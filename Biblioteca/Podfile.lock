@@ -1,0 +1,16 @@
+PODS:
+  - sharedModuleBiblioteca (1.0)
+
+DEPENDENCIES:
+  - sharedModuleBiblioteca (from `../sharedModuleBiblioteca`)
+
+EXTERNAL SOURCES:
+  sharedModuleBiblioteca:
+    :path: "../sharedModuleBiblioteca"
+
+SPEC CHECKSUMS:
+  sharedModuleBiblioteca: 4cef850d37166a3bc430a9de3e70cafebf473c77
+
+PODFILE CHECKSUM: 9990475596ee19ef9bfb9b8e77b60084798b1baa
+
+COCOAPODS: 1.12.0
