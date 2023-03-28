@@ -12,23 +12,33 @@ struct ItemOrizzontaliLista: View{
     var cardPrimi = CardLibri(titolo: "", descrizione: "")
     var cardSecondo = CardLibri(titolo: "", descrizione: "")
     
-    var body: some View {
+    var funzionePrimaCard: () -> Void
+    var funzioneSecondaCard: () -> Void
+
         
+    var body: some View {
         HStack {
-            cardPrimi
-                .padding(10)
-                
+            Button(action: funzionePrimaCard){
+                cardPrimi
+            }
+            .padding(10)
+            .buttonStyle(PlainButtonStyle())
+            
             Spacer()
                 
-            cardSecondo
-                .padding(10)
+            Button(action: funzioneSecondaCard){
+                cardSecondo
+            }
+            .padding(5)
+            .buttonStyle(PlainButtonStyle())
         }
-        .padding(15)
+        .padding(10)
     }
+    
+    
 }
-
 struct ItemOrizzontaliLista_Previews: PreviewProvider {
     static var previews: some View {
-        ItemOrizzontaliLista()
+        ItemOrizzontaliLista(funzionePrimaCard: {}, funzioneSecondaCard: {})
     }
 }

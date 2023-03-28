@@ -1,13 +1,20 @@
 import SwiftUI
-import sharedModuleBiblioteca
 
 struct ContentView: View {
-	let greet = Greeting().greet()
-
 	var body: some View {
+        Login()
         
-        MenuSplit(nomeUtente: "Eliomar", salutoUtente: "Ciao")
-        
+        /*
+        GeometryReader { geometry in
+            if geometry.size.width < 700 {
+                MenuSplit(nomeUtente: "Eliomar", salutoUtente: "Ciao")
+                
+            }else{
+                MenuSplitTablet(nomeUtente: "Eliomar", salutoUtente: "Ciao")
+            }
+        }
+         */
+         
 	}
 }
 

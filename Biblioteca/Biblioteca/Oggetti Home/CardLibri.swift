@@ -13,26 +13,33 @@ struct CardLibri: View {
     var descrizione: String = ""
     
     var body: some View {
+        
         ZStack{
             RoundedRectangle(cornerRadius: 20)
                 .fill(.white)
-                .shadow(radius: 5)
-            VStack{
+                .shadow(color: Color("ColoreCard"), radius: 6)
+            
+            VStack(alignment: .leading) {
                 Text(titolo)
+                    .foregroundColor(Color.black)
                     .font(.title)
                     .fontWeight(.bold)
-                    .padding(.top, 10)
+                    .padding(.horizontal, 10)
+                    .padding(.bottom, 0)
                 
                 Text(descrizione)
                     .font(.body)
                     .multilineTextAlignment(.center)
-                    .padding(.horizontal, 20)
-                    .padding(.top, 5)
+                    .padding(.horizontal, 10)
+                    .foregroundColor(Color.black)
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading) // Imposta l'allineamento del frame del VStack su bottomLeading
+            .padding(.bottom, 10) // Aggiungi un margine inferiore al VStack
         }
         .frame(width: 155, height: 270)
     }
 }
+
 
 struct CardLibri_Previews: PreviewProvider {
     static var previews: some View {

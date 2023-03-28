@@ -1,19 +1,17 @@
 //
-//  MenuSplit.swift
+//  MenuSplitTablet.swift
 //  Biblioteca
 //
-//  Created by eliomar rodriguez on 22/03/23.
+//  Created by eliomar rodriguez on 23/03/23.
 //  Copyright © 2023 orgName. All rights reserved.
 //
 
 import SwiftUI
 
-struct MenuSplit: View {
-    
+struct MenuSplitTablet: View {
     private let CONST_INDEX_LIBRI = 5
     
     @State var index = 0
-    @State var show = false
     
     @State var showAnimationSecondary = false
     
@@ -48,8 +46,9 @@ struct MenuSplit: View {
                         self.index = 0
                         //Indice di riconoscimento azione
                         
-                        //Each Time Tab Is Clicked Menu Will be Closed...
-                        withAnimation{ self.show.toggle() }
+                        if self.showAnimationSecondary{
+                            withAnimation{ self.showAnimationSecondary.toggle() }
+                        }
                         
                     }) {
                         HStack(spacing: 25){
@@ -64,6 +63,7 @@ struct MenuSplit: View {
                         .padding(.horizontal)
                         .background(self.index == 0 ? Color("ColorePrincipale").opacity(0.2) : Color.clear)
                         .cornerRadius(10)
+            
                     }
                     .padding(.top,25)
                     
@@ -72,8 +72,9 @@ struct MenuSplit: View {
                         self.index = 1
                         //Indice di riconoscimento azione
                         
-                        //Each Time Tab Is Clicked Menu Will be Closed...
-                        withAnimation{ self.show.toggle() }
+                        if self.showAnimationSecondary{
+                            withAnimation{ self.showAnimationSecondary.toggle() }
+                        }
                         
                     }) {
                         HStack(spacing: 25){
@@ -95,8 +96,9 @@ struct MenuSplit: View {
                         self.index = 2
                         //Indice di riconoscimento azione
                         
-                        //Each Time Tab Is Clicked Menu Will be Closed...
-                        withAnimation{ self.show.toggle() }
+                        if self.showAnimationSecondary{
+                            withAnimation{ self.showAnimationSecondary.toggle() }
+                        }
                         
                     }) {
                         HStack(spacing: 25){
@@ -119,8 +121,10 @@ struct MenuSplit: View {
                         self.index = 3
                         //Indice di riconoscimento azione
                         
-                        //Each Time Tab Is Clicked Menu Will be Closed...
-                        withAnimation{ self.show.toggle() }
+                        if self.showAnimationSecondary{
+                            withAnimation{ self.showAnimationSecondary.toggle() }
+                        }
+                        
                         
                     }) {
                         HStack(spacing: 25){
@@ -147,8 +151,9 @@ struct MenuSplit: View {
                         self.index = 4
                         //Indice di riconoscimento azione
                         
-                        //Each Time Tab Is Clicked Menu Will be Closed...
-                        withAnimation{ self.show.toggle() }
+                        if self.showAnimationSecondary{
+                            withAnimation{ self.showAnimationSecondary.toggle() }
+                        }
                         
                     }) {
                         HStack(spacing: 25){
@@ -184,10 +189,7 @@ struct MenuSplit: View {
                     
                     //Pulsante per la chiusura del menu
                     Button(action: {
-                        if !self.showAnimationSecondary{
-                            withAnimation{ self.show.toggle() }
-                            
-                        }else{
+                        if self.showAnimationSecondary{
                             self.index = 0
                             
                             withAnimation{ self.showAnimationSecondary.toggle() }
@@ -195,14 +197,8 @@ struct MenuSplit: View {
                         }
                         
                     }) {
-                        if !self.showAnimationSecondary{
-                            Image(systemName: self.show ? "xmark" : "line.horizontal.3")
-                                .resizable()
-                                .frame(width: self.show ? 18 : 22, height: 18)
-                                .foregroundColor(Color.primary.opacity(0.4))
-                            
-                        }else{
-                            Image(systemName: self.showAnimationSecondary ? "chevron.left" : "line.horizontal.3")
+                        if self.showAnimationSecondary{
+                            Image(systemName: self.showAnimationSecondary ? "chevron.left" : "")
                                 .resizable()
                                 .frame(width: self.showAnimationSecondary ? 18 : 22, height: 18)
                                 .foregroundColor(Color.primary.opacity(0.4))
@@ -216,17 +212,17 @@ struct MenuSplit: View {
                                 (self.index == 2 ? "Informazioni" :
                                     (self.index == 3 ? "Notifiche App" :
                                         (self.index == 4 ? "Impostazioni" : "Dati Libro")))))
-                        .font(.title)
-                        .foregroundColor(Color.primary.opacity(0.6))
-                        
+                    .font(.title)
+                    .foregroundColor(Color.primary.opacity(0.6))
+                    
                     Spacer(minLength: 0)
                     
                 }
                 .padding(.top,UIApplication.shared.windows.first?.safeAreaInsets.top)
-                .padding()
-                            
-                GeometryReader{_ in
+                .padding(.horizontal, self.showAnimationSecondary ? 15 : 0)
                 
+                GeometryReader{_ in
+                    
                     VStack{
                         
                         let prova = [
@@ -337,14 +333,12 @@ struct MenuSplit: View {
                         //Cambia la visuale dipendendo dall'indice
                         if self.index == 0{
                             ListaVisualizzazione(listaItemOrizzontale: prova)
-                                .allowsHitTesting(self.show ? false : true)
-
                             
                         } else if self.index == 1{
-
+                            
                             
                         } else if self.index == 2{
-
+                            
                             
                         } else if self.index == 3{
                             
@@ -353,11 +347,11 @@ struct MenuSplit: View {
                         }else{
                             MenuLibro(titolo: datiLibro.titolo, autore: datiLibro.autore, numeroCopie: datiLibro.numeroCopie ,disponibilitaLibro: datiLibro.disponibilitaLibro)
                                 .background(Color(UIColor.systemBackground))
-                                //Spostamento della vista a destra quando si fa clic sul pulsante del menu
+                            //Spostamento della vista a destra quando si fa clic sul pulsante del menu
                             
                                 .offset(x: self.showAnimationSecondary ? 0 : UIScreen.main.bounds.width, y: 0)
                             
-                                //Animazione di slide
+                            //Animazione di slide
                                 .animation(.spring(response: 0.5, dampingFraction: 0.7, blendDuration: 0))
                         }
                         
@@ -365,21 +359,15 @@ struct MenuSplit: View {
                 }
             }
             .background(Color(UIColor.systemBackground))
-            //Applica i bordi rotondi
-            .cornerRadius(self.show ? 30 : 0)
-            //Restringimento e spostamento della vista a destra quando si fa clic sul pulsante del menu
-            .scaleEffect(self.show ? 0.9 : 1)
-            .offset(x: self.show ? UIScreen.main.bounds.width / 2 : 0, y: self.show ? 15 : 0)
-            //Rotazione
-            .rotationEffect(.init(degrees: self.show ? -5 : 0))
-            .shadow(color: Color("ColorePrincipale"), radius: self.show ? 5 : 0)
+            .cornerRadius(30)
+            .shadow(color: Color("ColorePrincipale").opacity(0.50), radius: 5)
+            .padding(.leading, 187)
         }
-        
     }
 }
 
-struct MenuSplit_Previews: PreviewProvider {
+struct MenuSplitTablet_Previews: PreviewProvider {
     static var previews: some View {
-        MenuSplit(nomeUtente: "", salutoUtente: "")
+        MenuSplitTablet(nomeUtente: "", salutoUtente: "")
     }
 }
