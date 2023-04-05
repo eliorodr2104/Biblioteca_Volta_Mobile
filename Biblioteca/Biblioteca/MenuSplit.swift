@@ -1,23 +1,35 @@
-//
-//  MenuSplit.swift
-//  Biblioteca
-//
-//  Created by eliomar rodriguez on 22/03/23.
-//  Copyright © 2023 orgName. All rights reserved.
-//
-
+/**
+ * Created by eliomar rodriguez on 22/03/23.
+ *
+ * Descrizione: Rappresenta una vista per la visualizzazione del menu. La struttura definisce alcune variabili di stato, tra cui index, che tiene traccia dell'azione
+ *          selezionata dall'utente, e showAnimationSecondary, che controlla se l'animazione per la visualizzazione del menu secondario deve essere eseguita. La struttura
+ *          include anche la definizione di una variabile MenuLibro, utilizzata per visualizzare i dettagli di un libro selezionato.
+ *
+ *          Il corpo della vista è definito come una pila di z-stack e h-stack, utilizzati per definire la struttura e la posizione degli elementi all'interno del menu. La vista include
+ *          pulsanti per visualizzare il catalogo dei libri, i libri in prestito, le informazioni dell'app e le notifiche dell'app. Il menu include anche un pulsante per accedere alle
+ *          impostazioni dell'app.
+ *
+ *          La struttura di codice include anche alcuni stili e proprietà grafiche, come la dimensione del testo, il colore e la forma dei pulsanti, nonché la definizione di una
+ *          divisione grafica tra i pulsanti principali e quelli per le impostazioni.
+ *
+ * Progetto: Biblioteca
+ * SwiftUI view MenuSplit.swift
+ *
+ * Copyright © 2023 4AI.  All rights reserved.
+ */
 import SwiftUI
+import sharedModuleBiblioteca
 
 struct MenuSplit: View {
     
+    //Variabile statica e privata con l'indice per i libri
     private let CONST_INDEX_LIBRI = 5
     
     @State var index = 0
     @State var show = false
-    
     @State var showAnimationSecondary = false
     
-    @State var datiLibro = MenuLibro(titolo: "", autore: "", numeroCopie: 0, disponibilitaLibro: false)
+    @State var datiLibro: MenuLibro?
 
     var nomeUtente: String
     var salutoUtente: String
@@ -25,11 +37,15 @@ struct MenuSplit: View {
     
     var body: some View {
         ZStack{
-            //Menu Utente
+            /*
+             * Menù per la scelta dell'utente dentro l'app, il quale viene visualizzato con un'animazione; questa viene
+             * controllata dalla variabile di stato "showAnimationSecondary", la quale quando viene modificata aggiorna la grafica
+             * del programma inizialize, così mostrando i pulsanti di scelta.
+             */
             HStack{
                 VStack(alignment: .leading, spacing: 10) {
                     
-                    //Immagine Profilo
+                    //Immagine Profilo da mettere quando avrò l'icona del profilo
                     //Image(systemName: "xmark")
                     
                     Text(salutoUtente)
@@ -43,14 +59,14 @@ struct MenuSplit: View {
                         .font(.title)
                         .foregroundColor(.primary)
                     
-                    //Pulsante visualizzazione catalogo
+                    //Pulsante per la visualizzazione del catalogo
                     Button(action: {
-                        self.index = 0
+                        
                         //Indice di riconoscimento azione
+                        self.index = 0
                         
-                        //Each Time Tab Is Clicked Menu Will be Closed...
+                        //Fa lo switch della variabile di stato "show"
                         withAnimation{ self.show.toggle() }
-                        
                     }) {
                         HStack(spacing: 25){
                             Image("catalogo")
@@ -67,12 +83,12 @@ struct MenuSplit: View {
                     }
                     .padding(.top,25)
                     
-                    //Pulsante visualizzazione libri prestito
+                    //Pulsante per la visualizzazione dei libri che sono in prestito
                     Button(action: {
-                        self.index = 1
                         //Indice di riconoscimento azione
+                        self.index = 1
                         
-                        //Each Time Tab Is Clicked Menu Will be Closed...
+                        //Fa lo switch della variabile di stato "show"
                         withAnimation{ self.show.toggle() }
                         
                     }) {
@@ -90,12 +106,12 @@ struct MenuSplit: View {
                         .cornerRadius(10)
                     }
                     
-                    //Pulsante visualizzazione informazioni
+                    //Pulsante per la visualizzazione delle informazioni dell'utente
                     Button(action: {
-                        self.index = 2
                         //Indice di riconoscimento azione
+                        self.index = 2
                         
-                        //Each Time Tab Is Clicked Menu Will be Closed...
+                        //Fa lo switch della variabile di stato "show"
                         withAnimation{ self.show.toggle() }
                         
                     }) {
@@ -114,12 +130,12 @@ struct MenuSplit: View {
                         .cornerRadius(10)
                     }
                     
-                    //Pulsante visualizzazione notifiche app
+                    //Pulsante per la visualizzazione delle notifiche nell'app
                     Button(action: {
-                        self.index = 3
                         //Indice di riconoscimento azione
+                        self.index = 3
                         
-                        //Each Time Tab Is Clicked Menu Will be Closed...
+                        //Fa lo switch della variabile di stato "show"
                         withAnimation{ self.show.toggle() }
                         
                     }) {
@@ -142,12 +158,12 @@ struct MenuSplit: View {
                         .background(Color.white)
                         .padding(.vertical,30)
                     
-                    //Pulsante visualizzazione impostazioni
+                    //Pulsante per la visualizzazione delle impostazioni dell'app
                     Button(action: {
-                        self.index = 4
                         //Indice di riconoscimento azione
+                        self.index = 4
                         
-                        //Each Time Tab Is Clicked Menu Will be Closed...
+                        //Fa lo switch della variabile di stato "show"
                         withAnimation{ self.show.toggle() }
                         
                     }) {
@@ -177,13 +193,20 @@ struct MenuSplit: View {
             .padding(.top,UIApplication.shared.windows.first?.safeAreaInsets.top)
             .padding(.bottom,UIApplication.shared.windows.first?.safeAreaInsets.bottom)
             
-            //Schermata principale
+            //Schermata di visualizzazione principale, la quale  mostra la lista di tutti i libri richiesti dal database
             VStack(spacing: 0){
                 
+                //Barra orizzontale la quale è nella posizone Top dello schermo, e ha il pulsante per tornare indetro
                 HStack(spacing: 15){
                     
-                    //Pulsante per la chiusura del menu
+                    //Pulsante per la chiusura della schermata di visualizzazione principale con la lista dei libri
                     Button(action: {
+                        
+                        /*
+                         * Struttura condizionale la quale controlla se la variabile di stato showAnimationSecondary è False quando
+                         * viene modificata; al entrare avvia la funzione "toggle()", altrimenti, setta la variabile "index"
+                         * uguale a zero e avvia la funzione "toggle()".
+                         */
                         if !self.showAnimationSecondary{
                             withAnimation{ self.show.toggle() }
                             
@@ -191,10 +214,14 @@ struct MenuSplit: View {
                             self.index = 0
                             
                             withAnimation{ self.showAnimationSecondary.toggle() }
-                            
                         }
                         
                     }) {
+                        /*
+                         * Struttura condizionale la quale controlla se la variabile di stato showAnimationSecondary è False quando
+                         * viene modificata; al entrare controlla la variabile di stato "show" e cambia "Image", altrimenti,
+                         * controlla la variabile di stato "showAnimationSecondary" e modifica "Image"
+                         */
                         if !self.showAnimationSecondary{
                             Image(systemName: self.show ? "xmark" : "line.horizontal.3")
                                 .resizable()
@@ -210,7 +237,7 @@ struct MenuSplit: View {
                         
                     }
                     
-                    //Cambia il testo del pulsante dipendendo dall'indice scelto
+                    //Cambia il testo del pulsante dipendendo dall'indice che c'è nel momento del controllo
                     Text(self.index == 0 ? "Catalogo" :
                             (self.index == 1 ? "Libri Prestito" :
                                 (self.index == 2 ? "Informazioni" :
@@ -225,118 +252,19 @@ struct MenuSplit: View {
                 .padding(.top,UIApplication.shared.windows.first?.safeAreaInsets.top)
                 .padding()
                             
+                //Lettura delle dimensioni dello schermo nel quale si avvia la app
                 GeometryReader{_ in
                 
+                    //Visuale verticale nella quale c'è la lista del libri
                     VStack{
                         
-                        let prova = [
-                            ItemOrizzontaliLista(
-                                cardPrimi: CardLibri(
-                                    titolo: "ciao",
-                                    descrizione: "ciao"),
-                                
-                                cardSecondo: CardLibri(
-                                    titolo: "ciao1",
-                                    descrizione: "ciaooo1"),
-                                
-                                funzionePrimaCard: {
-                                    self.index = CONST_INDEX_LIBRI
-                                    
-                                    self.datiLibro = MenuLibro(titolo: "ciao", autore: "ciao", numeroCopie: 10 ,disponibilitaLibro: true)
-                                    
-                                    withAnimation{ self.showAnimationSecondary.toggle() }
-                                },
-                                
-                                funzioneSecondaCard: {
-                                    self.index = CONST_INDEX_LIBRI
-                                    
-                                    self.datiLibro = MenuLibro(titolo: "ciao1", autore: "ciaooo1", numeroCopie: 5, disponibilitaLibro: true)
-                                    
-                                    withAnimation{ self.showAnimationSecondary.toggle() }
-                                }
-                                
-                            ),
-                            ItemOrizzontaliLista(
-                                cardPrimi: CardLibri(
-                                    titolo: "ciao2",
-                                    descrizione: "ciao2"),
-                                
-                                cardSecondo: CardLibri(
-                                    titolo: "ciao3",
-                                    descrizione: "ciaooo3"),
-                                
-                                funzionePrimaCard: {
-                                    self.index = CONST_INDEX_LIBRI
-                                    
-                                    self.datiLibro = MenuLibro(titolo: "ciao2", autore: "ciao2", numeroCopie: 0, disponibilitaLibro: false)
-                                    
-                                    withAnimation{ self.showAnimationSecondary.toggle() }
-                                },
-                                
-                                funzioneSecondaCard: {
-                                    self.index = CONST_INDEX_LIBRI
-                                    
-                                    self.datiLibro = MenuLibro(titolo: "ciao3", autore: "ciaooo3", numeroCopie: 2, disponibilitaLibro: true)
-                                    
-                                    withAnimation{ self.showAnimationSecondary.toggle() }
-                                }
-                                
-                            ),
-                            ItemOrizzontaliLista(
-                                cardPrimi: CardLibri(
-                                    titolo: "ciao4",
-                                    descrizione: "ciao4"),
-                                
-                                cardSecondo: CardLibri(
-                                    titolo: "ciao5",
-                                    descrizione: "ciaooo5"),
-                                
-                                funzionePrimaCard: {
-                                    self.index = CONST_INDEX_LIBRI
-                                    
-                                    self.datiLibro = MenuLibro(titolo: "ciao4", autore: "ciao4", numeroCopie: 0, disponibilitaLibro: false)
-                                    
-                                    withAnimation{ self.showAnimationSecondary.toggle() }
-                                },
-                                
-                                funzioneSecondaCard: {
-                                    self.index = CONST_INDEX_LIBRI
-                                    
-                                    self.datiLibro = MenuLibro(titolo: "ciao5", autore: "ciaooo5", numeroCopie: 0, disponibilitaLibro: false)
-                                    
-                                    withAnimation{ self.showAnimationSecondary.toggle() }
-                                }
-                            ),
-                            ItemOrizzontaliLista(
-                                cardPrimi: CardLibri(
-                                    titolo: "ciao6",
-                                    descrizione: "ciao6"),
-                                
-                                cardSecondo: CardLibri(
-                                    titolo: "ciao7",
-                                    descrizione: "ciaooo7"),
-                                
-                                funzionePrimaCard: {
-                                    self.index = CONST_INDEX_LIBRI
-                                    
-                                    self.datiLibro = MenuLibro(titolo: "ciao6", autore: "ciao6", numeroCopie: 0, disponibilitaLibro: false)
-                                    
-                                    withAnimation{ self.showAnimationSecondary.toggle() }
-                                },
-                                
-                                funzioneSecondaCard: {
-                                    self.index = CONST_INDEX_LIBRI
-                                    
-                                    self.datiLibro = MenuLibro(titolo: "ciao7", autore: "ciaooo7", numeroCopie: 0, disponibilitaLibro: false)
-                                    
-                                    withAnimation{ self.showAnimationSecondary.toggle() }
-                                }
-                            )
-                        ]
-                        
+                        //Array temp, il quale ha dei dati di prova, che dopo verranno presi da un file JSON
+                        let tempArrayItemVisualizzazione = inizializzaItem(index: $index, CONST_INDEX_LIBRI: CONST_INDEX_LIBRI, datiLibro: $datiLibro, showAnimationSecondary: $showAnimationSecondary)
+
+
                         //Cambia la visuale dipendendo dall'indice
                         if self.index == 0{
-                            ListaVisualizzazione(listaItemOrizzontale: prova)
+                            ListaVisualizzazione(listaItemOrizzontale: tempArrayItemVisualizzazione)
                                 .allowsHitTesting(self.show ? false : true)
 
                             
@@ -351,7 +279,7 @@ struct MenuSplit: View {
                         }else if self.index == 4{
                             
                         }else{
-                            MenuLibro(titolo: datiLibro.titolo, autore: datiLibro.autore, numeroCopie: datiLibro.numeroCopie ,disponibilitaLibro: datiLibro.disponibilitaLibro)
+                            MenuLibro(titolo: datiLibro?.titolo, autore: datiLibro?.autore, numeroCopie: datiLibro?.numeroCopie ,disponibilitaLibro: datiLibro?.disponibilitaLibro)
                                 .background(Color(UIColor.systemBackground))
                                 //Spostamento della vista a destra quando si fa clic sul pulsante del menu
                             
@@ -376,6 +304,90 @@ struct MenuSplit: View {
         }
         
     }
+}
+
+private func inizializzaItem(index: Binding<Int>, CONST_INDEX_LIBRI: Int, datiLibro: Binding<MenuLibro?>, showAnimationSecondary: Binding<Bool>) -> [ItemOrizzontaliLista]{
+
+    //Prova aggiunta libri json
+    let libriVisualizzazioneRichiestaJson = inizializzaArrayLibro()
+    
+    var arrayTemp = [ItemOrizzontaliLista]()
+    
+    var item = ItemOrizzontaliLista(funzionePrimaCard: {}, funzioneSecondaCard: {})
+            
+    for i in stride(from: 0, to: libriVisualizzazioneRichiestaJson.count, by: 2) {
+                
+        if i < libriVisualizzazioneRichiestaJson.count - 1 && i != libriVisualizzazioneRichiestaJson.count{
+            item = ItemOrizzontaliLista(
+                cardPrimi: CardLibri(libro: libriVisualizzazioneRichiestaJson[i]),
+                cardSecondo: CardLibri(libro: libriVisualizzazioneRichiestaJson[i + 1]),
+                funzionePrimaCard: {
+                    index.wrappedValue = CONST_INDEX_LIBRI
+                    datiLibro.wrappedValue = MenuLibro(titolo: libriVisualizzazioneRichiestaJson[i].titolo, autore: libriVisualizzazioneRichiestaJson[i].autore, numeroCopie: libriVisualizzazioneRichiestaJson[i].nPag as? Int, disponibilitaLibro: false)
+                    withAnimation { showAnimationSecondary.wrappedValue.toggle() }
+                },
+                funzioneSecondaCard: {
+                    index.wrappedValue = CONST_INDEX_LIBRI
+                    datiLibro.wrappedValue = MenuLibro(titolo: libriVisualizzazioneRichiestaJson[i + 1].titolo, autore: libriVisualizzazioneRichiestaJson[i + 1].autore, numeroCopie: libriVisualizzazioneRichiestaJson[i + 1].nPag as? Int, disponibilitaLibro: true)
+                    withAnimation { showAnimationSecondary.wrappedValue.toggle() }
+                }
+            )
+            
+        }else if i == libriVisualizzazioneRichiestaJson.count - 1{
+            item = ItemOrizzontaliLista(
+                cardPrimi: CardLibri(libro: libriVisualizzazioneRichiestaJson[i]),
+                cardSecondo: CardLibri(libro: Libro(isbn: "", titolo: "", lingua: "", casaEditrice: nil, autore: "", annoPubblicazione: nil, pathImmagine: "", nPag: nil, categoria: nil, copie: nil)),
+                funzionePrimaCard: {
+                    index.wrappedValue = CONST_INDEX_LIBRI
+                    datiLibro.wrappedValue = MenuLibro(titolo: libriVisualizzazioneRichiestaJson[i].titolo, autore: libriVisualizzazioneRichiestaJson[i].autore, numeroCopie: libriVisualizzazioneRichiestaJson[i].nPag as? Int, disponibilitaLibro: false)
+                    withAnimation { showAnimationSecondary.wrappedValue.toggle() }
+                },
+                funzioneSecondaCard: {}
+            )
+        }
+        
+        arrayTemp.append(item)
+    }
+    return arrayTemp
+}
+
+
+private func inizializzaArrayLibro() -> [Libro]{
+
+    return [
+        Libro (isbn: "",
+                 titolo: "prova",
+                 lingua: "",
+                 casaEditrice: nil,
+                 autore: "",
+                 annoPubblicazione: nil,
+                 pathImmagine: "",
+                 nPag: nil,
+                 categoria: nil,
+                 copie: nil),
+        
+        Libro (isbn: "",
+                 titolo: "prova 2",
+                 lingua: "",
+                 casaEditrice: nil,
+                 autore: "",
+                 annoPubblicazione: nil,
+                 pathImmagine: "",
+                 nPag: nil,
+                 categoria: nil,
+                 copie: nil),
+        
+        Libro (isbn: "",
+                 titolo: "prova 3",
+                 lingua: "",
+                 casaEditrice: nil,
+                 autore: "",
+                 annoPubblicazione: nil,
+                 pathImmagine: "",
+                 nPag: nil,
+                 categoria: nil,
+                 copie: nil)
+    ]
 }
 
 struct MenuSplit_Previews: PreviewProvider {

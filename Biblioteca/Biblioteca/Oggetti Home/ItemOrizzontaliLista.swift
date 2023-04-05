@@ -1,23 +1,39 @@
-//
-//  ItemOrizzontaliLista.swift
-//  Biblioteca
-//
-//  Created by eliomar rodriguez on 22/03/23.
-//  Copyright © 2023 orgName. All rights reserved.
-//
-
+/**
+ * Created by eliomar rodriguez on 22/03/23.
+ *
+ * Descrizione: Questo codice definisce una vista SwiftUI chiamata ItemOrizzontaliLista, che contiene due carte di libri (cardPrimi e cardSecondo) posizionate orizzontalmente una
+ *          accanto all'altra all'interno di un HStack. Queste due carte vengono rese cliccabili grazie alla presenza di due bottoni (Button),
+ *          ognuno dei quali viene associato ad una funzione specifica (rispettivamente funzionePrimaCard e funzioneSecondaCard) che viene eseguita al momento del click.
+ *
+ *          All'interno del corpo della vista, la prima carta (cardPrimi) viene posizionata all'inizio dell'HStack, seguita da uno spazio (Spacer()) e dalla seconda carta
+ *          (cardSecondo) posizionata alla fine. Entrambi i bottoni utilizzano uno stile di pulsante plain (PlainButtonStyle()) per rimuovere la decorazione predefinita.
+ *
+ * Progetto: Biblioteca
+ * SwiftUI view ItemOrizzontaliLista.swift
+ *
+ * Copyright © 2023 4AI.  All rights reserved.
+ */
 import SwiftUI
+import sharedModuleBiblioteca
 
 struct ItemOrizzontaliLista: View{
-    var cardPrimi = CardLibri(titolo: "", descrizione: "")
-    var cardSecondo = CardLibri(titolo: "", descrizione: "")
+    //Dichiarazione e inizializzazione delle due "Card" dove
+    var cardPrimi = CardLibri(libro: Libro(isbn: "", titolo: "", lingua: "", casaEditrice: nil, autore: "", annoPubblicazione: nil, pathImmagine: "", nPag: nil, categoria: nil, copie: nil))
     
+    var cardSecondo = CardLibri(libro: Libro(isbn: "", titolo: "", lingua: "", casaEditrice: nil, autore: "", annoPubblicazione: nil, pathImmagine: "", nPag: nil, categoria: nil, copie: nil))
+    
+    /*
+     * Dichiarazione e inizializzazione delle due funzioni che avvengono quando si preme il rispettivo pulsante alla quale
+     * appartiene la "Card"
+     */
     var funzionePrimaCard: () -> Void
     var funzioneSecondaCard: () -> Void
 
         
     var body: some View {
+        //Visualizzazione orizzontale nella quale ci sono le due "Card" che si vedono nella schermata principale
         HStack {
+            //Pulsante che prende la forma della prima "Card"
             Button(action: funzionePrimaCard){
                 cardPrimi
             }
@@ -26,6 +42,7 @@ struct ItemOrizzontaliLista: View{
             
             Spacer()
                 
+            //Pulsante che prende la forma della seconda "Card"
             Button(action: funzioneSecondaCard){
                 cardSecondo
             }
@@ -37,6 +54,7 @@ struct ItemOrizzontaliLista: View{
     
     
 }
+
 struct ItemOrizzontaliLista_Previews: PreviewProvider {
     static var previews: some View {
         ItemOrizzontaliLista(funzionePrimaCard: {}, funzioneSecondaCard: {})
