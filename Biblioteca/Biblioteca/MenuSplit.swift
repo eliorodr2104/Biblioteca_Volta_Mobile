@@ -279,7 +279,7 @@ struct MenuSplit: View {
                         }else if self.index == 4{
                             
                         }else{
-                            MenuLibro(titolo: datiLibro?.titolo, autore: datiLibro?.autore, numeroCopie: datiLibro?.numeroCopie ,disponibilitaLibro: datiLibro?.disponibilitaLibro)
+                            MenuLibro(viewModel: MenuLibro.ViewModel(), titolo: datiLibro?.titolo, autore: datiLibro?.autore, numeroCopie: datiLibro?.numeroCopie ,disponibilitaLibro: datiLibro?.disponibilitaLibro)
                                 .background(Color(UIColor.systemBackground))
                                 //Spostamento della vista a destra quando si fa clic sul pulsante del menu
                             
@@ -323,12 +323,12 @@ private func inizializzaItem(index: Binding<Int>, CONST_INDEX_LIBRI: Int, datiLi
                 cardSecondo: CardLibri(libro: libriVisualizzazioneRichiestaJson[i + 1]),
                 funzionePrimaCard: {
                     index.wrappedValue = CONST_INDEX_LIBRI
-                    datiLibro.wrappedValue = MenuLibro(titolo: libriVisualizzazioneRichiestaJson[i].titolo, autore: libriVisualizzazioneRichiestaJson[i].autore, numeroCopie: libriVisualizzazioneRichiestaJson[i].nPag as? Int, disponibilitaLibro: false)
+                    datiLibro.wrappedValue = MenuLibro(viewModel: MenuLibro.ViewModel(), titolo: libriVisualizzazioneRichiestaJson[i].titolo, autore: libriVisualizzazioneRichiestaJson[i].autore, numeroCopie: libriVisualizzazioneRichiestaJson[i].nPag as? Int, disponibilitaLibro: false)
                     withAnimation { showAnimationSecondary.wrappedValue.toggle() }
                 },
                 funzioneSecondaCard: {
                     index.wrappedValue = CONST_INDEX_LIBRI
-                    datiLibro.wrappedValue = MenuLibro(titolo: libriVisualizzazioneRichiestaJson[i + 1].titolo, autore: libriVisualizzazioneRichiestaJson[i + 1].autore, numeroCopie: libriVisualizzazioneRichiestaJson[i + 1].nPag as? Int, disponibilitaLibro: true)
+                    datiLibro.wrappedValue = MenuLibro(viewModel: MenuLibro.ViewModel(), titolo: libriVisualizzazioneRichiestaJson[i + 1].titolo, autore: libriVisualizzazioneRichiestaJson[i + 1].autore, numeroCopie: libriVisualizzazioneRichiestaJson[i + 1].nPag as? Int, disponibilitaLibro: true)
                     withAnimation { showAnimationSecondary.wrappedValue.toggle() }
                 }
             )
@@ -339,7 +339,7 @@ private func inizializzaItem(index: Binding<Int>, CONST_INDEX_LIBRI: Int, datiLi
                 cardSecondo: CardLibri(libro: Libro(isbn: "", titolo: "", lingua: "", casaEditrice: nil, autore: "", annoPubblicazione: nil, pathImmagine: "", nPag: nil, categoria: nil, copie: nil)),
                 funzionePrimaCard: {
                     index.wrappedValue = CONST_INDEX_LIBRI
-                    datiLibro.wrappedValue = MenuLibro(titolo: libriVisualizzazioneRichiestaJson[i].titolo, autore: libriVisualizzazioneRichiestaJson[i].autore, numeroCopie: libriVisualizzazioneRichiestaJson[i].nPag as? Int, disponibilitaLibro: false)
+                    datiLibro.wrappedValue = MenuLibro(viewModel: MenuLibro.ViewModel(), titolo: libriVisualizzazioneRichiestaJson[i].titolo, autore: libriVisualizzazioneRichiestaJson[i].autore, numeroCopie: libriVisualizzazioneRichiestaJson[i].nPag as? Int, disponibilitaLibro: false)
                     withAnimation { showAnimationSecondary.wrappedValue.toggle() }
                 },
                 funzioneSecondaCard: {}

@@ -31,7 +31,11 @@ kotlin {
     sourceSets {
         val commonMain by getting
         val commonTest by getting
-        val androidMain by getting
+        val androidMain by getting{
+            dependencies {
+                implementation("io.ktor:ktor-client-okhttp:2.2.4")
+            }
+        }
         val androidUnitTest by getting
         val iosX64Main by getting
         val iosArm64Main by getting
@@ -41,6 +45,9 @@ kotlin {
             iosX64Main.dependsOn(this)
             iosArm64Main.dependsOn(this)
             iosSimulatorArm64Main.dependsOn(this)
+            dependencies {
+                implementation("io.ktor:ktor-client-darwin:2.2.4")
+            }
         }
         val iosX64Test by getting
         val iosArm64Test by getting
@@ -55,6 +62,8 @@ kotlin {
         commonMain{
             dependencies {
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.1")
+                implementation("io.ktor:ktor-client-core:2.2.4")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
             }
         }
     }

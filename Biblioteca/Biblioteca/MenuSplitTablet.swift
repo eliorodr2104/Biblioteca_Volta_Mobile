@@ -293,7 +293,7 @@ struct MenuSplitTablet: View {
                         }else if self.index == 4{
                             
                         }else{
-                            MenuLibro(titolo: datiLibro?.titolo, autore: datiLibro?.autore, numeroCopie: datiLibro?.numeroCopie ,disponibilitaLibro: datiLibro?.disponibilitaLibro)
+                            MenuLibro(viewModel: MenuLibro.ViewModel(), titolo: datiLibro?.titolo, autore: datiLibro?.autore, numeroCopie: datiLibro?.numeroCopie ,disponibilitaLibro: datiLibro?.disponibilitaLibro)
                                 .background(Color(UIColor.systemBackground))
                             //Spostamento della vista a destra quando si fa clic sul pulsante del menu
                             
@@ -314,6 +314,23 @@ struct MenuSplitTablet: View {
     }
 }
 
+/**
+   Inizializza un array di oggetti ItemOrizzontaliLista a partire da un array di libri e alcuni parametri opzionali.
+ 
+   - Parameters:
+     - index: Un binding a un intero utilizzato per tenere traccia dell'indice selezionato.
+     - CONST_INDEX_LIBRI: Un intero costante utilizzato come valore predefinito per l'indice.
+     - datiLibro: Un binding a un oggetto MenuLibro opzionale utilizzato per tenere traccia dei dati del libro selezionato.
+     - showAnimationSecondary: Un binding a un valore booleano opzionale utilizzato per attivare l'animazione.
+ 
+   - Returns: Un array di oggetti ItemOrizzontaliLista.
+
+   Questa funzione prende un array di libri e restituisce un array di oggetti ItemOrizzontaliLista, dove ogni oggetto rappresenta una coppia di libri che possono essere visualizzati orizzontalmente. L'array di libri è ottenuto tramite la funzione inizializzaArrayLibro(). Gli altri parametri sono opzionali e vengono utilizzati per gestire l'indice selezionato, i dati del libro selezionato e l'animazione della visualizzazione del libro selezionato.
+
+   Per ogni coppia di libri nell'array di libri, viene creato un oggetto ItemOrizzontaliLista con le informazioni sui due libri e le funzioni che vengono chiamate quando viene selezionata una delle due carte. Le funzioni impostano l'indice selezionato e i dati del libro selezionato e attivano l'animazione se necessario.
+
+   Se l'array di libri ha un numero dispari di elementi, l'ultimo libro viene visualizzato solo nella prima carta e la seconda carta viene lasciata vuota.
+*/
 private func inizializzaItem(index: Binding<Int>, CONST_INDEX_LIBRI: Int, datiLibro: Binding<MenuLibro?>, showAnimationSecondary: Binding<Bool>) -> [ItemOrizzontaliLista]{
 
     //Prova aggiunta libri json
@@ -331,12 +348,12 @@ private func inizializzaItem(index: Binding<Int>, CONST_INDEX_LIBRI: Int, datiLi
                 cardSecondo: CardLibri(libro: libriVisualizzazioneRichiestaJson[i + 1]),
                 funzionePrimaCard: {
                     index.wrappedValue = CONST_INDEX_LIBRI
-                    datiLibro.wrappedValue = MenuLibro(titolo: libriVisualizzazioneRichiestaJson[i].titolo, autore: libriVisualizzazioneRichiestaJson[i].autore, numeroCopie: libriVisualizzazioneRichiestaJson[i].nPag as? Int, disponibilitaLibro: false)
+                    datiLibro.wrappedValue = MenuLibro(viewModel: MenuLibro.ViewModel(), titolo: libriVisualizzazioneRichiestaJson[i].titolo, autore: libriVisualizzazioneRichiestaJson[i].autore, numeroCopie: libriVisualizzazioneRichiestaJson[i].nPag as? Int, disponibilitaLibro: false)
                     withAnimation { showAnimationSecondary.wrappedValue.toggle() }
                 },
                 funzioneSecondaCard: {
                     index.wrappedValue = CONST_INDEX_LIBRI
-                    datiLibro.wrappedValue = MenuLibro(titolo: libriVisualizzazioneRichiestaJson[i + 1].titolo, autore: libriVisualizzazioneRichiestaJson[i + 1].autore, numeroCopie: libriVisualizzazioneRichiestaJson[i + 1].nPag as? Int, disponibilitaLibro: true)
+                    datiLibro.wrappedValue = MenuLibro(viewModel: MenuLibro.ViewModel(), titolo: libriVisualizzazioneRichiestaJson[i + 1].titolo, autore: libriVisualizzazioneRichiestaJson[i + 1].autore, numeroCopie: libriVisualizzazioneRichiestaJson[i + 1].nPag as? Int, disponibilitaLibro: true)
                     withAnimation { showAnimationSecondary.wrappedValue.toggle() }
                 }
             )
@@ -347,7 +364,7 @@ private func inizializzaItem(index: Binding<Int>, CONST_INDEX_LIBRI: Int, datiLi
                 cardSecondo: CardLibri(libro: Libro(isbn: "", titolo: "", lingua: "", casaEditrice: nil, autore: "", annoPubblicazione: nil, pathImmagine: "", nPag: nil, categoria: nil, copie: nil)),
                 funzionePrimaCard: {
                     index.wrappedValue = CONST_INDEX_LIBRI
-                    datiLibro.wrappedValue = MenuLibro(titolo: libriVisualizzazioneRichiestaJson[i].titolo, autore: libriVisualizzazioneRichiestaJson[i].autore, numeroCopie: libriVisualizzazioneRichiestaJson[i].nPag as? Int, disponibilitaLibro: false)
+                    datiLibro.wrappedValue = MenuLibro(viewModel: MenuLibro.ViewModel(), titolo: libriVisualizzazioneRichiestaJson[i].titolo, autore: libriVisualizzazioneRichiestaJson[i].autore, numeroCopie: libriVisualizzazioneRichiestaJson[i].nPag as? Int, disponibilitaLibro: false)
                     withAnimation { showAnimationSecondary.wrappedValue.toggle() }
                 },
                 funzioneSecondaCard: {}

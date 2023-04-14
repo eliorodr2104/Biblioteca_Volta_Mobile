@@ -1,4 +1,4 @@
-package com.biblioteca.dati
+package com.biblioteca
 
 import kotlinx.serialization.Serializable
 

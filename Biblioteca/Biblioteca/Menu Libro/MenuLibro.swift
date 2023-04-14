@@ -25,8 +25,11 @@
  * Copyright © 2023 4AI.  All rights reserved.
  */
 import SwiftUI
+import sharedModuleBiblioteca
 
 struct MenuLibro: View {
+    @ObservedObject private(set) var viewModel: ViewModel
+    
     var titolo: String?
     var autore: String?
     var numeroCopie: Int?
@@ -71,9 +74,10 @@ struct MenuLibro: View {
                          * fa anche un ulteriore controllo per la dimensione del testo con la variabile statica "isLargeSize"
                          */
                         VStack(alignment: .leading) {
-                            Text(titolo ?? "")
-                                .font(isLargeSize ? .largeTitle : .title)
+                            
+                            Text(viewModel.text)
                                 .fontWeight(.bold)
+                                .font(isLargeSize ? .largeTitle : .title)
                                 .foregroundColor(.primary)
                             
                             Text(autore ?? "")
@@ -117,8 +121,25 @@ struct MenuLibro: View {
     }
 }
 
+extension MenuLibro {
+    class ViewModel: ObservableObject {
+        @Published var text = "Loading..."
+        init() {
+            GestioneJson().provaConnessione { connessione, error in
+                DispatchQueue.main.async {
+                    if let connessione = connessione {
+                        self.text = connessione
+                    } else {
+                        self.text = error?.localizedDescription ?? "error"
+                    }
+                }
+            }
+        }
+    }
+}
+
 struct MenuLibro_Previews: PreviewProvider {
     static var previews: some View {
-        MenuLibro(titolo: "", autore: "", numeroCopie: 0 ,disponibilitaLibro: true)
+        MenuLibro(viewModel: MenuLibro.ViewModel(), titolo: "", autore: "", numeroCopie: 0 ,disponibilitaLibro: true)
     }
 }
