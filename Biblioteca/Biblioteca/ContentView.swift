@@ -14,6 +14,7 @@
  * Copyright © 2023 4AI.  All rights reserved.
  */
 import SwiftUI
+import sharedModuleBiblioteca
 
 struct ContentView: View {
 	var body: some View {
@@ -32,10 +33,10 @@ struct ContentView: View {
              * s'è vero apre il menù per telefono, altrimenti apre la visuale per il tablet.
              */
             if geometry.size.width < 700 {
-                MenuSplit(nomeUtente: "Eliomar", salutoUtente: "Ciao")
+                MenuSplit(nomeUtente: "Eliomar", salutoUtente: "Ciao", utenteUtilizzo: Utente(idUtente: 0, nome: "", cognome: "", numero: nil, mailAlternativa: "", grado: 3, mail: ""))
                 
             }else{
-                MenuSplitTablet(nomeUtente: "Eliomar", salutoUtente: "Ciao")
+                MenuSplitTablet(viewModel: MenuSplitTablet.ViewModel(), nomeUtente: "Eliomar", salutoUtente: "Ciao")
             }
         }
          

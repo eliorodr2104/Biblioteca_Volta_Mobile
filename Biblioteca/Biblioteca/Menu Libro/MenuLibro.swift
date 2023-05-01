@@ -28,16 +28,21 @@ import SwiftUI
 import sharedModuleBiblioteca
 
 struct MenuLibro: View {
+    
+    var datiLibro: DatiLibro?
+    
     @ObservedObject private(set) var viewModel: ViewModel
     
-    var titolo: String?
-    var autore: String?
-    var numeroCopie: Int?
-    var disponibilitaLibro: Bool?
+    init(datiLibro: DatiLibro? = nil) {
+        self.datiLibro = datiLibro
+        self.viewModel = ViewModel(isbn: datiLibro?.isbn ?? "")
+    }
     
     //Variabile di stato booleana
     @State var controlloDimensione = false
-        
+    
+    let items: [Etichetta] = [Etichetta(nomeEtichetta: "Prova"), Etichetta(nomeEtichetta: "Prova1"), Etichetta(nomeEtichetta: "Prova2"), Etichetta(nomeEtichetta: "Prova3"), Etichetta(nomeEtichetta: "Prova4"), Etichetta(nomeEtichetta: "Prova5")]
+    
     var body: some View {
         
         //Lettura delle dimensioni dello schermo nel quale si avvia la app
@@ -53,7 +58,7 @@ struct MenuLibro: View {
                 VStack(alignment: .leading){
                     
                     //Visualizzazione orizzontale dove ci sono le informazioni principale del libro anche con l'immagine
-                    HStack(alignment: .top){
+                    HStack(alignment: .center){
                         
                         //Corpo del rettangolo che ha la copertina del libro
                         ZStack{
@@ -61,58 +66,95 @@ struct MenuLibro: View {
                                 .fill(.white)
                                 .shadow(color: Color("ColoreCard"), radius: 6)
                             
-                            Image("")
+                            //Image("")
                             
                         }
                         .frame(width: 113, height: 175)
                         .padding(.horizontal, 10)
-                        
-                        Spacer(minLength: 5)
-                        
+                                                
                         /*
                          * Visualizzazione verticale la quale si mettono tutti i "Text" con le informazioni principali del libro,
                          * fa anche un ulteriore controllo per la dimensione del testo con la variabile statica "isLargeSize"
                          */
                         VStack(alignment: .leading) {
                             
-                            Text(viewModel.text)
+                            Text(datiLibro?.titolo ?? "")
                                 .fontWeight(.bold)
                                 .font(isLargeSize ? .largeTitle : .title)
                                 .foregroundColor(.primary)
+                                .padding(.top, 55)
                             
-                            Text(autore ?? "")
+                            //DA MODIFICARE CON L'AUTORE DEL LIBRO ANZI CHE L'ID
+                            Text(String(datiLibro?.autore ?? "") == "" ? "Autore sconosciuto" : String(datiLibro?.autore ?? ""))
                                 .fontWeight(.bold)
                                 .font(isLargeSize ? .headline : .subheadline)
                                 .foregroundColor(.primary.opacity(0.5))
+                            
+                            Text("La lingua del libro è: " + GestioneRisorseKt.conversioneLinguaLibro(linguaDelLibro: datiLibro?.lingua ?? "VUOTO"))
+                                .fontWeight(.bold)
+                                .font(isLargeSize ? .headline : .subheadline)
+                                .foregroundColor(.primary.opacity(0.75))
+                                .padding(.top, 20)
+                            
                             
                             /*
                              * Struttura condizionale la quale controlla che la variabile "disponibilitaLibro" sia True; s'è
                              * vero setta la disponibilità in "disponibile" e da anche il numero di copie rimasto, altrimenti,
                              * setta il libro come non disponibile
                              */
-                            if disponibilitaLibro ?? false {
-                                Text("Disponibile")
+                            
+                            if getRisultatoCopie(copieLibro: viewModel.libro?.copie as? [CopiaLibro]) > 0 {
+                                Text("Il libro è disponibile")
                                     .fontWeight(.bold)
                                     .font(isLargeSize ? .body : .subheadline)
-                                    .foregroundColor(.primary)
-                                    .padding(.top, 5)
+                                    .foregroundColor(.primary.opacity(0.75))
                                 
-                                Text("Il numero di copie di copie è: " + String(numeroCopie ?? 0))
-                                    .fontWeight(.bold)
-                                    .font(isLargeSize ? .headline : .subheadline)
-                                    .foregroundColor(.primary.opacity(0.5))
-                                    .padding(.bottom, 5)
                             } else {
-                                Text("Non disponibile al prestito")
+                                Text("Il libro non è disponibile")
                                     .fontWeight(.bold)
                                     .font(isLargeSize ? .body : .subheadline)
-                                    .foregroundColor(.primary)
-                                    .padding(.top, 5)
-                                    .padding(.bottom, 5)
+                                    .foregroundColor(.primary.opacity(0.75))
+                            }
+                            
+                        }
+                        //.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                        
+                    }
+                    
+                    Divider()
+                        .background(Color.white)
+                        .padding(.vertical, 11)
+                    
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        LazyHStack {
+                            ForEach(items.indices, id: \.self) { index in
+                                items[index]
                             }
                         }
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                        .padding(.horizontal, isLargeSize ? 20 : 10)
+                        .frame(height: 30)
+                    }
+                    .frame(height: 30)
+                    .padding(.trailing, 10)
+                    .padding(.leading, 10)
+                    
+                    if (datiLibro?.descrizione?.count ?? 0 <= 764){
+                        HStack(alignment: .top){
+                            Text(datiLibro?.descrizione ?? "")
+                                .multilineTextAlignment(.leading)
+                        }
+                        .padding(.top, 10)
+                        
+                    }else{
+                        ScrollView {
+                            //Text(datiLibro?.descrizione ?? "")
+                            Text(datiLibro?.descrizione ?? "")
+                                .padding(.trailing, 10)
+                                .multilineTextAlignment(.leading)
+                                .frame(width: geometry.size.width)
+                                
+                        }
+                        .padding(.top, 10)
+                        .padding(.leading, 10)
                     }
                 }
             }
@@ -121,16 +163,38 @@ struct MenuLibro: View {
     }
 }
 
+func getRisultatoCopie(copieLibro: [CopiaLibro]?) -> Int{
+    var contaLibri = 0
+    
+    if copieLibro != nil{
+        for i in stride(from: 0, to: copieLibro?.count ?? 0, by: 1){
+            
+            if copieLibro?[i].inPrestito != true{
+                contaLibri += 1
+            }
+        }
+        
+        return contaLibri
+        
+    }else{
+        return 0
+    }
+    
+    
+}
+
+
 extension MenuLibro {
     class ViewModel: ObservableObject {
-        @Published var text = "Loading..."
-        init() {
-            GestioneJson().provaConnessione { connessione, error in
+        @Published var libro: Libro?
+        
+        init(isbn: String) {
+            GestioneJson().getCopieLibro(isbn: isbn) { libro, error in
                 DispatchQueue.main.async {
-                    if let connessione = connessione {
-                        self.text = connessione
+                    if let libro = libro {
+                        self.libro = libro
                     } else {
-                        self.text = error?.localizedDescription ?? "error"
+                        print(error?.localizedDescription ?? "error")
                     }
                 }
             }
@@ -138,8 +202,9 @@ extension MenuLibro {
     }
 }
 
+
 struct MenuLibro_Previews: PreviewProvider {
     static var previews: some View {
-        MenuLibro(viewModel: MenuLibro.ViewModel(), titolo: "", autore: "", numeroCopie: 0 ,disponibilitaLibro: true)
+        MenuLibro(datiLibro: DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "0", annoPubblicazione: nil, idCategoria: 0, idGenere: 0, descrizione: nil, image: nil))
     }
 }

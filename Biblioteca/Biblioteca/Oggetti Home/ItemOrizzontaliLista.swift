@@ -18,9 +18,9 @@ import sharedModuleBiblioteca
 
 struct ItemOrizzontaliLista: View{
     //Dichiarazione e inizializzazione delle due "Card" dove
-    var cardPrimi = CardLibri(libro: Libro(isbn: "", titolo: "", lingua: "", casaEditrice: nil, autore: "", annoPubblicazione: nil, pathImmagine: "", nPag: nil, categoria: nil, copie: nil))
+    var cardPrimi = CardLibri(libro: DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "0", annoPubblicazione: nil, idCategoria: 0, idGenere: 0, descrizione: nil, image: nil))
     
-    var cardSecondo = CardLibri(libro: Libro(isbn: "", titolo: "", lingua: "", casaEditrice: nil, autore: "", annoPubblicazione: nil, pathImmagine: "", nPag: nil, categoria: nil, copie: nil))
+    var cardSecondo = CardLibri(libro: DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "0", annoPubblicazione: nil, idCategoria: 0, idGenere: 0, descrizione: nil, image: nil))
     
     /*
      * Dichiarazione e inizializzazione delle due funzioni che avvengono quando si preme il rispettivo pulsante alla quale

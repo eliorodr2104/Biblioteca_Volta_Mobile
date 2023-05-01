@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 51;
+	objectVersion = 53;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -12,6 +12,11 @@
 		2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2152FB032600AC8F00CF470E /* iOSApp.swift */; };
 		3B4E837BE46E95D8A93800F0 /* Pods_Biblioteca.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CBD720B4836773FE11B0B742 /* Pods_Biblioteca.framework */; };
 		7555FF83242A565900829871 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* ContentView.swift */; };
+		E34696CD29E9E69600D7A17B /* MenuPrestiti.swift in Sources */ = {isa = PBXBuildFile; fileRef = E34696CC29E9E69600D7A17B /* MenuPrestiti.swift */; };
+		E34696CF29E9E70300D7A17B /* ItemPrestitiLista.swift in Sources */ = {isa = PBXBuildFile; fileRef = E34696CE29E9E70300D7A17B /* ItemPrestitiLista.swift */; };
+		E387E8F829FC5EBD000E5DF7 /* lingua.json in Resources */ = {isa = PBXBuildFile; fileRef = E387E8F729FC5EBC000E5DF7 /* lingua.json */; };
+		E387E8FA29FC7218000E5DF7 /* Etichetta.swift in Sources */ = {isa = PBXBuildFile; fileRef = E387E8F929FC7218000E5DF7 /* Etichetta.swift */; };
+		E3B34D1529FFF76100CEC0C7 /* Informazioni.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3B34D1429FFF76000CEC0C7 /* Informazioni.swift */; };
 		E3C4368B29CB5B3000B4B494 /* CardLibri.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3C4368A29CB5B3000B4B494 /* CardLibri.swift */; };
 		E3C4368D29CB631700B4B494 /* ItemOrizzontaliLista.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3C4368C29CB631700B4B494 /* ItemOrizzontaliLista.swift */; };
 		E3C4369229CB70EF00B4B494 /* MenuSplit.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3C4369129CB70EF00B4B494 /* MenuSplit.swift */; };
@@ -31,6 +36,11 @@
 		7555FF8C242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B61B7BDBFE2FFC0CC2FAE861 /* Pods-Biblioteca.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Biblioteca.debug.xcconfig"; path = "Target Support Files/Pods-Biblioteca/Pods-Biblioteca.debug.xcconfig"; sourceTree = "<group>"; };
 		CBD720B4836773FE11B0B742 /* Pods_Biblioteca.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Biblioteca.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E34696CC29E9E69600D7A17B /* MenuPrestiti.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuPrestiti.swift; sourceTree = "<group>"; };
+		E34696CE29E9E70300D7A17B /* ItemPrestitiLista.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemPrestitiLista.swift; sourceTree = "<group>"; };
+		E387E8F729FC5EBC000E5DF7 /* lingua.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = lingua.json; sourceTree = "<group>"; };
+		E387E8F929FC7218000E5DF7 /* Etichetta.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Etichetta.swift; sourceTree = "<group>"; };
+		E3B34D1429FFF76000CEC0C7 /* Informazioni.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Informazioni.swift; sourceTree = "<group>"; };
 		E3C4368A29CB5B3000B4B494 /* CardLibri.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardLibri.swift; sourceTree = "<group>"; };
 		E3C4368C29CB631700B4B494 /* ItemOrizzontaliLista.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemOrizzontaliLista.swift; sourceTree = "<group>"; };
 		E3C4369129CB70EF00B4B494 /* MenuSplit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuSplit.swift; sourceTree = "<group>"; };
@@ -63,6 +73,7 @@
 		7555FF72242A565900829871 = {
 			isa = PBXGroup;
 			children = (
+				E387E8F629FC5EBC000E5DF7 /* resources */,
 				7555FF7D242A565900829871 /* Biblioteca */,
 				7555FF7C242A565900829871 /* Products */,
 				B9310D258EB9FBF544F0E655 /* Pods */,
@@ -81,6 +92,8 @@
 		7555FF7D242A565900829871 /* Biblioteca */ = {
 			isa = PBXGroup;
 			children = (
+				E3B34D1329FFF73800CEC0C7 /* Informazioni Utenti */,
+				E34696CB29E9E66900D7A17B /* Menu Prestiti */,
 				E3C4369A29D17CAB00B4B494 /* Login */,
 				E3C4369529CC7BB000B4B494 /* Menu Libro */,
 				E3C4369129CB70EF00B4B494 /* MenuSplit.swift */,
@@ -104,6 +117,32 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
+		E34696CB29E9E66900D7A17B /* Menu Prestiti */ = {
+			isa = PBXGroup;
+			children = (
+				E34696CC29E9E69600D7A17B /* MenuPrestiti.swift */,
+				E34696CE29E9E70300D7A17B /* ItemPrestitiLista.swift */,
+			);
+			path = "Menu Prestiti";
+			sourceTree = "<group>";
+		};
+		E387E8F629FC5EBC000E5DF7 /* resources */ = {
+			isa = PBXGroup;
+			children = (
+				E387E8F729FC5EBC000E5DF7 /* lingua.json */,
+			);
+			name = resources;
+			path = ../sharedModuleBiblioteca/src/commonMain/resources;
+			sourceTree = "<group>";
+		};
+		E3B34D1329FFF73800CEC0C7 /* Informazioni Utenti */ = {
+			isa = PBXGroup;
+			children = (
+				E3B34D1429FFF76000CEC0C7 /* Informazioni.swift */,
+			);
+			path = "Informazioni Utenti";
+			sourceTree = "<group>";
+		};
 		E3C4369029CB6D1200B4B494 /* Oggetti Home */ = {
 			isa = PBXGroup;
 			children = (
@@ -118,6 +157,7 @@
 			isa = PBXGroup;
 			children = (
 				E3C4369629CC7BE100B4B494 /* MenuLibro.swift */,
+				E387E8F929FC7218000E5DF7 /* Etichetta.swift */,
 			);
 			path = "Menu Libro";
 			sourceTree = "<group>";
@@ -166,8 +206,9 @@
 		7555FF73242A565900829871 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				BuildIndependentTargetsInParallel = YES;
 				LastSwiftUpdateCheck = 1130;
-				LastUpgradeCheck = 1130;
+				LastUpgradeCheck = 1430;
 				ORGANIZATIONNAME = orgName;
 				TargetAttributes = {
 					7555FF7A242A565900829871 = {
@@ -200,6 +241,7 @@
 			files = (
 				058557D9273AAEEB004C7B11 /* Preview Assets.xcassets in Resources */,
 				058557BB273AAA24004C7B11 /* Assets.xcassets in Resources */,
+				E387E8F829FC5EBD000E5DF7 /* lingua.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -254,11 +296,15 @@
 			files = (
 				E3C4368B29CB5B3000B4B494 /* CardLibri.swift in Sources */,
 				E3C4369429CB9E1D00B4B494 /* ListaVisualizzazione.swift in Sources */,
+				E34696CD29E9E69600D7A17B /* MenuPrestiti.swift in Sources */,
+				E34696CF29E9E70300D7A17B /* ItemPrestitiLista.swift in Sources */,
 				E3C4369729CC7BE100B4B494 /* MenuLibro.swift in Sources */,
 				2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */,
 				E3C4369229CB70EF00B4B494 /* MenuSplit.swift in Sources */,
 				E3C4369929CCFA3500B4B494 /* MenuSplitTablet.swift in Sources */,
+				E3B34D1529FFF76100CEC0C7 /* Informazioni.swift in Sources */,
 				E3C4369C29D17CCD00B4B494 /* Login.swift in Sources */,
+				E387E8FA29FC7218000E5DF7 /* Etichetta.swift in Sources */,
 				E3C4368D29CB631700B4B494 /* ItemOrizzontaliLista.swift in Sources */,
 				7555FF83242A565900829871 /* ContentView.swift in Sources */,
 			);

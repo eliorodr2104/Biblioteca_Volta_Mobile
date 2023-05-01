@@ -25,11 +25,13 @@ struct MenuSplitTablet: View {
     //Variabile statica e privata con l'indice per i libri
     private let CONST_INDEX_LIBRI = 5
     
+    @ObservedObject private(set) var viewModel: ViewModel
+    
     @State var index = 0
     
     @State var showAnimationSecondary = false
     
-    @State var datiLibro: MenuLibro?
+    @State var datiDelLibro: MenuLibro?
     
     var nomeUtente: String
     var salutoUtente: String
@@ -75,7 +77,7 @@ struct MenuSplitTablet: View {
                         
                     }) {
                         HStack(spacing: 25){
-                            Image("catalogo")
+                            Image("catalogue_icon")
                                 .foregroundColor(self.index == 0 ? Color("ColorePrincipale") : Color.primary)
                             
                             Text("Catalogo")
@@ -276,14 +278,15 @@ struct MenuSplitTablet: View {
                     VStack{
                         
                         //Array temp, il quale ha dei dati di prova, che dopo verranno presi da un file JSON
-                        let tempArrayItemVisualizzazione = inizializzaItem(index: $index, CONST_INDEX_LIBRI: CONST_INDEX_LIBRI, datiLibro: $datiLibro, showAnimationSecondary: $showAnimationSecondary)
+                        let tempArrayItemVisualizzazione = inizializzaItem(index: $index, CONST_INDEX_LIBRI: CONST_INDEX_LIBRI, datiLibro: $datiDelLibro, showAnimationSecondary: $showAnimationSecondary, libriVisualizzazioneRichiestaJson: viewModel.text as! [DatiLibro])
 
                         //Cambia la visuale dipendendo dall'indice
                         if self.index == 0{
                             ListaVisualizzazione(listaItemOrizzontale: tempArrayItemVisualizzazione)
                             
                         } else if self.index == 1{
-                            
+                            //Libri prestito
+                            MenuPrestiti(listaItemPrestiti: inizializzareArrayPrestiti())
                             
                         } else if self.index == 2{
                             
@@ -293,7 +296,7 @@ struct MenuSplitTablet: View {
                         }else if self.index == 4{
                             
                         }else{
-                            MenuLibro(viewModel: MenuLibro.ViewModel(), titolo: datiLibro?.titolo, autore: datiLibro?.autore, numeroCopie: datiLibro?.numeroCopie ,disponibilitaLibro: datiLibro?.disponibilitaLibro)
+                            MenuLibro(datiLibro: datiDelLibro?.datiLibro ?? nil)
                                 .background(Color(UIColor.systemBackground))
                             //Spostamento della vista a destra quando si fa clic sul pulsante del menu
                             
@@ -331,10 +334,7 @@ struct MenuSplitTablet: View {
 
    Se l'array di libri ha un numero dispari di elementi, l'ultimo libro viene visualizzato solo nella prima carta e la seconda carta viene lasciata vuota.
 */
-private func inizializzaItem(index: Binding<Int>, CONST_INDEX_LIBRI: Int, datiLibro: Binding<MenuLibro?>, showAnimationSecondary: Binding<Bool>) -> [ItemOrizzontaliLista]{
-
-    //Prova aggiunta libri json
-    let libriVisualizzazioneRichiestaJson = inizializzaArrayLibro()
+private func inizializzaItem(index: Binding<Int>, CONST_INDEX_LIBRI: Int, datiLibro: Binding<MenuLibro?>, showAnimationSecondary: Binding<Bool>, libriVisualizzazioneRichiestaJson: [DatiLibro]) -> [ItemOrizzontaliLista]{
     
     var arrayTemp = [ItemOrizzontaliLista]()
     
@@ -348,12 +348,12 @@ private func inizializzaItem(index: Binding<Int>, CONST_INDEX_LIBRI: Int, datiLi
                 cardSecondo: CardLibri(libro: libriVisualizzazioneRichiestaJson[i + 1]),
                 funzionePrimaCard: {
                     index.wrappedValue = CONST_INDEX_LIBRI
-                    datiLibro.wrappedValue = MenuLibro(viewModel: MenuLibro.ViewModel(), titolo: libriVisualizzazioneRichiestaJson[i].titolo, autore: libriVisualizzazioneRichiestaJson[i].autore, numeroCopie: libriVisualizzazioneRichiestaJson[i].nPag as? Int, disponibilitaLibro: false)
+                    datiLibro.wrappedValue = MenuLibro(datiLibro: libriVisualizzazioneRichiestaJson[i])
                     withAnimation { showAnimationSecondary.wrappedValue.toggle() }
                 },
                 funzioneSecondaCard: {
                     index.wrappedValue = CONST_INDEX_LIBRI
-                    datiLibro.wrappedValue = MenuLibro(viewModel: MenuLibro.ViewModel(), titolo: libriVisualizzazioneRichiestaJson[i + 1].titolo, autore: libriVisualizzazioneRichiestaJson[i + 1].autore, numeroCopie: libriVisualizzazioneRichiestaJson[i + 1].nPag as? Int, disponibilitaLibro: true)
+                    datiLibro.wrappedValue = MenuLibro(datiLibro: libriVisualizzazioneRichiestaJson[i + 1])
                     withAnimation { showAnimationSecondary.wrappedValue.toggle() }
                 }
             )
@@ -361,10 +361,10 @@ private func inizializzaItem(index: Binding<Int>, CONST_INDEX_LIBRI: Int, datiLi
         }else if i == libriVisualizzazioneRichiestaJson.count - 1{
             item = ItemOrizzontaliLista(
                 cardPrimi: CardLibri(libro: libriVisualizzazioneRichiestaJson[i]),
-                cardSecondo: CardLibri(libro: Libro(isbn: "", titolo: "", lingua: "", casaEditrice: nil, autore: "", annoPubblicazione: nil, pathImmagine: "", nPag: nil, categoria: nil, copie: nil)),
+                cardSecondo: CardLibri(libro: DatiLibro(isbn: "", titolo: "prova", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "0", annoPubblicazione: nil, idCategoria: 0, idGenere: 0, descrizione: nil, image: nil)),
                 funzionePrimaCard: {
                     index.wrappedValue = CONST_INDEX_LIBRI
-                    datiLibro.wrappedValue = MenuLibro(viewModel: MenuLibro.ViewModel(), titolo: libriVisualizzazioneRichiestaJson[i].titolo, autore: libriVisualizzazioneRichiestaJson[i].autore, numeroCopie: libriVisualizzazioneRichiestaJson[i].nPag as? Int, disponibilitaLibro: false)
+                    datiLibro.wrappedValue = MenuLibro(datiLibro: libriVisualizzazioneRichiestaJson[i])
                     withAnimation { showAnimationSecondary.wrappedValue.toggle() }
                 },
                 funzioneSecondaCard: {}
@@ -376,45 +376,50 @@ private func inizializzaItem(index: Binding<Int>, CONST_INDEX_LIBRI: Int, datiLi
     return arrayTemp
 }
 
-private func inizializzaArrayLibro() -> [Libro]{
+private func inizializzareArrayPrestiti() -> [ItemPrestitiLista]{
     return [
-        Libro (isbn: "",
-                 titolo: "prova",
-                 lingua: "",
-                 casaEditrice: nil,
-                 autore: "",
-                 annoPubblicazione: nil,
-                 pathImmagine: "",
-                 nPag: nil,
-                 categoria: nil,
-                 copie: nil),
+        ItemPrestitiLista(libro:
+                            CopiaLibro(idCopia: "0",
+                                       isbn: "000",
+                                       condizioni: "buo",
+                                       inPrestito: false,
+                                       sezione: "",
+                                       scaffale: 0,
+                                       ripiano: 0,
+                                       np: 0,
+                                       idPrestito: 0)),
         
-        Libro (isbn: "",
-                 titolo: "prova 2",
-                 lingua: "",
-                 casaEditrice: nil,
-                 autore: "",
-                 annoPubblicazione: nil,
-                 pathImmagine: "",
-                 nPag: nil,
-                 categoria: nil,
-                 copie: nil),
-        
-        Libro (isbn: "",
-                 titolo: "prova 3",
-                 lingua: "",
-                 casaEditrice: nil,
-                 autore: "",
-                 annoPubblicazione: nil,
-                 pathImmagine: "",
-                 nPag: nil,
-                 categoria: nil,
-                 copie: nil)
+        ItemPrestitiLista(libro:
+                            CopiaLibro(idCopia: "1",
+                                       isbn: "001",
+                                       condizioni: "buono",
+                                       inPrestito: false,
+                                       sezione: "",
+                                       scaffale: 0,
+                                       ripiano: 0,
+                                       np: 0,
+                                       idPrestito: 0))
     ]
+}
+
+
+extension MenuSplitTablet {
+    class ViewModel: ObservableObject {
+        @Published var text = NSMutableArray()
+        init() {
+            GestioneJson().getTuttiLibri { connessione, error in
+                DispatchQueue.main.async {
+                    if let connessione = connessione {
+                        self.text = connessione
+                    } else {}
+                }
+            }
+        }
+    }
 }
 
 struct MenuSplitTablet_Previews: PreviewProvider {
     static var previews: some View {
-        MenuSplitTablet(nomeUtente: "", salutoUtente: "")
+        MenuSplitTablet(viewModel: MenuSplitTablet.ViewModel(), nomeUtente: "", salutoUtente: "")
     }
 }

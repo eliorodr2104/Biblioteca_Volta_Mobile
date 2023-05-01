@@ -23,16 +23,31 @@ import sharedModuleBiblioteca
 struct MenuSplit: View {
     
     //Variabile statica e privata con l'indice per i libri
-    private let CONST_INDEX_LIBRI = 5
+    private let CONST_INDEX_LIBRI = 9
     
+    @ObservedObject private(set) var viewModel: ViewModel
+        
     @State var index = 0
-    @State var show = false
-    @State var showAnimationSecondary = false
+    @State var show: Bool
+    @State var showAnimationSecondary: Bool
     
     @State var datiLibro: MenuLibro?
 
-    var nomeUtente: String
+    private var nomeUtente: String
     var salutoUtente: String
+    
+    private var utenteUtilizzo: Utente
+    
+    init(index: Int = 0, show: Bool = false, showAnimationSecondary: Bool = false, datiLibro: MenuLibro? = nil, nomeUtente: String, salutoUtente: String = "Bentornato", utenteUtilizzo: Utente) {
+        self.viewModel = ViewModel(utente: utenteUtilizzo)
+        self.index = index
+        self.show = show
+        self.showAnimationSecondary = showAnimationSecondary
+        self.datiLibro = datiLibro
+        self.nomeUtente = nomeUtente
+        self.salutoUtente = salutoUtente
+        self.utenteUtilizzo = utenteUtilizzo
+    }
     
     
     var body: some View {
@@ -46,19 +61,30 @@ struct MenuSplit: View {
                 VStack(alignment: .leading, spacing: 10) {
                     
                     //Immagine Profilo da mettere quando avrò l'icona del profilo
-                    //Image(systemName: "xmark")
-                    
-                    Text(salutoUtente)
-                        .font(.title)
-                        .fontWeight(.bold)
-                        .foregroundColor(.primary)
-                        .padding(.top, 10)
-                    
-                    Text(nomeUtente)
-                        .fontWeight(.bold)
-                        .font(.title)
-                        .foregroundColor(.primary)
-                    
+                    VStack(alignment: .center){
+                        ZStack{
+                            RoundedRectangle(cornerRadius: 100)
+                                .fill(.white)
+                            
+                            Image(systemName: "xmark")
+                                .cornerRadius(100)
+                        }
+                        .frame(width: 50, height: 50)
+                        
+                        
+                        Text(salutoUtente)
+                            .font(.title)
+                            .fontWeight(.bold)
+                            .foregroundColor(.primary)
+                            .padding(.top, 5)
+                        
+                        Text(nomeUtente)
+                            .fontWeight(.bold)
+                            .font(.title)
+                            .foregroundColor(.primary)
+                    }
+                    .padding(.leading, 25)
+                                        
                     //Pulsante per la visualizzazione del catalogo
                     Button(action: {
                         
@@ -69,8 +95,10 @@ struct MenuSplit: View {
                         withAnimation{ self.show.toggle() }
                     }) {
                         HStack(spacing: 25){
-                            Image("catalogo")
+                            Image("catalogue_icon")
                                 .foregroundColor(self.index == 0 ? Color("ColorePrincipale") : Color.primary)
+                                .frame(width: 5, height: 5)
+                                
                             
                             Text("Catalogo")
                                 .foregroundColor(self.index == 0 ? Color("ColorePrincipale") : Color.primary)
@@ -81,7 +109,7 @@ struct MenuSplit: View {
                         .background(self.index == 0 ? Color("ColorePrincipale").opacity(0.2) : Color.clear)
                         .cornerRadius(10)
                     }
-                    .padding(.top,25)
+                    .padding(.top,20)
                     
                     //Pulsante per la visualizzazione dei libri che sono in prestito
                     Button(action: {
@@ -93,8 +121,9 @@ struct MenuSplit: View {
                         
                     }) {
                         HStack(spacing: 25){
-                            Image("libri prestito")
+                            Image("libri_prestito")
                                 .foregroundColor(self.index == 1 ? Color("ColorePrincipale") : Color.primary)
+                                .frame(width: 5, height: 5)
                             
                             Text("Libri Prestito")
                                 .foregroundColor(self.index == 1 ? Color("ColorePrincipale") : Color.primary)
@@ -116,8 +145,9 @@ struct MenuSplit: View {
                         
                     }) {
                         HStack(spacing: 25){
-                            Image("informazioni")
+                            Image("information_icon")
                                 .foregroundColor(self.index == 2 ? Color("ColorePrincipale") : Color.primary)
+                                .frame(width: 5, height: 5)
                             
                             
                             Text("Informazioni")
@@ -140,8 +170,9 @@ struct MenuSplit: View {
                         
                     }) {
                         HStack(spacing: 25){
-                            Image("notifiche app")
+                            Image("notification_icon")
                                 .foregroundColor(self.index == 3 ? Color("ColorePrincipale") : Color.primary)
+                                .frame(width: 5, height: 5)
                             
                             Text("Notifiche App")
                                 .foregroundColor(self.index == 3 ? Color("ColorePrincipale") : Color.primary)
@@ -153,10 +184,117 @@ struct MenuSplit: View {
                         .cornerRadius(10)
                     }
                     
+                    if utenteUtilizzo.grado > 0 || utenteUtilizzo.grado < 4{
+                        //Pulsante per la visualizzazione delle notifiche nell'app
+                        Button(action: {
+                            //Indice di riconoscimento azione
+                            self.index = 5
+                            
+                            //Fa lo switch della variabile di stato "show"
+                            withAnimation{ self.show.toggle() }
+                            
+                        }) {
+                            HStack(spacing: 25){
+                                Image("bookManagment_icon")
+                                    .foregroundColor(self.index == 5 ? Color("ColorePrincipale") : Color.primary)
+                                    .frame(width: 5, height: 5)
+                                
+                                Text("Gestione Libri")
+                                    .foregroundColor(self.index == 5 ? Color("ColorePrincipale") : Color.primary)
+                                
+                            }
+                            .padding(.vertical, 10)
+                            .padding(.horizontal)
+                            .background(self.index == 5 ? Color("ColorePrincipale").opacity(0.2) : Color.clear)
+                            .cornerRadius(10)
+                            
+                        }
+                        
+                        if utenteUtilizzo.grado == 2 || utenteUtilizzo.grado == 3{
+                            //Pulsante per la visualizzazione delle notifiche nell'app
+                            Button(action: {
+                                //Indice di riconoscimento azione
+                                self.index = 6
+                                
+                                //Fa lo switch della variabile di stato "show"
+                                withAnimation{ self.show.toggle() }
+                                
+                            }) {
+                                HStack(spacing: 25){
+                                    Image("loansManagment_icon")
+                                        .foregroundColor(self.index == 6 ? Color("ColorePrincipale") : Color.primary)
+                                        .frame(width: 5, height: 5)
+                                    
+                                    Text("Gestione Prestiti")
+                                        .foregroundColor(self.index == 6 ? Color("ColorePrincipale") : Color.primary)
+                                    
+                                }
+                                .padding(.vertical, 10)
+                                .padding(.horizontal)
+                                .background(self.index == 6 ? Color("ColorePrincipale").opacity(0.2) : Color.clear)
+                                .cornerRadius(10)
+                                
+                            }
+                            
+                            //Pulsante per la visualizzazione delle notifiche nell'app
+                            Button(action: {
+                                //Indice di riconoscimento azione
+                                self.index = 7
+                                
+                                //Fa lo switch della variabile di stato "show"
+                                withAnimation{ self.show.toggle() }
+                                
+                            }) {
+                                HStack(spacing: 25){
+                                    Image("analytics_icon")
+                                        .foregroundColor(self.index == 7 ? Color("ColorePrincipale") : Color.primary)
+                                        .frame(width: 5, height: 5)
+                                    
+                                    Text("Statistiche")
+                                        .foregroundColor(self.index == 7 ? Color("ColorePrincipale") : Color.primary)
+                                    
+                                }
+                                .padding(.vertical, 10)
+                                .padding(.horizontal)
+                                .background(self.index == 7 ? Color("ColorePrincipale").opacity(0.2) : Color.clear)
+                                .cornerRadius(10)
+                                
+                            }
+                        }
+                        
+                        if utenteUtilizzo.grado == 3{
+                            //Pulsante per la visualizzazione delle notifiche nell'app
+                            Button(action: {
+                                //Indice di riconoscimento azione
+                                self.index = 8
+                                
+                                //Fa lo switch della variabile di stato "show"
+                                withAnimation{ self.show.toggle() }
+                                
+                            }) {
+                                HStack(spacing: 25){
+                                    Image("developer_icon")
+                                        .foregroundColor(self.index == 8 ? Color("ColorePrincipale") : Color.primary)
+                                        .frame(width: 5, height: 5)
+                                    
+                                    Text("Debug")
+                                        .foregroundColor(self.index == 8 ? Color("ColorePrincipale") : Color.primary)
+                                    
+                                }
+                                .padding(.vertical, 10)
+                                .padding(.horizontal)
+                                .background(self.index == 8 ? Color("ColorePrincipale").opacity(0.2) : Color.clear)
+                                .cornerRadius(10)
+                                
+                            }
+                        }
+                    }
+                    
+                    
                     Divider()
                         .frame(width: 150, height: 1)
                         .background(Color.white)
-                        .padding(.vertical,30)
+                        .padding(.vertical, utenteUtilizzo.grado > 0 && utenteUtilizzo.grado < 4 ? 15 : 30)
                     
                     //Pulsante per la visualizzazione delle impostazioni dell'app
                     Button(action: {
@@ -168,11 +306,12 @@ struct MenuSplit: View {
                         
                     }) {
                         HStack(spacing: 25){
-                            Image("impostazioni")
-                                .foregroundColor(Color.primary)
+                            Image("settings_icon")
+                                .foregroundColor(self.index == 4 ? Color("ColorePrincipale") : Color.primary)
+                                .frame(width: 5, height: 5)
                             
                             Text("Impostazioni")
-                                .foregroundColor(Color.primary)
+                                .foregroundColor(self.index == 4 ? Color("ColorePrincipale") : Color.primary)
                             
                         }
                         .padding(.vertical, 10)
@@ -190,7 +329,7 @@ struct MenuSplit: View {
                 Spacer(minLength: 0)
                 
             }
-            .padding(.top,UIApplication.shared.windows.first?.safeAreaInsets.top)
+            .padding(.top, UIApplication.shared.windows.first?.safeAreaInsets.top)
             .padding(.bottom,UIApplication.shared.windows.first?.safeAreaInsets.bottom)
             
             //Schermata di visualizzazione principale, la quale  mostra la lista di tutti i libri richiesti dal database
@@ -242,14 +381,18 @@ struct MenuSplit: View {
                             (self.index == 1 ? "Libri Prestito" :
                                 (self.index == 2 ? "Informazioni" :
                                     (self.index == 3 ? "Notifiche App" :
-                                        (self.index == 4 ? "Impostazioni" : "Dati Libro")))))
+                                        (self.index == 4 ? "Impostazioni" :
+                                            (self.index == 5 ? "Gestione Libri" :
+                                                (self.index == 6 ? "Gestione Prestiti" :
+                                                    (self.index == 7 ? "Statistiche" :
+                                                        (self.index == 8 ? "Debug" : "Dati Libro")))))))))
                         .font(.title)
                         .foregroundColor(Color.primary.opacity(0.6))
                         
                     Spacer(minLength: 0)
                     
                 }
-                .padding(.top,UIApplication.shared.windows.first?.safeAreaInsets.top)
+                .padding(.top, UIApplication.shared.windows.first?.safeAreaInsets.top)
                 .padding()
                             
                 //Lettura delle dimensioni dello schermo nel quale si avvia la app
@@ -258,28 +401,45 @@ struct MenuSplit: View {
                     //Visuale verticale nella quale c'è la lista del libri
                     VStack{
                         
-                        //Array temp, il quale ha dei dati di prova, che dopo verranno presi da un file JSON
-                        let tempArrayItemVisualizzazione = inizializzaItem(index: $index, CONST_INDEX_LIBRI: CONST_INDEX_LIBRI, datiLibro: $datiLibro, showAnimationSecondary: $showAnimationSecondary)
-
+                        //Variabile con l'array di libri dentro il DB
+                        let libriVisualizzazioneRichiestaJson = viewModel.arrayLibri
+                                                                        
+                        //Array con i oggeti ItemOrizzontaliLista inizializzati dal
+                        let tempArrayItemVisualizzazione = inizializzaItem(index: $index, CONST_INDEX_LIBRI: CONST_INDEX_LIBRI, datiLibro: $datiLibro, showAnimationSecondary: $showAnimationSecondary, libriVisualizzazioneRichiestaJson: libriVisualizzazioneRichiestaJson as! [DatiLibro])
+                         
 
                         //Cambia la visuale dipendendo dall'indice
                         if self.index == 0{
+                            
                             ListaVisualizzazione(listaItemOrizzontale: tempArrayItemVisualizzazione)
                                 .allowsHitTesting(self.show ? false : true)
 
-                            
                         } else if self.index == 1{
-
+                            //Libri prestito
+                            MenuPrestiti(listaItemPrestiti: viewModel.arrayPrestiti as! [ItemPrestitiLista])
                             
                         } else if self.index == 2{
-
+                            Informazioni()
+                            
+                            /*
+                            MenuLibro(datiLibro: DatiLibro(isbn: "84729472912", titolo: "Miao", sottotitolo: "miao sottotitolo", lingua: "it", casaEditrice: "miaone", autore: "0", annoPubblicazione: "2004", idCategoria: 0, idGenere: 0, descrizione: "miao descrizione", image: nil))
+                             */
                             
                         } else if self.index == 3{
                             
+                            
                         }else if self.index == 4{
                             
+                        }else if self.index == 5{
+                            
+                        }else if self.index == 6{
+                            
+                        }else if self.index == 7{
+                            
+                        }else if self.index == 8{
+                            
                         }else{
-                            MenuLibro(viewModel: MenuLibro.ViewModel(), titolo: datiLibro?.titolo, autore: datiLibro?.autore, numeroCopie: datiLibro?.numeroCopie ,disponibilitaLibro: datiLibro?.disponibilitaLibro)
+                            MenuLibro(datiLibro: datiLibro?.datiLibro)
                                 .background(Color(UIColor.systemBackground))
                                 //Spostamento della vista a destra quando si fa clic sul pulsante del menu
                             
@@ -306,11 +466,8 @@ struct MenuSplit: View {
     }
 }
 
-private func inizializzaItem(index: Binding<Int>, CONST_INDEX_LIBRI: Int, datiLibro: Binding<MenuLibro?>, showAnimationSecondary: Binding<Bool>) -> [ItemOrizzontaliLista]{
+private func inizializzaItem(index: Binding<Int>, CONST_INDEX_LIBRI: Int, datiLibro: Binding<MenuLibro?>, showAnimationSecondary: Binding<Bool>, libriVisualizzazioneRichiestaJson: [DatiLibro]) -> [ItemOrizzontaliLista]{
 
-    //Prova aggiunta libri json
-    let libriVisualizzazioneRichiestaJson = inizializzaArrayLibro()
-    
     var arrayTemp = [ItemOrizzontaliLista]()
     
     var item = ItemOrizzontaliLista(funzionePrimaCard: {}, funzioneSecondaCard: {})
@@ -323,12 +480,12 @@ private func inizializzaItem(index: Binding<Int>, CONST_INDEX_LIBRI: Int, datiLi
                 cardSecondo: CardLibri(libro: libriVisualizzazioneRichiestaJson[i + 1]),
                 funzionePrimaCard: {
                     index.wrappedValue = CONST_INDEX_LIBRI
-                    datiLibro.wrappedValue = MenuLibro(viewModel: MenuLibro.ViewModel(), titolo: libriVisualizzazioneRichiestaJson[i].titolo, autore: libriVisualizzazioneRichiestaJson[i].autore, numeroCopie: libriVisualizzazioneRichiestaJson[i].nPag as? Int, disponibilitaLibro: false)
+                    datiLibro.wrappedValue = MenuLibro(datiLibro: libriVisualizzazioneRichiestaJson[i])
                     withAnimation { showAnimationSecondary.wrappedValue.toggle() }
                 },
                 funzioneSecondaCard: {
                     index.wrappedValue = CONST_INDEX_LIBRI
-                    datiLibro.wrappedValue = MenuLibro(viewModel: MenuLibro.ViewModel(), titolo: libriVisualizzazioneRichiestaJson[i + 1].titolo, autore: libriVisualizzazioneRichiestaJson[i + 1].autore, numeroCopie: libriVisualizzazioneRichiestaJson[i + 1].nPag as? Int, disponibilitaLibro: true)
+                    datiLibro.wrappedValue = MenuLibro(datiLibro: libriVisualizzazioneRichiestaJson[i + 1])
                     withAnimation { showAnimationSecondary.wrappedValue.toggle() }
                 }
             )
@@ -336,10 +493,10 @@ private func inizializzaItem(index: Binding<Int>, CONST_INDEX_LIBRI: Int, datiLi
         }else if i == libriVisualizzazioneRichiestaJson.count - 1{
             item = ItemOrizzontaliLista(
                 cardPrimi: CardLibri(libro: libriVisualizzazioneRichiestaJson[i]),
-                cardSecondo: CardLibri(libro: Libro(isbn: "", titolo: "", lingua: "", casaEditrice: nil, autore: "", annoPubblicazione: nil, pathImmagine: "", nPag: nil, categoria: nil, copie: nil)),
+                cardSecondo: CardLibri(libro: DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "0", annoPubblicazione: nil, idCategoria: 0, idGenere: 0, descrizione: nil, image: nil)),
                 funzionePrimaCard: {
                     index.wrappedValue = CONST_INDEX_LIBRI
-                    datiLibro.wrappedValue = MenuLibro(viewModel: MenuLibro.ViewModel(), titolo: libriVisualizzazioneRichiestaJson[i].titolo, autore: libriVisualizzazioneRichiestaJson[i].autore, numeroCopie: libriVisualizzazioneRichiestaJson[i].nPag as? Int, disponibilitaLibro: false)
+                    datiLibro.wrappedValue = MenuLibro(datiLibro: libriVisualizzazioneRichiestaJson[i])
                     withAnimation { showAnimationSecondary.wrappedValue.toggle() }
                 },
                 funzioneSecondaCard: {}
@@ -351,47 +508,38 @@ private func inizializzaItem(index: Binding<Int>, CONST_INDEX_LIBRI: Int, datiLi
     return arrayTemp
 }
 
-
-private func inizializzaArrayLibro() -> [Libro]{
-
-    return [
-        Libro (isbn: "",
-                 titolo: "prova",
-                 lingua: "",
-                 casaEditrice: nil,
-                 autore: "",
-                 annoPubblicazione: nil,
-                 pathImmagine: "",
-                 nPag: nil,
-                 categoria: nil,
-                 copie: nil),
+extension MenuSplit {
+    class ViewModel: ObservableObject {
+        @Published var arrayLibri = NSMutableArray()
+        @Published var arrayPrestiti = NSMutableArray()
         
-        Libro (isbn: "",
-                 titolo: "prova 2",
-                 lingua: "",
-                 casaEditrice: nil,
-                 autore: "",
-                 annoPubblicazione: nil,
-                 pathImmagine: "",
-                 nPag: nil,
-                 categoria: nil,
-                 copie: nil),
-        
-        Libro (isbn: "",
-                 titolo: "prova 3",
-                 lingua: "",
-                 casaEditrice: nil,
-                 autore: "",
-                 annoPubblicazione: nil,
-                 pathImmagine: "",
-                 nPag: nil,
-                 categoria: nil,
-                 copie: nil)
-    ]
+        init(utente: Utente) {
+            GestioneJson().getTuttiLibri { connessione, error in
+                DispatchQueue.main.async {
+                    if let connessione = connessione {
+                        self.arrayLibri = connessione
+                    } else {}
+                }
+            }
+            
+            GestioneJson().getTuttiPrestito(utente: utente){ prestito, errore in
+                DispatchQueue.main.async {
+                    if let prestito = prestito {
+                        self.arrayPrestiti = prestito
+                        
+                    }else {
+                        print(errore?.localizedDescription ?? "error")
+                    }
+                }
+                
+            }
+        }
+    }
 }
 
 struct MenuSplit_Previews: PreviewProvider {
     static var previews: some View {
-        MenuSplit(nomeUtente: "", salutoUtente: "")
+        MenuSplit(nomeUtente: "", utenteUtilizzo: Utente(idUtente: 0, nome: "", cognome: "", numero: nil, mailAlternativa: "", grado: 0, mail: ""))
     }
 }
+

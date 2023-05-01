@@ -14,6 +14,7 @@
  * Copyright © 2023 4AI.  All rights reserved.
  */
 import SwiftUI
+import sharedModuleBiblioteca
 
 /**
  * Created by eliomar rodriguez on 27/03/23.
@@ -44,10 +45,10 @@ struct Login: View {
              * s'è vero apre il menù per telefono, altrimenti apre la visuale per il tablet.
              */
             if screenWidth < 700 {
-                MenuSplit(nomeUtente: "Eliomar", salutoUtente: "Ciao")
+                MenuSplit(nomeUtente: "Eliomar", utenteUtilizzo: Utente(idUtente: 0, nome: "", cognome: "", numero: nil, mailAlternativa: "", grado: 0, mail: ""))
                 
             } else {
-                MenuSplitTablet(nomeUtente: "Eliomar", salutoUtente: "Ciao")
+                MenuSplitTablet(viewModel: MenuSplitTablet.ViewModel(), nomeUtente: "Eliomar", salutoUtente: "Ciao")
             }
             
         }else{

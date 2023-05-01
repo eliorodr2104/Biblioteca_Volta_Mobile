@@ -38,14 +38,14 @@ import sharedModuleBiblioteca
  */
 struct CardLibri: View {
     
-    var libro: Libro
+    var libro: DatiLibro
     var titolo: String
-    var descrizione: String
+    var descrizione: String?
     
-    init(libro: Libro) {
+    init(libro: DatiLibro) {
         self.libro = libro
         self.titolo = libro.titolo
-        self.descrizione = libro.autore
+        self.descrizione = libro.descrizione
     }
     
     var body: some View {
@@ -63,7 +63,7 @@ struct CardLibri: View {
                     .padding(.horizontal, 10)
                     .padding(.bottom, 0)
                 
-                Text(descrizione)
+                Text(descrizione ?? "")
                     .font(.body)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 10)
@@ -80,7 +80,7 @@ struct CardLibri: View {
 
 struct CardLibri_Previews: PreviewProvider {
     static var previews: some View {
-        CardLibri(libro: Libro(isbn: "", titolo: "", lingua: "", casaEditrice: nil, autore: "", annoPubblicazione: nil, pathImmagine: "", nPag: nil, categoria: nil, copie: nil))
+        CardLibri(libro: DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "0", annoPubblicazione: nil, idCategoria: 0, idGenere: 0, descrizione: nil, image: nil))
         
     }
 }

@@ -1,3 +1,8 @@
+buildscript {
+    dependencies {
+        classpath("com.android.tools.build:gradle:8.0.0")
+    }
+}
 plugins {
     //trick: for the same plugin versions in all sub-modules
     id("com.android.application").version("7.4.2").apply(false)
