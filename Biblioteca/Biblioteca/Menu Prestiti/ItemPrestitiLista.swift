@@ -52,6 +52,6 @@ struct ItemPrestitiLista: View {
 
 struct ItemPrestitiLista_Previews: PreviewProvider {
     static var previews: some View {
-        ItemPrestitiLista(libro: CopiaLibro(idCopia: "", isbn: "", condizioni: "", inPrestito: false, sezione: "", scaffale: 0, ripiano: 0, np: 0, idPrestito: 0))
+        ItemPrestitiLista(libro: CopiaLibro(idCopia: 0, isbn: "", condizioni: "", inPrestito: false, sezione: "", scaffale: 0, ripiano: 0, idPrestito: 0))
     }
 }

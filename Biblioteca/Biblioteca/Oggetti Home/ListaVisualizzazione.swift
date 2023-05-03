@@ -26,6 +26,7 @@
 import SwiftUI
 import sharedModuleBiblioteca
 
+@available(iOS 15.0, *)
 struct ListaVisualizzazione: View {
     /*
      * Variabile statica la quale prende il valore della funzione "greet()" (VARIABILE_DI_PROVA) la quale è fatta in codice
@@ -108,6 +109,7 @@ struct ListaVisualizzazione: View {
 
 }
 
+@available(iOS 15.0, *)
 struct ListaVisualizzazione_Previews: PreviewProvider {
     static var previews: some View {
         ListaVisualizzazione()

@@ -16,7 +16,7 @@ import kotlinx.serialization.Serializable
  * @param idCategoria: String
  * @param idGenere: String
  * @param descrizione: String
-q */
+ */
 @Serializable
 data class DatiLibro(
     val isbn: String,
@@ -26,8 +26,9 @@ data class DatiLibro(
     val casaEditrice: String?,
     val autore: String,
     val annoPubblicazione: String?,
-    val idCategoria: Int,
+    val idCategoria:  ArrayList<Int>,
     val idGenere: Int,
     val descrizione: String?,
+    val np: Int,
     val image: String?
 )

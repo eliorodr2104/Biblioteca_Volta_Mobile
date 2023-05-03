@@ -21,6 +21,7 @@ import sharedModuleBiblioteca
  *
  * Descrizione: Struttura che definisce la vista di Login.
  */
+@available(iOS 15.0, *)
 struct Login: View {
     //Stati privati per la gestione dell'input email e password.
     @State private var textEmail: String = ""
@@ -256,6 +257,7 @@ private func isValidEmail(email: String) -> Bool {
 }
 
 
+@available(iOS 15.0, *)
 struct Login_Previews: PreviewProvider {
     static var previews: some View {
         Login()

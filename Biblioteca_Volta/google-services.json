@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1001042214002",
+    "project_id": "bibliotecavolta-ab281",
+    "storage_bucket": "bibliotecavolta-ab281.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1001042214002:android:83c3fb74b48c112b7556eb",
+        "android_client_info": {
+          "package_name": "com.biblioteca.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1001042214002-k6o4r2mr5qvf0b3vbuavif5bupg02370.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBm5IOTR3WiRDQ2yUyQGV7UKANpT0VXmTY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1001042214002-f7veqj13hh1tmt5a20bukrk8khhvvh0j.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

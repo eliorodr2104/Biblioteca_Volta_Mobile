@@ -21,6 +21,6 @@ data class Utente(
     val cognome: String,
     val numero: String?,
     val mailAlternativa: String,
-    val grado: Int,
+    val grado: Int = 0,
     val mail: String = "$nome.$cognome@volta-alessandria.it"
 )

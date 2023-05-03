@@ -64,5 +64,37 @@ actual suspend fun getPrestitiLibri(utentePrestito: Utente): String?{
 }
 
 actual suspend fun getCopieLibri(isbn: String): String?{
-    return ""
+    return try {
+        if (isbn != ""){
+            val copieLibri = client.get("http://192.168.20.228:8080/libri/$isbn/copie")
+
+            if (copieLibri.status.value in 200..299)
+                copieLibri.readBytes().decodeToString()
+
+            else
+                null
+
+
+        }else
+            "Isbn empty"
+
+    }catch (s: Exception){
+        "Server timeout connection"
+    }
+}
+
+actual suspend fun getCategorieLibri(listaIdCategoria: ArrayList<Int>): String?{
+    return try {
+        val prestitiLibri = client.get("http://192.168.20.228:8080/utenti/")
+
+        //Controllo per la risposta giusta del server
+        if (prestitiLibri.status.value in 200..299)
+            prestitiLibri.readBytes().decodeToString()
+
+        else
+            null
+
+    }catch (s: Exception){
+        "Server timeout connection"
+    }
 }

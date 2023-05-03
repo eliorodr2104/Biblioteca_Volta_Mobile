@@ -16,11 +16,12 @@
 import SwiftUI
 import sharedModuleBiblioteca
 
+@available(iOS 15.0, *)
 struct ItemOrizzontaliLista: View{
     //Dichiarazione e inizializzazione delle due "Card" dove
-    var cardPrimi = CardLibri(libro: DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "0", annoPubblicazione: nil, idCategoria: 0, idGenere: 0, descrizione: nil, image: nil))
+    var cardPrimi = CardLibri(libro: DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "0", annoPubblicazione: nil, idCategoria: NSMutableArray(), idGenere: 0, descrizione: nil, np: 0, image: nil))
     
-    var cardSecondo = CardLibri(libro: DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "0", annoPubblicazione: nil, idCategoria: 0, idGenere: 0, descrizione: nil, image: nil))
+    var cardSecondo = CardLibri(libro: DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "0", annoPubblicazione: nil, idCategoria: NSMutableArray(), idGenere: 0, descrizione: nil, np: 0, image: nil))
     
     /*
      * Dichiarazione e inizializzazione delle due funzioni che avvengono quando si preme il rispettivo pulsante alla quale
@@ -55,6 +56,7 @@ struct ItemOrizzontaliLista: View{
     
 }
 
+@available(iOS 15.0, *)
 struct ItemOrizzontaliLista_Previews: PreviewProvider {
     static var previews: some View {
         ItemOrizzontaliLista(funzionePrimaCard: {}, funzioneSecondaCard: {})

@@ -17,13 +17,12 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class CopiaLibro(
-    var idCopia: String,
+    var idCopia: Int,
     var isbn: String,
     var condizioni: String,
     var inPrestito: Boolean,
-    val sezione: String,
+    val sezione: String?,
     val scaffale: Int,
     val ripiano: Int,
-    val np: Int,
-    val idPrestito: Int,
+    val idPrestito: Int
 )

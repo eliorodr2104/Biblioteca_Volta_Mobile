@@ -30,9 +30,10 @@ data class Libro(
     val casaEditrice: String?,
     val autore: String,
     val annoPubblicazione: String?,
-    val idCategoria: Int,
+    val idCategoria: ArrayList<Int>,
     val idGenere: Int,
     val copie: ArrayList<CopiaLibro>?,
     val descrizione: String?,
+    val np: Int,
     val image: String?
 )

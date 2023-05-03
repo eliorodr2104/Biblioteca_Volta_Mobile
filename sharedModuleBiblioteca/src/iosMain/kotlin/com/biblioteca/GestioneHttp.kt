@@ -3,18 +3,25 @@ package com.biblioteca
 import com.biblioteca.OggettiComuni.Utente
 import io.ktor.client.*
 import io.ktor.client.engine.darwin.Darwin
-import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.plugins.HttpRequestRetry
+import io.ktor.client.plugins.cache.HttpCache
+import io.ktor.client.plugins.cookies.HttpCookies
 import io.ktor.client.plugins.onUpload
 import io.ktor.client.request.*
 import io.ktor.client.statement.readBytes
 import io.ktor.client.statement.request
 
 private val client = HttpClient(Darwin) {
-    install(HttpTimeout) {
-        connectTimeoutMillis = 5000
-        socketTimeoutMillis = 5000
-        connectTimeoutMillis = 5000
-        requestTimeoutMillis = 10000
+    //PROVA DELLA CACHE DI SISTEMA PER LE RICHIESTE HTTP
+    install(HttpCache)
+
+    //PROVA DELLE COOKIES
+    //install(HttpCookies)
+
+    //PROVA DI MODULA PER FARE VAR TENTATIVI
+    install(HttpRequestRetry) {
+        retryOnServerErrors(maxRetries = 5)
+        exponentialDelay()
     }
 
     engine {
@@ -27,8 +34,29 @@ private val client = HttpClient(Darwin) {
     }
 }
 
+actual suspend fun getCopieLibri(isbn: String): String?{
+    return try {
+        if (isbn != ""){
+            val copieLibri = client.get("http://192.168.20.228:8080/libri/$isbn/copie")
+
+            if (copieLibri.status.value in 200..299)
+                copieLibri.readBytes().decodeToString()
+
+            else
+                null
+
+
+        }else
+            "Isbn empty"
+
+    }catch (s: Exception){
+        "Server timeout connection"
+    }
+}
+
 actual suspend fun postLibroJsonServer(libro: String?): String? {
-     val response = client.post {
+     val postLibro = client.post {
+
          url("https://192.168.20.228:8443/libri")
          setBody(libro)
 
@@ -37,14 +65,19 @@ actual suspend fun postLibroJsonServer(libro: String?): String? {
          }
      }
 
-     return response.request.toString()
+     return postLibro.request.toString()
 }
 
 actual suspend fun getJsonLibro(): String? {
     return try {
-        val getLibri = client.get("http://192.168.20.228:8080/libri")
+        val libri = client.get("http://192.168.20.228:8080/libri")
 
-        getLibri.readBytes().decodeToString()
+        //Controllo per la risposta giusta del server
+        if (libri.status.value in 200..299)
+            libri.readBytes().decodeToString()
+
+        else
+            null
 
     }catch (s: Exception){
         "Server timeout connection"
@@ -53,25 +86,32 @@ actual suspend fun getJsonLibro(): String? {
 
 actual suspend fun getPrestitiLibri(utentePrestito: Utente): String?{
     return try {
-        val getLibri = client.get("http://192.168.20.228:8080/utenti/$utentePrestito/prestiti")
+        val prestitiLibri = client.get("http://192.168.20.228:8080/utenti/${utentePrestito.idUtente}/prestiti")
 
-        getLibri.readBytes().decodeToString()
+        //Controllo per la risposta giusta del server
+        if (prestitiLibri.status.value in 200..299)
+            prestitiLibri.readBytes().decodeToString()
+
+        else
+            null
 
     }catch (s: Exception){
         "Server timeout connection"
     }
 }
 
-actual suspend fun getCopieLibri(isbn: String): String?{
+actual suspend fun getCategorieLibri(listaIdCategoria: ArrayList<Int>): String?{
+    val listaCategorieString = listaIdCategoria.joinToString(separator = ",")
 
     return try {
-        if (isbn != ""){
-            val getLibri = client.get("http://192.168.20.228:8080/libri/$isbn/copie")
+        val prestitiLibri = client.get("http://192.168.20.228:8080/categorie/$listaCategorieString")
 
-            getLibri.readBytes().decodeToString()
+        //Controllo per la risposta giusta del server
+        if (prestitiLibri.status.value in 200..299)
+            prestitiLibri.readBytes().decodeToString()
 
-        }else
-            "Isbn empty"
+        else
+            null
 
     }catch (s: Exception){
         "Server timeout connection"

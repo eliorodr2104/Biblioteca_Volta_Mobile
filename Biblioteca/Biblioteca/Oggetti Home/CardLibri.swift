@@ -36,51 +36,71 @@ import sharedModuleBiblioteca
  *
  *          Infine, la vista è avvolta in un frame per impostare le dimensioni della card.
  */
+@available(iOS 15.0, *)
 struct CardLibri: View {
-    
+    @ObservedObject private(set) var viewModel: ViewModel
+
     var libro: DatiLibro
     var titolo: String
-    var descrizione: String?
+    
+    @State private var imageSize: CGSize = .zero
     
     init(libro: DatiLibro) {
         self.libro = libro
         self.titolo = libro.titolo
-        self.descrizione = libro.descrizione
+        self.viewModel = ViewModel(isbn: libro.isbn)
     }
     
     var body: some View {
+        let copieLibro = getRisultatoCopie(copieLibro: viewModel.libro?.copie as? [CopiaLibro]) > 0
         
-        ZStack{
-            RoundedRectangle(cornerRadius: 20)
-                .fill(.white)
-                .shadow(color: Color("ColoreCard"), radius: 6)
-            
-            VStack(alignment: .leading) {
-                Text(titolo)
-                    .foregroundColor(Color.black)
-                    .font(.title)
-                    .fontWeight(.bold)
-                    .padding(.horizontal, 10)
-                    .padding(.bottom, 0)
-                
-                Text(descrizione ?? "")
-                    .font(.body)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 10)
-                    .foregroundColor(Color.black)
+        ZStack(alignment: .topTrailing){
+            AsyncImage(url: URL(string: libro.image ?? "")){ image in
+                image.resizable(resizingMode: .stretch)
+            } placeholder: {
+                Color.black
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading) // Imposta l'allineamento del frame del VStack su bottomLeading
-            .padding(.bottom, 10) // Aggiungi un margine inferiore al VStack
+            .clipShape(RoundedRectangle(cornerRadius: 20))
+            .frame(width: 155, height: 270)
+            
+            RoundedRectangle(cornerRadius: 100)
+                .fill(copieLibro ? Color.green : Color.red)
+                .frame(width: 30, height: 30)
+                .padding(.top, -9)
+                .padding(.trailing, -10)
+            
         }
         .frame(width: 155, height: 270)
+            
+    }
+}
+
+@available(iOS 15.0, *)
+extension CardLibri {
+    class ViewModel: ObservableObject {
+        @Published var libro: Libro?
+        
+        init(isbn: String) {
+            GestioneJson().getCopieLibro(isbn: isbn) { libro, error in
+                DispatchQueue.main.async {
+                    if let libro = libro {
+                        self.libro = libro
+                    } else {
+                        //print(error?.localizedDescription ?? "error")
+                    }
+                }
+            }
+        }
     }
 }
 
 
 
+
+@available(iOS 15.0, *)
 struct CardLibri_Previews: PreviewProvider {
     static var previews: some View {
-        CardLibri(libro: DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "0", annoPubblicazione: nil, idCategoria: 0, idGenere: 0, descrizione: nil, image: nil))
+        CardLibri(libro: DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "0", annoPubblicazione: nil, idCategoria: NSMutableArray(), idGenere: 0, descrizione: nil, np: 0, image: nil))
         
     }
 }

@@ -4,14 +4,13 @@ import com.biblioteca.OggettiComuni.DatiLibro
 import com.biblioteca.OggettiComuni.Libro
 import com.biblioteca.OggettiComuni.Prestito
 import com.biblioteca.OggettiComuni.Utente
+import com.biblioteca.getCategorieLibri
 import com.biblioteca.getCopieLibri
 import com.biblioteca.postLibroJsonServer
 import com.biblioteca.getJsonLibro
 import com.biblioteca.getPrestitiLibri
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.jsonObject
-
 
 class GestioneJson {
     suspend fun postLibroServer(libroAdAggiungere: Libro): String {
@@ -23,36 +22,55 @@ class GestioneJson {
     }
 
     suspend fun getTuttiLibri(): ArrayList<DatiLibro>? {
-        val stringHttpJson = getJsonLibro()
+        return try {
+            val stringHttpJson = getJsonLibro()
 
-        return if (stringHttpJson != "Server timeout connection" && stringHttpJson != ""){
+            if (stringHttpJson != "Server timeout connection" && stringHttpJson != ""){
 
-            val json = Json.parseToJsonElement(getJsonLibro() ?: "")
+                val json = Json.parseToJsonElement(stringHttpJson ?: "")
 
-            Json.decodeFromString(json.toString())
-        }else
+                Json.decodeFromString<ArrayList<DatiLibro>>(json.toString())
+            }else
+                null
+        }catch (e: Exception){
             null
+        }
     }
 
     suspend fun getTuttiPrestito(utente: Utente): ArrayList<Prestito>?{
         val stringHttpJson = getPrestitiLibri(utente)
 
-        return if (stringHttpJson != "Server timeout connection" && stringHttpJson != ""){
+        return if (stringHttpJson != "Server timeout connection" && stringHttpJson != "" && stringHttpJson != "[]"){
 
-            val json = Json.parseToJsonElement(getJsonLibro() ?: "")
+            val json = Json.parseToJsonElement(stringHttpJson ?: "")
 
-            Json.decodeFromString(json.toString())
+            Json.decodeFromString<ArrayList<Prestito>>(json.toString())
         }else
             null
     }
 
     suspend fun getCopieLibro(isbn: String): Libro?{
         val stringHttpJson = getCopieLibri(isbn)
-        
+
         return if (stringHttpJson != "Server timeout connection" && stringHttpJson != "" && stringHttpJson != "Isbn empty"){
 
             Json.decodeFromString<Libro>(stringHttpJson.toString())
         }else
             null
+    }
+
+    suspend fun getCategorie(listaIdCategoria: ArrayList<Int>): ArrayList<String>?{
+        val stringHttpJson = getCategorieLibri(listaIdCategoria)
+
+        return try {
+            if (stringHttpJson != "Server timeout connection" && stringHttpJson != "" && stringHttpJson != "[]"){
+                val json = Json.parseToJsonElement(stringHttpJson ?: "")
+
+                Json.decodeFromString<ArrayList<String>>(json.toString())
+            }else
+                null
+        }catch (e: Exception){
+            null
+        }
     }
 }

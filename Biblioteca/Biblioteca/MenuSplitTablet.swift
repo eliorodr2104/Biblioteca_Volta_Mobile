@@ -20,6 +20,7 @@
 import SwiftUI
 import sharedModuleBiblioteca
 
+@available(iOS 15.0, *)
 struct MenuSplitTablet: View {
     
     //Variabile statica e privata con l'indice per i libri
@@ -31,10 +32,18 @@ struct MenuSplitTablet: View {
     
     @State var showAnimationSecondary = false
     
-    @State var datiDelLibro: MenuLibro?
+    @State var datiDelLibro = MenuLibro(datiLibro: DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "", annoPubblicazione: nil, idCategoria: NSMutableArray(), idGenere: 0, descrizione: nil, np: 0, image: nil))
     
     var nomeUtente: String
     var salutoUtente: String
+    
+    init(viewModel: ViewModel, index: Int = 0, showAnimationSecondary: Bool = false, nomeUtente: String, salutoUtente: String) {
+        self.viewModel = viewModel
+        self.index = index
+        self.showAnimationSecondary = showAnimationSecondary
+        self.nomeUtente = nomeUtente
+        self.salutoUtente = salutoUtente
+    }
     
     
     var body: some View {
@@ -296,7 +305,7 @@ struct MenuSplitTablet: View {
                         }else if self.index == 4{
                             
                         }else{
-                            MenuLibro(datiLibro: datiDelLibro?.datiLibro ?? nil)
+                            MenuLibro(datiLibro: datiDelLibro.datiLibro)
                                 .background(Color(UIColor.systemBackground))
                             //Spostamento della vista a destra quando si fa clic sul pulsante del menu
                             
@@ -334,7 +343,8 @@ struct MenuSplitTablet: View {
 
    Se l'array di libri ha un numero dispari di elementi, l'ultimo libro viene visualizzato solo nella prima carta e la seconda carta viene lasciata vuota.
 */
-private func inizializzaItem(index: Binding<Int>, CONST_INDEX_LIBRI: Int, datiLibro: Binding<MenuLibro?>, showAnimationSecondary: Binding<Bool>, libriVisualizzazioneRichiestaJson: [DatiLibro]) -> [ItemOrizzontaliLista]{
+@available(iOS 15.0, *)
+private func inizializzaItem(index: Binding<Int>, CONST_INDEX_LIBRI: Int, datiLibro: Binding<MenuLibro>, showAnimationSecondary: Binding<Bool>, libriVisualizzazioneRichiestaJson: [DatiLibro]) -> [ItemOrizzontaliLista]{
     
     var arrayTemp = [ItemOrizzontaliLista]()
     
@@ -361,7 +371,7 @@ private func inizializzaItem(index: Binding<Int>, CONST_INDEX_LIBRI: Int, datiLi
         }else if i == libriVisualizzazioneRichiestaJson.count - 1{
             item = ItemOrizzontaliLista(
                 cardPrimi: CardLibri(libro: libriVisualizzazioneRichiestaJson[i]),
-                cardSecondo: CardLibri(libro: DatiLibro(isbn: "", titolo: "prova", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "0", annoPubblicazione: nil, idCategoria: 0, idGenere: 0, descrizione: nil, image: nil)),
+                cardSecondo: CardLibri(libro: DatiLibro(isbn: "", titolo: "prova", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "0", annoPubblicazione: nil, idCategoria: NSMutableArray(), idGenere: 0, descrizione: nil, np: 0, image: nil)),
                 funzionePrimaCard: {
                     index.wrappedValue = CONST_INDEX_LIBRI
                     datiLibro.wrappedValue = MenuLibro(datiLibro: libriVisualizzazioneRichiestaJson[i])
@@ -379,30 +389,29 @@ private func inizializzaItem(index: Binding<Int>, CONST_INDEX_LIBRI: Int, datiLi
 private func inizializzareArrayPrestiti() -> [ItemPrestitiLista]{
     return [
         ItemPrestitiLista(libro:
-                            CopiaLibro(idCopia: "0",
+                            CopiaLibro(idCopia: 0,
                                        isbn: "000",
                                        condizioni: "buo",
                                        inPrestito: false,
                                        sezione: "",
                                        scaffale: 0,
                                        ripiano: 0,
-                                       np: 0,
                                        idPrestito: 0)),
         
         ItemPrestitiLista(libro:
-                            CopiaLibro(idCopia: "1",
+                            CopiaLibro(idCopia: 1,
                                        isbn: "001",
                                        condizioni: "buono",
                                        inPrestito: false,
                                        sezione: "",
                                        scaffale: 0,
                                        ripiano: 0,
-                                       np: 0,
                                        idPrestito: 0))
     ]
 }
 
 
+@available(iOS 15.0, *)
 extension MenuSplitTablet {
     class ViewModel: ObservableObject {
         @Published var text = NSMutableArray()
@@ -418,6 +427,7 @@ extension MenuSplitTablet {
     }
 }
 
+@available(iOS 15.0, *)
 struct MenuSplitTablet_Previews: PreviewProvider {
     static var previews: some View {
         MenuSplitTablet(viewModel: MenuSplitTablet.ViewModel(), nomeUtente: "", salutoUtente: "")

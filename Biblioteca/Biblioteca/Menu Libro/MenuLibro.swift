@@ -27,23 +27,25 @@
 import SwiftUI
 import sharedModuleBiblioteca
 
+@available(iOS 15.0, *)
 struct MenuLibro: View {
     
-    var datiLibro: DatiLibro?
+    var datiLibro: DatiLibro
     
     @ObservedObject private(set) var viewModel: ViewModel
     
-    init(datiLibro: DatiLibro? = nil) {
+    init(datiLibro: DatiLibro) {
         self.datiLibro = datiLibro
-        self.viewModel = ViewModel(isbn: datiLibro?.isbn ?? "")
+        self.viewModel = ViewModel(isbn: datiLibro.isbn, listaCategorie: datiLibro.idCategoria)
     }
     
     //Variabile di stato booleana
     @State var controlloDimensione = false
-    
-    let items: [Etichetta] = [Etichetta(nomeEtichetta: "Prova"), Etichetta(nomeEtichetta: "Prova1"), Etichetta(nomeEtichetta: "Prova2"), Etichetta(nomeEtichetta: "Prova3"), Etichetta(nomeEtichetta: "Prova4"), Etichetta(nomeEtichetta: "Prova5")]
-    
+        
     var body: some View {
+        let items: [Etichetta] = inizializzaCategorie(arrayCategorie: viewModel.arrayCategorie as! [String])
+        
+        let nCopieDisponibili = getRisultatoCopie(copieLibro: viewModel.libro?.copie as? [CopiaLibro])
         
         //Lettura delle dimensioni dello schermo nel quale si avvia la app
         GeometryReader { geometry in
@@ -62,11 +64,28 @@ struct MenuLibro: View {
                         
                         //Corpo del rettangolo che ha la copertina del libro
                         ZStack{
-                            RoundedRectangle(cornerRadius: 20)
-                                .fill(.white)
-                                .shadow(color: Color("ColoreCard"), radius: 6)
-                            
-                            //Image("")
+                            AsyncImage(url: URL(string: datiLibro.image ?? "")){ image in
+                                image.resizable(resizingMode: .stretch)
+                            } placeholder: {
+                                ProgressView()
+                            }
+                            .clipShape(RoundedRectangle(cornerRadius: 20))
+                            .frame(width: 113, height: 175)
+                            .overlay {
+                                if nCopieDisponibili > 0{
+                                    RoundedRectangle(cornerRadius: 5)
+                                        .fill(Color("ColorePrincipale"))
+                                        .frame(width: 14, height: 13)
+                                        .padding(.bottom, 145)
+                                        .padding(.trailing, 85)
+                                        
+                                    Text(String(nCopieDisponibili))
+                                        .font(.footnote)
+                                        .foregroundColor(.white)
+                                        .padding(.bottom, 145)
+                                        .padding(.trailing, 85)
+                                }
+                            }
                             
                         }
                         .frame(width: 113, height: 175)
@@ -78,43 +97,29 @@ struct MenuLibro: View {
                          */
                         VStack(alignment: .leading) {
                             
-                            Text(datiLibro?.titolo ?? "")
+                            Text(datiLibro.titolo )
                                 .fontWeight(.bold)
                                 .font(isLargeSize ? .largeTitle : .title)
                                 .foregroundColor(.primary)
                                 .padding(.top, 55)
                             
                             //DA MODIFICARE CON L'AUTORE DEL LIBRO ANZI CHE L'ID
-                            Text(String(datiLibro?.autore ?? "") == "" ? "Autore sconosciuto" : String(datiLibro?.autore ?? ""))
+                            Text(String(datiLibro.autore ) == "" ? "Autore sconosciuto" : String(datiLibro.autore ))
                                 .fontWeight(.bold)
                                 .font(isLargeSize ? .headline : .subheadline)
                                 .foregroundColor(.primary.opacity(0.5))
                             
-                            Text("La lingua del libro è: " + GestioneRisorseKt.conversioneLinguaLibro(linguaDelLibro: datiLibro?.lingua ?? "VUOTO"))
+                            Text("La lingua del libro è: " + GestioneRisorseKt.conversioneLinguaLibro(linguaDelLibro: datiLibro.lingua ))
                                 .fontWeight(.bold)
                                 .font(isLargeSize ? .headline : .subheadline)
                                 .foregroundColor(.primary.opacity(0.75))
                                 .padding(.top, 20)
                             
                             
-                            /*
-                             * Struttura condizionale la quale controlla che la variabile "disponibilitaLibro" sia True; s'è
-                             * vero setta la disponibilità in "disponibile" e da anche il numero di copie rimasto, altrimenti,
-                             * setta il libro come non disponibile
-                             */
-                            
-                            if getRisultatoCopie(copieLibro: viewModel.libro?.copie as? [CopiaLibro]) > 0 {
-                                Text("Il libro è disponibile")
-                                    .fontWeight(.bold)
-                                    .font(isLargeSize ? .body : .subheadline)
-                                    .foregroundColor(.primary.opacity(0.75))
-                                
-                            } else {
-                                Text("Il libro non è disponibile")
-                                    .fontWeight(.bold)
-                                    .font(isLargeSize ? .body : .subheadline)
-                                    .foregroundColor(.primary.opacity(0.75))
-                            }
+                            Text(nCopieDisponibili > 0 ? "Il libro è disponibile" : "Il libro non è disponibile")
+                                .fontWeight(.bold)
+                                .font(isLargeSize ? .body : .subheadline)
+                                .foregroundColor(.primary.opacity(0.75))
                             
                         }
                         //.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
@@ -137,9 +142,9 @@ struct MenuLibro: View {
                     .padding(.trailing, 10)
                     .padding(.leading, 10)
                     
-                    if (datiLibro?.descrizione?.count ?? 0 <= 764){
+                    if (datiLibro.descrizione?.count ?? 0 <= 764){
                         HStack(alignment: .top){
-                            Text(datiLibro?.descrizione ?? "")
+                            Text(datiLibro.descrizione ?? "")
                                 .multilineTextAlignment(.leading)
                         }
                         .padding(.top, 10)
@@ -147,7 +152,7 @@ struct MenuLibro: View {
                     }else{
                         ScrollView {
                             //Text(datiLibro?.descrizione ?? "")
-                            Text(datiLibro?.descrizione ?? "")
+                            Text(datiLibro.descrizione ?? "")
                                 .padding(.trailing, 10)
                                 .multilineTextAlignment(.leading)
                                 .frame(width: geometry.size.width)
@@ -165,7 +170,7 @@ struct MenuLibro: View {
 
 func getRisultatoCopie(copieLibro: [CopiaLibro]?) -> Int{
     var contaLibri = 0
-    
+            
     if copieLibro != nil{
         for i in stride(from: 0, to: copieLibro?.count ?? 0, by: 1){
             
@@ -173,7 +178,7 @@ func getRisultatoCopie(copieLibro: [CopiaLibro]?) -> Int{
                 contaLibri += 1
             }
         }
-        
+                
         return contaLibri
         
     }else{
@@ -183,18 +188,42 @@ func getRisultatoCopie(copieLibro: [CopiaLibro]?) -> Int{
     
 }
 
+private func inizializzaCategorie(arrayCategorie: [String]) -> [Etichetta]{
+    var arrayEtichette = [Etichetta]()
+    
+    for i in stride(from: 0, to: arrayCategorie.count, by: 1){
+        arrayEtichette.append(Etichetta(nomeEtichetta: arrayCategorie[i]))
+    }
+    
+    return arrayEtichette
+}
 
+
+@available(iOS 15.0, *)
 extension MenuLibro {
     class ViewModel: ObservableObject {
         @Published var libro: Libro?
+        @Published var arrayCategorie = NSMutableArray()
         
-        init(isbn: String) {
+        init(isbn: String, listaCategorie: NSMutableArray) {
             GestioneJson().getCopieLibro(isbn: isbn) { libro, error in
-                DispatchQueue.main.async {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     if let libro = libro {
                         self.libro = libro
+                        
                     } else {
-                        print(error?.localizedDescription ?? "error")
+                        //print(error?.localizedDescription ?? "error")
+                    }
+                }
+            }
+            
+            GestioneJson().getCategorie(listaIdCategoria: listaCategorie) { arrayCategorie, error in
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    if let arrayCategorie = arrayCategorie {
+                        self.arrayCategorie = arrayCategorie
+                        
+                    } else {
+                        //print(error?.localizedDescription ?? "error")
                     }
                 }
             }
@@ -203,8 +232,9 @@ extension MenuLibro {
 }
 
 
+@available(iOS 15.0, *)
 struct MenuLibro_Previews: PreviewProvider {
     static var previews: some View {
-        MenuLibro(datiLibro: DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "0", annoPubblicazione: nil, idCategoria: 0, idGenere: 0, descrizione: nil, image: nil))
+        MenuLibro(datiLibro: DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "0", annoPubblicazione: nil, idCategoria: NSMutableArray(), idGenere: 0, descrizione: nil, np: 0, image: nil))
     }
 }
