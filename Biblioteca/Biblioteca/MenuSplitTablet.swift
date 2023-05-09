@@ -32,7 +32,7 @@ struct MenuSplitTablet: View {
     
     @State var showAnimationSecondary = false
     
-    @State var datiDelLibro = MenuLibro(datiLibro: DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "", annoPubblicazione: nil, idCategoria: NSMutableArray(), idGenere: 0, descrizione: nil, np: 0, image: nil))
+    @State var datiDelLibro = MenuLibro(datiLibro: DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "", annoPubblicazione: nil, idCategorie: NSMutableArray(), idGenere: 0, descrizione: nil, np: 0, image: nil))
     
     var nomeUtente: String
     var salutoUtente: String
@@ -295,7 +295,7 @@ struct MenuSplitTablet: View {
                             
                         } else if self.index == 1{
                             //Libri prestito
-                            MenuPrestiti(listaItemPrestiti: inizializzareArrayPrestiti())
+                            //MenuPrestiti(listaPrestiti: [Prestito] )
                             
                         } else if self.index == 2{
                             
@@ -312,7 +312,6 @@ struct MenuSplitTablet: View {
                                 .offset(x: self.showAnimationSecondary ? 0 : UIScreen.main.bounds.width, y: 0)
                             
                             //Animazione di slide
-                                .animation(.spring(response: 0.5, dampingFraction: 0.7, blendDuration: 0))
                         }
                         
                     }
@@ -371,7 +370,7 @@ private func inizializzaItem(index: Binding<Int>, CONST_INDEX_LIBRI: Int, datiLi
         }else if i == libriVisualizzazioneRichiestaJson.count - 1{
             item = ItemOrizzontaliLista(
                 cardPrimi: CardLibri(libro: libriVisualizzazioneRichiestaJson[i]),
-                cardSecondo: CardLibri(libro: DatiLibro(isbn: "", titolo: "prova", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "0", annoPubblicazione: nil, idCategoria: NSMutableArray(), idGenere: 0, descrizione: nil, np: 0, image: nil)),
+                cardSecondo: CardLibri(libro: DatiLibro(isbn: "", titolo: "prova", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "0", annoPubblicazione: nil, idCategorie: NSMutableArray(), idGenere: 0, descrizione: nil, np: 0, image: nil)),
                 funzionePrimaCard: {
                     index.wrappedValue = CONST_INDEX_LIBRI
                     datiLibro.wrappedValue = MenuLibro(datiLibro: libriVisualizzazioneRichiestaJson[i])
@@ -385,31 +384,6 @@ private func inizializzaItem(index: Binding<Int>, CONST_INDEX_LIBRI: Int, datiLi
     }
     return arrayTemp
 }
-
-private func inizializzareArrayPrestiti() -> [ItemPrestitiLista]{
-    return [
-        ItemPrestitiLista(libro:
-                            CopiaLibro(idCopia: 0,
-                                       isbn: "000",
-                                       condizioni: "buo",
-                                       inPrestito: false,
-                                       sezione: "",
-                                       scaffale: 0,
-                                       ripiano: 0,
-                                       idPrestito: 0)),
-        
-        ItemPrestitiLista(libro:
-                            CopiaLibro(idCopia: 1,
-                                       isbn: "001",
-                                       condizioni: "buono",
-                                       inPrestito: false,
-                                       sezione: "",
-                                       scaffale: 0,
-                                       ripiano: 0,
-                                       idPrestito: 0))
-    ]
-}
-
 
 @available(iOS 15.0, *)
 extension MenuSplitTablet {

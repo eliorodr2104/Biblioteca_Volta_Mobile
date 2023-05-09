@@ -26,6 +26,7 @@
  */
 import SwiftUI
 import sharedModuleBiblioteca
+import CachedAsyncImage
 
 @available(iOS 15.0, *)
 struct MenuLibro: View {
@@ -36,7 +37,7 @@ struct MenuLibro: View {
     
     init(datiLibro: DatiLibro) {
         self.datiLibro = datiLibro
-        self.viewModel = ViewModel(isbn: datiLibro.isbn, listaCategorie: datiLibro.idCategoria)
+        self.viewModel = ViewModel(isbn: datiLibro.isbn, listaCategorie: datiLibro.idCategorie)
     }
     
     //Variabile di stato booleana
@@ -64,7 +65,7 @@ struct MenuLibro: View {
                         
                         //Corpo del rettangolo che ha la copertina del libro
                         ZStack{
-                            AsyncImage(url: URL(string: datiLibro.image ?? "")){ image in
+                            CachedAsyncImage(url: URL(string: datiLibro.image ?? "")){ image in
                                 image.resizable(resizingMode: .stretch)
                             } placeholder: {
                                 ProgressView()
@@ -75,7 +76,7 @@ struct MenuLibro: View {
                                 if nCopieDisponibili > 0{
                                     RoundedRectangle(cornerRadius: 5)
                                         .fill(Color("ColorePrincipale"))
-                                        .frame(width: 14, height: 13)
+                                        .frame(width: 16, height: 14)
                                         .padding(.bottom, 145)
                                         .padding(.trailing, 85)
                                         
@@ -97,14 +98,14 @@ struct MenuLibro: View {
                          */
                         VStack(alignment: .leading) {
                             
-                            Text(datiLibro.titolo )
+                            Text(datiLibro.titolo)
                                 .fontWeight(.bold)
                                 .font(isLargeSize ? .largeTitle : .title)
                                 .foregroundColor(.primary)
                                 .padding(.top, 55)
                             
                             //DA MODIFICARE CON L'AUTORE DEL LIBRO ANZI CHE L'ID
-                            Text(String(datiLibro.autore ) == "" ? "Autore sconosciuto" : String(datiLibro.autore ))
+                            Text(String(datiLibro.autore) == "" ? "Autore sconosciuto" : String(datiLibro.autore ))
                                 .fontWeight(.bold)
                                 .font(isLargeSize ? .headline : .subheadline)
                                 .foregroundColor(.primary.opacity(0.5))
@@ -120,6 +121,8 @@ struct MenuLibro: View {
                                 .fontWeight(.bold)
                                 .font(isLargeSize ? .body : .subheadline)
                                 .foregroundColor(.primary.opacity(0.75))
+                                .animation(.spring(response: 0.5, dampingFraction: 0.7, blendDuration: 3))
+                            
                             
                         }
                         //.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
@@ -172,9 +175,8 @@ func getRisultatoCopie(copieLibro: [CopiaLibro]?) -> Int{
     var contaLibri = 0
             
     if copieLibro != nil{
-        for i in stride(from: 0, to: copieLibro?.count ?? 0, by: 1){
-            
-            if copieLibro?[i].inPrestito != true{
+        for i in stride(from: 0, to: copieLibro?.count ?? 0, by: 1){            
+            if copieLibro?[i].idPrestito == -1{
                 contaLibri += 1
             }
         }
@@ -207,7 +209,7 @@ extension MenuLibro {
         
         init(isbn: String, listaCategorie: NSMutableArray) {
             GestioneJson().getCopieLibro(isbn: isbn) { libro, error in
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                     if let libro = libro {
                         self.libro = libro
                         
@@ -218,7 +220,7 @@ extension MenuLibro {
             }
             
             GestioneJson().getCategorie(listaIdCategoria: listaCategorie) { arrayCategorie, error in
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                     if let arrayCategorie = arrayCategorie {
                         self.arrayCategorie = arrayCategorie
                         
@@ -235,6 +237,6 @@ extension MenuLibro {
 @available(iOS 15.0, *)
 struct MenuLibro_Previews: PreviewProvider {
     static var previews: some View {
-        MenuLibro(datiLibro: DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "0", annoPubblicazione: nil, idCategoria: NSMutableArray(), idGenere: 0, descrizione: nil, np: 0, image: nil))
+        MenuLibro(datiLibro: DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "0", annoPubblicazione: nil, idCategorie: NSMutableArray(), idGenere: 0, descrizione: nil, np: 0, image: nil))
     }
 }

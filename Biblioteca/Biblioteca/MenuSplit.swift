@@ -32,14 +32,14 @@ struct MenuSplit: View {
     @State var show: Bool
     @State var showAnimationSecondary: Bool
     
-    @State var datiLibro = MenuLibro(datiLibro: DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "", annoPubblicazione: nil, idCategoria: NSMutableArray(), idGenere: 0, descrizione: nil, np: 0, image: nil))
+    @State var datiLibro: MenuLibro
 
     private var nomeUtente: String
     var salutoUtente: String
     
     private var utenteUtilizzo: Utente
     
-    init(index: Int = 0, show: Bool = false, showAnimationSecondary: Bool = false, nomeUtente: String, salutoUtente: String = "Bentornato", utenteUtilizzo: Utente) {
+    init(index: Int = 0, show: Bool = false, showAnimationSecondary: Bool = false, nomeUtente: String, salutoUtente: String = "Bentornato", utenteUtilizzo: Utente, datiLibro: MenuLibro) {
         self.viewModel = ViewModel(utente: utenteUtilizzo)
         self.index = index
         self.show = show
@@ -47,6 +47,7 @@ struct MenuSplit: View {
         self.nomeUtente = nomeUtente
         self.salutoUtente = salutoUtente
         self.utenteUtilizzo = utenteUtilizzo
+        self.datiLibro = datiLibro
     }
     
     
@@ -329,8 +330,6 @@ struct MenuSplit: View {
                 Spacer(minLength: 0)
                 
             }
-            .padding(.top, UIApplication.shared.windows.first?.safeAreaInsets.top)
-            .padding(.bottom,UIApplication.shared.windows.first?.safeAreaInsets.bottom)
             
             //Schermata di visualizzazione principale, la quale  mostra la lista di tutti i libri richiesti dal database
             VStack(spacing: 0){
@@ -392,7 +391,6 @@ struct MenuSplit: View {
                     Spacer(minLength: 0)
                     
                 }
-                .padding(.top, UIApplication.shared.windows.first?.safeAreaInsets.top)
                 .padding()
                             
                 //Lettura delle dimensioni dello schermo nel quale si avvia la app
@@ -410,22 +408,23 @@ struct MenuSplit: View {
 
                         //Cambia la visuale dipendendo dall'indice
                         if self.index == 0{
-                            
                             ListaVisualizzazione(listaItemOrizzontale: tempArrayItemVisualizzazione)
                                 .allowsHitTesting(self.show ? false : true)
 
                         } else if self.index == 1{
                             //Libri prestito
-                            MenuPrestiti(listaItemPrestiti: viewModel.arrayPrestiti as! [ItemPrestitiLista])
+                            MenuPrestiti(listaPrestiti: viewModel.arrayPrestiti as! [Prestito])
                             
                         } else if self.index == 2{
                             //Informazioni()
                             
-                            MenuLibro(datiLibro: DatiLibro(isbn: "84729472912", titolo: "Miao", sottotitolo: "miao sottotitolo", lingua: "it", casaEditrice: "miaone", autore: "0", annoPubblicazione: "2004", idCategoria: NSMutableArray(), idGenere: 0, descrizione: "miao descrizione", np: 0, image: "https://www.pitarresicma.it/wp-content/uploads/2022/12/618T7zo4nL.jpg"))
+                            /*
+                            MenuLibro(datiLibro: DatiLibro(isbn: "84729472912", titolo: "Miao", sottotitolo: "miao sottotitolo", lingua: "it", casaEditrice: "miaone", autore: "0", annoPubblicazione: "2004", idCategorie: NSMutableArray(), idGenere: 0, descrizione: "miao descrizione", np: 0, image: "https://www.pitarresicma.it/wp-content/uploads/2022/12/618T7zo4nL.jpg"))
+                             */
 
                             
                         } else if self.index == 3{
-                            
+                            //Text(viewModel.prova)
                             
                         }else if self.index == 4{
                             
@@ -444,8 +443,6 @@ struct MenuSplit: View {
                             
                                 .offset(x: self.showAnimationSecondary ? 0 : UIScreen.main.bounds.width, y: 0)
                             
-                                //Animazione di slide
-                                .animation(.spring(response: 0.5, dampingFraction: 0.7, blendDuration: 0))
                         }
                         
                     }
@@ -467,7 +464,7 @@ struct MenuSplit: View {
 
 @available(iOS 15.0, *)
 private func inizializzaItem(index: Binding<Int>, CONST_INDEX_LIBRI: Int, datiLibro: Binding<MenuLibro>, showAnimationSecondary: Binding<Bool>, libriVisualizzazioneRichiestaJson: [DatiLibro]) -> [ItemOrizzontaliLista]{
-
+    
     var arrayTemp = [ItemOrizzontaliLista]()
     
     var item = ItemOrizzontaliLista(funzionePrimaCard: {}, funzioneSecondaCard: {})
@@ -493,7 +490,7 @@ private func inizializzaItem(index: Binding<Int>, CONST_INDEX_LIBRI: Int, datiLi
         }else if i == libriVisualizzazioneRichiestaJson.count - 1{
             item = ItemOrizzontaliLista(
                 cardPrimi: CardLibri(libro: libriVisualizzazioneRichiestaJson[i]),
-                cardSecondo: CardLibri(libro: DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "0", annoPubblicazione: nil, idCategoria: NSMutableArray(), idGenere: 0, descrizione: nil, np: 0, image: nil)),
+                cardSecondo: CardLibri(libro: DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "0", annoPubblicazione: nil, idCategorie: NSMutableArray(), idGenere: 0, descrizione: nil, np: 0, image: nil)),
                 funzionePrimaCard: {
                     index.wrappedValue = CONST_INDEX_LIBRI
                     datiLibro.wrappedValue = MenuLibro(datiLibro: libriVisualizzazioneRichiestaJson[i])
@@ -507,7 +504,7 @@ private func inizializzaItem(index: Binding<Int>, CONST_INDEX_LIBRI: Int, datiLi
 
         
     }
-    
+        
     return arrayTemp
 }
 
@@ -517,27 +514,43 @@ extension MenuSplit {
         @Published var arrayLibri = NSMutableArray()
         @Published var arrayPrestiti = NSMutableArray()
         
+        @Published var prova = ""
+        
         init(utente: Utente) {
             GestioneJson().getTuttiLibri { connessione, error in
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     if let connessione = connessione {
                         self.arrayLibri = connessione
-                    } else {}
+                        
+                    } else {
+                        print(error?.localizedDescription ?? "error")
+                    }
                 }
             }
             
+            GestioneJson().getTuttiPrestito(utente: utente){ prestito, errore in
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    if let prestito = prestito {
+                        self.arrayPrestiti = prestito
+                        
+                    }else {
+                        //print(errore?.localizedDescription ?? "error")
+                    }
+                }
+                
+            }
             
-             GestioneJson().getTuttiPrestito(utente: utente){ prestito, errore in
-                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                     if let prestito = prestito {
-                         self.arrayPrestiti = prestito
-                         
-                     }else {
-                         //print(errore?.localizedDescription ?? "error")
-                     }
-                 }
-                 
-             }
+            GestioneJson().postLibroServer(){ libro, errore in
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    if libro != nil {
+                        self.prova = libro ?? "CIAO"
+                        
+                    }else {
+                        //print(errore?.localizedDescription ?? "error")
+                    }
+                }
+                
+            }
              
         }
     }
@@ -546,7 +559,7 @@ extension MenuSplit {
 @available(iOS 15.0, *)
 struct MenuSplit_Previews: PreviewProvider {
     static var previews: some View {
-        MenuSplit(nomeUtente: "", utenteUtilizzo: Utente(idUtente: 0, nome: "", cognome: "", numero: nil, mailAlternativa: "", grado: 0, mail: ""))
+        MenuSplit(nomeUtente: "", utenteUtilizzo: Utente(idUtente: 0, nome: "", cognome: "", numero: nil, mailAlternativa: "", grado: 0, mail: ""), datiLibro: MenuLibro(datiLibro: DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "", annoPubblicazione: nil, idCategorie: NSMutableArray(), idGenere: 0, descrizione: nil, np: 0, image: nil)))
     }
 }
 

@@ -14,6 +14,7 @@
  */
 import SwiftUI
 import sharedModuleBiblioteca
+import CachedAsyncImage
 
 
 /**
@@ -55,22 +56,32 @@ struct CardLibri: View {
         let copieLibro = getRisultatoCopie(copieLibro: viewModel.libro?.copie as? [CopiaLibro]) > 0
         
         ZStack(alignment: .topTrailing){
-            AsyncImage(url: URL(string: libro.image ?? "")){ image in
+            CachedAsyncImage(url: URL(string: libro.image ?? "")){ image in
                 image.resizable(resizingMode: .stretch)
             } placeholder: {
-                Color.black
+                ProgressView()
             }
             .clipShape(RoundedRectangle(cornerRadius: 20))
-            .frame(width: 155, height: 270)
+            .frame(width: 155, height: 250)
+            .overlay(alignment: .bottomLeading) {
+                Text(libro.titolo)
+                    .font(.subheadline)
+                    .bold()
+                    .foregroundColor(Color.white)
+                    .padding(.leading, 10)
+                    .padding(.bottom, 5)
+                    .shadow(color: Color.black, radius: 0.5)
+            }
             
             RoundedRectangle(cornerRadius: 100)
                 .fill(copieLibro ? Color.green : Color.red)
-                .frame(width: 30, height: 30)
-                .padding(.top, -9)
-                .padding(.trailing, -10)
+                .shadow(color: copieLibro ? Color.green : Color.red, radius: 5)
+                .frame(width: 25, height: 25)
+                .padding(.top, -7)
+                .padding(.trailing, -8)
             
         }
-        .frame(width: 155, height: 270)
+        .frame(width: 155, height: 250)
             
     }
 }
@@ -100,7 +111,7 @@ extension CardLibri {
 @available(iOS 15.0, *)
 struct CardLibri_Previews: PreviewProvider {
     static var previews: some View {
-        CardLibri(libro: DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "0", annoPubblicazione: nil, idCategoria: NSMutableArray(), idGenere: 0, descrizione: nil, np: 0, image: nil))
+        CardLibri(libro: DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "0", annoPubblicazione: nil, idCategorie: NSMutableArray(), idGenere: 0, descrizione: nil, np: 0, image: nil))
         
     }
 }

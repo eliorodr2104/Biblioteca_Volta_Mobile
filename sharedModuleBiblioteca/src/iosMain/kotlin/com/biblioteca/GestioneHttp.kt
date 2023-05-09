@@ -19,10 +19,13 @@ private val client = HttpClient(Darwin) {
     //install(HttpCookies)
 
     //PROVA DI MODULA PER FARE VAR TENTATIVI
+    /*
     install(HttpRequestRetry) {
         retryOnServerErrors(maxRetries = 5)
         exponentialDelay()
     }
+
+     */
 
     engine {
         /*
@@ -57,7 +60,7 @@ actual suspend fun getCopieLibri(isbn: String): String?{
 actual suspend fun postLibroJsonServer(libro: String?): String? {
      val postLibro = client.post {
 
-         url("https://192.168.20.228:8443/libri")
+         url("http://192.168.20.228:8080/libri")
          setBody(libro)
 
          onUpload { bytesSentTotal, contentLength ->
@@ -65,7 +68,7 @@ actual suspend fun postLibroJsonServer(libro: String?): String? {
          }
      }
 
-     return postLibro.request.toString()
+     return postLibro.toString()
 }
 
 actual suspend fun getJsonLibro(): String? {

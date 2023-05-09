@@ -10,19 +10,21 @@ import SwiftUI
 import sharedModuleBiblioteca
 
 struct MenuPrestiti: View {
-    @State var listaItemPrestiti = [ItemPrestitiLista]()
+    @State var listaPrestiti = [Prestito]()
     
     private let quantitaPrestiti: Int
+    private let itemListaPrestiti: [ItemPrestitiLista]
         
-    init(listaItemPrestiti: [ItemPrestitiLista] = [ItemPrestitiLista]()) {
-        self.listaItemPrestiti = listaItemPrestiti
-        self.quantitaPrestiti = listaItemPrestiti.count
+    init(listaPrestiti: [Prestito] = [Prestito]()) {
+        self.listaPrestiti = listaPrestiti
+        self.quantitaPrestiti = listaPrestiti.count
+        self.itemListaPrestiti = convertiOggetti(listaPrestiti: listaPrestiti)
     }
     
     var body: some View {
         NavigationView{
             List {
-                ForEach(listaItemPrestiti.indices, id: \.self) { index in
+                ForEach(itemListaPrestiti.indices, id: \.self) { index in
                     /*
                     switch calcolaGiorniRimanenti(listaItemPrestiti[index].libro.prestito.dataInizio ?? "00/00/0000") {
                     case 0...3:
@@ -36,7 +38,7 @@ struct MenuPrestiti: View {
                     }
                      */
                     
-                    listaItemPrestiti[index]
+                    itemListaPrestiti[index]
                 }
                 
             }
@@ -44,6 +46,17 @@ struct MenuPrestiti: View {
             .navigationTitle("Libri in prestito: " + String(quantitaPrestiti))
         }
     }
+}
+
+func convertiOggetti(listaPrestiti: [Prestito]) -> [ItemPrestitiLista]{
+    var itemListaPrestiti = [ItemPrestitiLista]()
+
+    
+    for prestitoSingolo in listaPrestiti{
+        itemListaPrestiti.append(ItemPrestitiLista(prestitoLibro: prestitoSingolo))
+    }
+    
+    return itemListaPrestiti
 }
 
 func calcolaGiorniRimanenti(_ dateString: String) -> Int {

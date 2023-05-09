@@ -19,9 +19,9 @@ import sharedModuleBiblioteca
 @available(iOS 15.0, *)
 struct ItemOrizzontaliLista: View{
     //Dichiarazione e inizializzazione delle due "Card" dove
-    var cardPrimi = CardLibri(libro: DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "0", annoPubblicazione: nil, idCategoria: NSMutableArray(), idGenere: 0, descrizione: nil, np: 0, image: nil))
+    var cardPrimi = CardLibri(libro: DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "0", annoPubblicazione: nil, idCategorie: NSMutableArray(), idGenere: 0, descrizione: nil, np: 0, image: nil))
     
-    var cardSecondo = CardLibri(libro: DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "0", annoPubblicazione: nil, idCategoria: NSMutableArray(), idGenere: 0, descrizione: nil, np: 0, image: nil))
+    var cardSecondo = CardLibri(libro: DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "0", annoPubblicazione: nil, idCategorie: NSMutableArray(), idGenere: 0, descrizione: nil, np: 0, image: nil))
     
     /*
      * Dichiarazione e inizializzazione delle due funzioni che avvengono quando si preme il rispettivo pulsante alla quale
@@ -33,6 +33,7 @@ struct ItemOrizzontaliLista: View{
         
     var body: some View {
         //Visualizzazione orizzontale nella quale ci sono le due "Card" che si vedono nella schermata principale
+        
         HStack {
             //Pulsante che prende la forma della prima "Card"
             Button(action: funzionePrimaCard){
@@ -42,13 +43,15 @@ struct ItemOrizzontaliLista: View{
             .buttonStyle(PlainButtonStyle())
             
             Spacer()
-                
-            //Pulsante che prende la forma della seconda "Card"
-            Button(action: funzioneSecondaCard){
-                cardSecondo
+            
+            if cardSecondo.libro.isbn != ""{
+                //Pulsante che prende la forma della seconda "Card"
+                Button(action: funzioneSecondaCard){
+                    cardSecondo
+                }
+                .padding(5)
+                .buttonStyle(PlainButtonStyle())
             }
-            .padding(5)
-            .buttonStyle(PlainButtonStyle())
         }
         .padding(10)
     }

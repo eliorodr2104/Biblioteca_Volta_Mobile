@@ -14,8 +14,10 @@
 		7555FF83242A565900829871 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* ContentView.swift */; };
 		E34696CD29E9E69600D7A17B /* MenuPrestiti.swift in Sources */ = {isa = PBXBuildFile; fileRef = E34696CC29E9E69600D7A17B /* MenuPrestiti.swift */; };
 		E34696CF29E9E70300D7A17B /* ItemPrestitiLista.swift in Sources */ = {isa = PBXBuildFile; fileRef = E34696CE29E9E70300D7A17B /* ItemPrestitiLista.swift */; };
+		E34814602A0A3789004B2560 /* CachedAsyncImage in Frameworks */ = {isa = PBXBuildFile; productRef = E348145F2A0A3789004B2560 /* CachedAsyncImage */; };
 		E387E8F829FC5EBD000E5DF7 /* lingua.json in Resources */ = {isa = PBXBuildFile; fileRef = E387E8F729FC5EBC000E5DF7 /* lingua.json */; };
 		E387E8FA29FC7218000E5DF7 /* Etichetta.swift in Sources */ = {isa = PBXBuildFile; fileRef = E387E8F929FC7218000E5DF7 /* Etichetta.swift */; };
+		E396D0022A0916DC0039C101 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E396D0012A0916DC0039C101 /* Launch Screen.storyboard */; };
 		E3B34D1529FFF76100CEC0C7 /* Informazioni.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3B34D1429FFF76000CEC0C7 /* Informazioni.swift */; };
 		E3C4368B29CB5B3000B4B494 /* CardLibri.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3C4368A29CB5B3000B4B494 /* CardLibri.swift */; };
 		E3C4368D29CB631700B4B494 /* ItemOrizzontaliLista.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3C4368C29CB631700B4B494 /* ItemOrizzontaliLista.swift */; };
@@ -40,6 +42,7 @@
 		E34696CE29E9E70300D7A17B /* ItemPrestitiLista.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemPrestitiLista.swift; sourceTree = "<group>"; };
 		E387E8F729FC5EBC000E5DF7 /* lingua.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = lingua.json; sourceTree = "<group>"; };
 		E387E8F929FC7218000E5DF7 /* Etichetta.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Etichetta.swift; sourceTree = "<group>"; };
+		E396D0012A0916DC0039C101 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		E3B34D1429FFF76000CEC0C7 /* Informazioni.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Informazioni.swift; sourceTree = "<group>"; };
 		E3C4368A29CB5B3000B4B494 /* CardLibri.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardLibri.swift; sourceTree = "<group>"; };
 		E3C4368C29CB631700B4B494 /* ItemOrizzontaliLista.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemOrizzontaliLista.swift; sourceTree = "<group>"; };
@@ -56,6 +59,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3B4E837BE46E95D8A93800F0 /* Pods_Biblioteca.framework in Frameworks */,
+				E34814602A0A3789004B2560 /* CachedAsyncImage in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -73,6 +77,7 @@
 		7555FF72242A565900829871 = {
 			isa = PBXGroup;
 			children = (
+				E396D0012A0916DC0039C101 /* Launch Screen.storyboard */,
 				E387E8F629FC5EBC000E5DF7 /* resources */,
 				7555FF7D242A565900829871 /* Biblioteca */,
 				7555FF7C242A565900829871 /* Products */,
@@ -196,6 +201,9 @@
 			dependencies = (
 			);
 			name = Biblioteca;
+			packageProductDependencies = (
+				E348145F2A0A3789004B2560 /* CachedAsyncImage */,
+			);
 			productName = Biblioteca;
 			productReference = 7555FF7B242A565900829871 /* Biblioteca.app */;
 			productType = "com.apple.product-type.application";
@@ -225,6 +233,9 @@
 				Base,
 			);
 			mainGroup = 7555FF72242A565900829871;
+			packageReferences = (
+				E348145E2A0A3789004B2560 /* XCRemoteSwiftPackageReference "swiftui-cached-async-image" */,
+			);
 			productRefGroup = 7555FF7C242A565900829871 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -241,6 +252,7 @@
 			files = (
 				058557D9273AAEEB004C7B11 /* Preview Assets.xcassets in Resources */,
 				058557BB273AAA24004C7B11 /* Assets.xcassets in Resources */,
+				E396D0022A0916DC0039C101 /* Launch Screen.storyboard in Resources */,
 				E387E8F829FC5EBD000E5DF7 /* lingua.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -435,13 +447,17 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1.0A;
 				DEVELOPMENT_ASSET_PATHS = "\"Biblioteca/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Biblioteca/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.books";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 1.0A;
 				PRODUCT_BUNDLE_IDENTIFIER = orgIdentifier.Biblioteca;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -455,13 +471,17 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1.0A;
 				DEVELOPMENT_ASSET_PATHS = "\"Biblioteca/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Biblioteca/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.books";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 1.0A;
 				PRODUCT_BUNDLE_IDENTIFIER = orgIdentifier.Biblioteca;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -491,6 +511,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		E348145E2A0A3789004B2560 /* XCRemoteSwiftPackageReference "swiftui-cached-async-image" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/lorenzofiamingo/swiftui-cached-async-image";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		E348145F2A0A3789004B2560 /* CachedAsyncImage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E348145E2A0A3789004B2560 /* XCRemoteSwiftPackageReference "swiftui-cached-async-image" */;
+			productName = CachedAsyncImage;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 7555FF73242A565900829871 /* Project object */;
 }

@@ -13,12 +13,20 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 class GestioneJson {
-    suspend fun postLibroServer(libroAdAggiungere: Libro): String {
-        val json = Json { prettyPrint = true }
+    suspend fun postLibroServer(): String {
+        val prova = DatiLibro("1234", "prova", null, "prova", null, "prova", null, arrayListOf(1, 2), 1, null, 10, null)
 
-        val jsonString = json.encodeToString(Libro.serializer(), libroAdAggiungere)
+        try {
+            val json = Json { prettyPrint = true }
 
-        return postLibroJsonServer(jsonString).toString()
+            val jsonString = json.encodeToString(DatiLibro.serializer(), prova)
+
+            return postLibroJsonServer(jsonString).toString()
+        }catch (e: Exception){
+            println(e.message)
+        }
+
+        return ""
     }
 
     suspend fun getTuttiLibri(): ArrayList<DatiLibro>? {
@@ -27,12 +35,13 @@ class GestioneJson {
 
             if (stringHttpJson != "Server timeout connection" && stringHttpJson != ""){
 
-                val json = Json.parseToJsonElement(stringHttpJson ?: "")
+                //val json = Json.parseToJsonElement(stringHttpJson!!)
 
-                Json.decodeFromString<ArrayList<DatiLibro>>(json.toString())
+                Json.decodeFromString<ArrayList<DatiLibro>>( stringHttpJson.toString())
             }else
                 null
         }catch (e: Exception){
+            println(e.message)
             null
         }
     }

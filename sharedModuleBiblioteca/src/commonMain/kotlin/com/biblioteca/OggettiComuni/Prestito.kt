@@ -23,4 +23,6 @@ data class Prestito(
     val dataFine: String?,
     val dataInizio: String?,
     val condizioneIniziale: String?,
-    val condizioneFinale: String?)
+    val condizioneFinale: String?,
+    var attivo: Boolean
+)

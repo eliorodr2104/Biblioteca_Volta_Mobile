@@ -20,7 +20,6 @@ data class CopiaLibro(
     var idCopia: Int,
     var isbn: String,
     var condizioni: String,
-    var inPrestito: Boolean,
     val sezione: String?,
     val scaffale: Int,
     val ripiano: Int,

@@ -11,14 +11,14 @@ import sharedModuleBiblioteca
 
 struct ItemPrestitiLista: View {
     
-    var libro: CopiaLibro
+    var prestitoLibro: Prestito
     
     private var titoloLibro: String
     //private var prestitoLibro: Prestito
     
-    init(libro: CopiaLibro) {
-        self.libro = libro
-        self.titoloLibro = String(libro.isbn)
+    init(prestitoLibro: Prestito) {
+        self.prestitoLibro = prestitoLibro
+        self.titoloLibro = String(prestitoLibro.idCopia)
         //self.prestitoLibro = libro.prestito
     }
     
@@ -52,6 +52,6 @@ struct ItemPrestitiLista: View {
 
 struct ItemPrestitiLista_Previews: PreviewProvider {
     static var previews: some View {
-        ItemPrestitiLista(libro: CopiaLibro(idCopia: 0, isbn: "", condizioni: "", inPrestito: false, sezione: "", scaffale: 0, ripiano: 0, idPrestito: 0))
+        ItemPrestitiLista(prestitoLibro: Prestito(idPrestito: 0, idCopia: 0, idUtente: 0, dataFine: nil, dataInizio: nil, condizioneIniziale: nil, condizioneFinale: nil, attivo: false))
     }
 }
