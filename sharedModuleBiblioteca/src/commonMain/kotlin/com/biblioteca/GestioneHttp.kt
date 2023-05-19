@@ -2,11 +2,21 @@ package com.biblioteca
 
 import com.biblioteca.OggettiComuni.Utente
 
-expect suspend fun getJsonLibro(): String?
+expect suspend fun getLibriCatalogo(indiceCatalogo: String): String?
 expect suspend fun postLibroJsonServer(libro: String?): String?
 
 expect suspend fun getPrestitiLibri(utentePrestito: Utente): String?
 
 expect suspend fun getCopieLibri(isbn: String): String?
 
-expect suspend fun getCategorieLibri(listaIdCategoria: ArrayList<Int>): String?
+expect suspend fun getCategorieLibri(listaIdCategoria: String): String?
+
+expect suspend fun deleteCopiaLibro(idCopia: String): String?
+
+expect suspend fun getCopieLibroIdCopia(idCopia: String): String?
+
+expect suspend fun getLibroIsbn(isbn: String): String?
+
+expect suspend fun getLibroIsbnApi(isbn: String): String?
+
+expect suspend fun postCopiaLibro(copiaLibro: String): String?

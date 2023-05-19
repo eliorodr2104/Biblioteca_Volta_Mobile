@@ -35,9 +35,16 @@ struct MenuLibro: View {
     
     @ObservedObject private(set) var viewModel: ViewModel
     
-    init(datiLibro: DatiLibro) {
+    var index: Binding<Int>
+    var showAnimationSecondary: Binding<Bool>
+    var show: Binding<Bool>
+    
+    init(datiLibro: DatiLibro, index: Binding<Int>, showAnimationSecondary: Binding<Bool>, show: Binding<Bool>) {
         self.datiLibro = datiLibro
         self.viewModel = ViewModel(isbn: datiLibro.isbn, listaCategorie: datiLibro.idCategorie)
+        self.index = index
+        self.showAnimationSecondary = showAnimationSecondary
+        self.show = show
     }
     
     //Variabile di stato booleana
@@ -167,6 +174,7 @@ struct MenuLibro: View {
                 }
             }
             .padding(.top, 20)
+            
         }
     }
 }
@@ -207,8 +215,8 @@ extension MenuLibro {
         @Published var libro: Libro?
         @Published var arrayCategorie = NSMutableArray()
         
-        init(isbn: String, listaCategorie: NSMutableArray) {
-            GestioneJson().getCopieLibro(isbn: isbn) { libro, error in
+        init(isbn: String, listaCategorie: String) {
+            GestioneJson().getCopieLibroDaIsbn(isbn: isbn) { libro, error in
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                     if let libro = libro {
                         self.libro = libro
@@ -219,9 +227,10 @@ extension MenuLibro {
                 }
             }
             
-            GestioneJson().getCategorie(listaIdCategoria: listaCategorie) { arrayCategorie, error in
+            GestioneJson().getCategorieLibro(listaIdCategoria: listaCategorie) { arrayCategorie, error in
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                     if let arrayCategorie = arrayCategorie {
+                                                
                         self.arrayCategorie = arrayCategorie
                         
                     } else {
@@ -237,6 +246,6 @@ extension MenuLibro {
 @available(iOS 15.0, *)
 struct MenuLibro_Previews: PreviewProvider {
     static var previews: some View {
-        MenuLibro(datiLibro: DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "0", annoPubblicazione: nil, idCategorie: NSMutableArray(), idGenere: 0, descrizione: nil, np: 0, image: nil))
+        MenuLibro(datiLibro: DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "0", annoPubblicazione: nil, idCategorie: "", idGenere: 0, descrizione: nil, np: 0, image: nil), index: .constant(0), showAnimationSecondary: .constant(false), show: .constant(false))
     }
 }

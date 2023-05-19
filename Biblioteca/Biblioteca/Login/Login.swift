@@ -46,7 +46,7 @@ struct Login: View {
              * s'è vero apre il menù per telefono, altrimenti apre la visuale per il tablet.
              */
             if screenWidth < 700 {
-                MenuSplit(nomeUtente: "Eliomar", utenteUtilizzo: Utente(idUtente: 0, nome: "", cognome: "", numero: nil, mailAlternativa: "", grado: 0, mail: ""), datiLibro: MenuLibro(datiLibro: DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "", annoPubblicazione: nil, idCategorie: NSMutableArray(), idGenere: 0, descrizione: nil, np: 0, image: nil)))
+                MenuSplit(nomeUtente: "Eliomar", utenteUtilizzo: Utente(idUtente: 0, nome: "", cognome: "", numero: nil, mailAlternativa: "", grado: 0, mail: "", preferiti: nil), datiLibro: MenuLibro(datiLibro: DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "", annoPubblicazione: nil, idCategorie: "", idGenere: 0, descrizione: nil, np: 0, image: nil), index: .constant(0), showAnimationSecondary: .constant(false), show: .constant(false)))
                 
             } else {
                 MenuSplitTablet(viewModel: MenuSplitTablet.ViewModel(), nomeUtente: "Eliomar", salutoUtente: "Ciao")

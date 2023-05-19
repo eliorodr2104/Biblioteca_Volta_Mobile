@@ -72,7 +72,6 @@ func calcolaGiorniRimanenti(_ dateString: String) -> Int {
     return 0
 }
 
-
 struct MenuPrestiti_Previews: PreviewProvider {
     static var previews: some View {
         MenuPrestiti()

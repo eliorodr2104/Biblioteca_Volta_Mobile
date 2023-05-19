@@ -21,7 +21,7 @@
     "version" : 1
   },
   "properties" : {
-    "compression-type" : "gpu-optimized-best",
+    "compression-type" : "lossy",
     "template-rendering-intent" : "template"
   }
 }

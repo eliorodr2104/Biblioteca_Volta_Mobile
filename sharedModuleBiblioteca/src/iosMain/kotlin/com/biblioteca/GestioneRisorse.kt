@@ -7,6 +7,9 @@ import kotlinx.cinterop.ptr
 import kotlinx.cinterop.value
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonPrimitive
 import platform.Foundation.NSBundle
 import platform.Foundation.NSError
 import platform.Foundation.NSString
@@ -49,6 +52,52 @@ actual fun conversioneLinguaLibro(linguaDelLibro: String): String{
 
     return jsonObject[linguaDelLibro].toString()
 
+}
+
+actual fun leggereCondizioniLibro(): ArrayList<String>{
+
+    val bundle: NSBundle = NSBundle.bundleForClass(BundleMarker)
+
+    val name = "condizione_libro.json"
+
+    val (filename, type) = when (val lastPeriodIndex = name.lastIndexOf('.')) {
+        0 -> {
+            null to name.drop(1)
+        }
+        in 1..Int.MAX_VALUE -> {
+            name.take(lastPeriodIndex) to name.drop(lastPeriodIndex + 1)
+        }
+        else -> {
+            name to null
+        }
+    }
+    val path = bundle.pathForResource(filename, type) ?: error(
+        "Couldn't get path of $name (parsed as: ${listOfNotNull(filename,type).joinToString(".")})"
+    )
+
+    val jsonObject = Json.decodeFromString<HashMap<String, String>>(memScoped {
+        val errorPtr = alloc<ObjCObjectVar<NSError?>>()
+
+        NSString.stringWithContentsOfFile(
+            path,
+            encoding = NSUTF8StringEncoding,
+            error = errorPtr.ptr
+        ) ?: run {
+            error("Couldn't load resource: $name. Error: ${errorPtr.value?.localizedDescription} - ${errorPtr.value}")
+        }
+    })
+
+    val arrayList = ArrayList<String>()
+
+    val innerJsonArray = jsonObject["condizione"] as? JsonArray
+    innerJsonArray?.forEach { jsonElement ->
+        val value = (jsonElement as? JsonPrimitive)?.content
+        value?.let {
+            arrayList.add(value)
+        }
+    }
+
+    return arrayList
 }
 
 private class BundleMarker : NSObject() {

@@ -32,7 +32,7 @@ struct MenuSplitTablet: View {
     
     @State var showAnimationSecondary = false
     
-    @State var datiDelLibro = MenuLibro(datiLibro: DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "", annoPubblicazione: nil, idCategorie: NSMutableArray(), idGenere: 0, descrizione: nil, np: 0, image: nil))
+    @State var datiDelLibro = MenuLibro(datiLibro: DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "", annoPubblicazione: nil, idCategorie: "", idGenere: 0, descrizione: nil, np: 0, image: nil), index: .constant(0), showAnimationSecondary: .constant(false), show: .constant(false))
     
     var nomeUtente: String
     var salutoUtente: String
@@ -229,8 +229,6 @@ struct MenuSplitTablet: View {
                 Spacer(minLength: 0)
                 
             }
-            .padding(.top,UIApplication.shared.windows.first?.safeAreaInsets.top)
-            .padding(.bottom,UIApplication.shared.windows.first?.safeAreaInsets.bottom)
             
             //Schermata di visualizzazione principale, la quale  mostra la lista di tutti i libri richiesti dal database
             VStack(spacing: 0){
@@ -277,7 +275,6 @@ struct MenuSplitTablet: View {
                     
                     Spacer(minLength: 0)
                 }
-                .padding(.top,UIApplication.shared.windows.first?.safeAreaInsets.top)
                 .padding(.horizontal, self.showAnimationSecondary ? 15 : 0)
                 
                 //Lettura delle dimensioni dello schermo nel quale si avvia la app
@@ -287,11 +284,12 @@ struct MenuSplitTablet: View {
                     VStack{
                         
                         //Array temp, il quale ha dei dati di prova, che dopo verranno presi da un file JSON
-                        let tempArrayItemVisualizzazione = inizializzaItem(index: $index, CONST_INDEX_LIBRI: CONST_INDEX_LIBRI, datiLibro: $datiDelLibro, showAnimationSecondary: $showAnimationSecondary, libriVisualizzazioneRichiestaJson: viewModel.text as! [DatiLibro])
 
                         //Cambia la visuale dipendendo dall'indice
                         if self.index == 0{
-                            ListaVisualizzazione(listaItemOrizzontale: tempArrayItemVisualizzazione)
+                            /*
+                            ListaVisualizzazione(index: $index, datiLibro: $datiDelLibro, showAnimationSecondary: $showAnimationSecondary)
+                             */
                             
                         } else if self.index == 1{
                             //Libri prestito
@@ -305,7 +303,7 @@ struct MenuSplitTablet: View {
                         }else if self.index == 4{
                             
                         }else{
-                            MenuLibro(datiLibro: datiDelLibro.datiLibro)
+                            MenuLibro(datiLibro: datiDelLibro.datiLibro, index: $index, showAnimationSecondary: $showAnimationSecondary, show: .constant(false))
                                 .background(Color(UIColor.systemBackground))
                             //Spostamento della vista a destra quando si fa clic sul pulsante del menu
                             
@@ -347,7 +345,7 @@ private func inizializzaItem(index: Binding<Int>, CONST_INDEX_LIBRI: Int, datiLi
     
     var arrayTemp = [ItemOrizzontaliLista]()
     
-    var item = ItemOrizzontaliLista(funzionePrimaCard: {}, funzioneSecondaCard: {})
+    var item = ItemOrizzontaliLista(funzionePrimaCard: {}, funzioneSecondaCard: {}, show: .constant(false), ultimoItem: false, getData: PrendiData())
             
     for i in stride(from: 0, to: libriVisualizzazioneRichiestaJson.count, by: 2) {
                 
@@ -357,26 +355,26 @@ private func inizializzaItem(index: Binding<Int>, CONST_INDEX_LIBRI: Int, datiLi
                 cardSecondo: CardLibri(libro: libriVisualizzazioneRichiestaJson[i + 1]),
                 funzionePrimaCard: {
                     index.wrappedValue = CONST_INDEX_LIBRI
-                    datiLibro.wrappedValue = MenuLibro(datiLibro: libriVisualizzazioneRichiestaJson[i])
+                    datiLibro.wrappedValue = MenuLibro(datiLibro: libriVisualizzazioneRichiestaJson[i], index: index, showAnimationSecondary: showAnimationSecondary, show: .constant(false))
                     withAnimation { showAnimationSecondary.wrappedValue.toggle() }
                 },
                 funzioneSecondaCard: {
                     index.wrappedValue = CONST_INDEX_LIBRI
-                    datiLibro.wrappedValue = MenuLibro(datiLibro: libriVisualizzazioneRichiestaJson[i + 1])
+                    datiLibro.wrappedValue = MenuLibro(datiLibro: libriVisualizzazioneRichiestaJson[i + 1], index: index, showAnimationSecondary: showAnimationSecondary, show: .constant(false))
                     withAnimation { showAnimationSecondary.wrappedValue.toggle() }
-                }
+                }, show: .constant(false), ultimoItem: false, getData: PrendiData()
             )
             
         }else if i == libriVisualizzazioneRichiestaJson.count - 1{
             item = ItemOrizzontaliLista(
                 cardPrimi: CardLibri(libro: libriVisualizzazioneRichiestaJson[i]),
-                cardSecondo: CardLibri(libro: DatiLibro(isbn: "", titolo: "prova", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "0", annoPubblicazione: nil, idCategorie: NSMutableArray(), idGenere: 0, descrizione: nil, np: 0, image: nil)),
+                cardSecondo: CardLibri(libro: DatiLibro(isbn: "", titolo: "prova", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "0", annoPubblicazione: nil, idCategorie: "", idGenere: 0, descrizione: nil, np: 0, image: nil)),
                 funzionePrimaCard: {
                     index.wrappedValue = CONST_INDEX_LIBRI
-                    datiLibro.wrappedValue = MenuLibro(datiLibro: libriVisualizzazioneRichiestaJson[i])
+                    datiLibro.wrappedValue = MenuLibro(datiLibro: libriVisualizzazioneRichiestaJson[i], index: index, showAnimationSecondary: showAnimationSecondary, show: .constant(false))
                     withAnimation { showAnimationSecondary.wrappedValue.toggle() }
                 },
-                funzioneSecondaCard: {}
+                funzioneSecondaCard: {}, show: .constant(false), ultimoItem: false, getData: PrendiData()
             )
         }
         
@@ -390,7 +388,7 @@ extension MenuSplitTablet {
     class ViewModel: ObservableObject {
         @Published var text = NSMutableArray()
         init() {
-            GestioneJson().getTuttiLibri { connessione, error in
+            GestioneJson().getPezziDelCatalogo(indiceCatalogo: "") { connessione, error in
                 DispatchQueue.main.async {
                     if let connessione = connessione {
                         self.text = connessione

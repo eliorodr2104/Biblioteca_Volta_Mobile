@@ -27,12 +27,17 @@ struct MenuSplit: View {
     private let CONST_INDEX_LIBRI = 9
     
     @ObservedObject private(set) var viewModel: ViewModel
-        
+    
+    @State var animazioneCatalogo = false
+    
     @State var index = 0
     @State var show: Bool
     @State var showAnimationSecondary: Bool
     
+    @State var indexPrecedente = 0
+    
     @State var datiLibro: MenuLibro
+    @State var datiLibroGestione = DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "", annoPubblicazione: nil, idCategorie: "", idGenere: 0, descrizione: nil, np: 0, image: nil)
 
     private var nomeUtente: String
     var salutoUtente: String
@@ -89,6 +94,8 @@ struct MenuSplit: View {
                     //Pulsante per la visualizzazione del catalogo
                     Button(action: {
                         
+                        self.indexPrecedente = 0
+                        
                         //Indice di riconoscimento azione
                         self.index = 0
                         
@@ -114,6 +121,9 @@ struct MenuSplit: View {
                     
                     //Pulsante per la visualizzazione dei libri che sono in prestito
                     Button(action: {
+                        
+                        self.indexPrecedente = 1
+                        
                         //Indice di riconoscimento azione
                         self.index = 1
                         
@@ -138,6 +148,9 @@ struct MenuSplit: View {
                     
                     //Pulsante per la visualizzazione delle informazioni dell'utente
                     Button(action: {
+                        
+                        self.indexPrecedente = 2
+                        
                         //Indice di riconoscimento azione
                         self.index = 2
                         
@@ -163,6 +176,9 @@ struct MenuSplit: View {
                     
                     //Pulsante per la visualizzazione delle notifiche nell'app
                     Button(action: {
+                        
+                        self.indexPrecedente = 3
+                        
                         //Indice di riconoscimento azione
                         self.index = 3
                         
@@ -188,6 +204,8 @@ struct MenuSplit: View {
                     if utenteUtilizzo.grado > 0 || utenteUtilizzo.grado < 4{
                         //Pulsante per la visualizzazione delle notifiche nell'app
                         Button(action: {
+                            self.indexPrecedente = 5
+                            
                             //Indice di riconoscimento azione
                             self.index = 5
                             
@@ -214,6 +232,9 @@ struct MenuSplit: View {
                         if utenteUtilizzo.grado == 2 || utenteUtilizzo.grado == 3{
                             //Pulsante per la visualizzazione delle notifiche nell'app
                             Button(action: {
+                                
+                                self.indexPrecedente = 6
+                                
                                 //Indice di riconoscimento azione
                                 self.index = 6
                                 
@@ -239,6 +260,9 @@ struct MenuSplit: View {
                             
                             //Pulsante per la visualizzazione delle notifiche nell'app
                             Button(action: {
+                                
+                                self.indexPrecedente = 7
+                                
                                 //Indice di riconoscimento azione
                                 self.index = 7
                                 
@@ -266,6 +290,9 @@ struct MenuSplit: View {
                         if utenteUtilizzo.grado == 3{
                             //Pulsante per la visualizzazione delle notifiche nell'app
                             Button(action: {
+                                
+                                self.indexPrecedente = 8
+                                
                                 //Indice di riconoscimento azione
                                 self.index = 8
                                 
@@ -299,6 +326,9 @@ struct MenuSplit: View {
                     
                     //Pulsante per la visualizzazione delle impostazioni dell'app
                     Button(action: {
+                        
+                        self.indexPrecedente = 4
+                        
                         //Indice di riconoscimento azione
                         self.index = 4
                         
@@ -349,7 +379,7 @@ struct MenuSplit: View {
                             withAnimation{ self.show.toggle() }
                             
                         }else{
-                            self.index = 0
+                            self.index = self.indexPrecedente
                             
                             withAnimation{ self.showAnimationSecondary.toggle() }
                         }
@@ -399,49 +429,135 @@ struct MenuSplit: View {
                     //Visuale verticale nella quale c'è la lista del libri
                     VStack{
                         
-                        //Variabile con l'array di libri dentro il DB
-                        let libriVisualizzazioneRichiestaJson = viewModel.arrayLibri
-                                                                        
-                        //Array con i oggeti ItemOrizzontaliLista inizializzati dal
-                        let tempArrayItemVisualizzazione = inizializzaItem(index: $index, CONST_INDEX_LIBRI: CONST_INDEX_LIBRI, datiLibro: $datiLibro, showAnimationSecondary: $showAnimationSecondary, libriVisualizzazioneRichiestaJson: libriVisualizzazioneRichiestaJson as! [DatiLibro])
-                         
-
                         //Cambia la visuale dipendendo dall'indice
                         if self.index == 0{
-                            ListaVisualizzazione(listaItemOrizzontale: tempArrayItemVisualizzazione)
-                                .allowsHitTesting(self.show ? false : true)
-
+                            ListaVisualizzazione(index: $index, datiLibro: $datiLibro, showAnimationSecondary: $showAnimationSecondary, show: $show)
+                                //.disabled(showAnimationSecondary)
+                                .gesture(
+                                    DragGesture()
+                                        .onEnded { value in
+                                            if abs(value.translation.width) > abs(value.translation.height) {
+                                                // Horizontal movement
+                                                if value.translation.width > 0 {
+                                                    // Scrolling from left to right
+                                                    withAnimation {
+                                                        self.show = true
+                                                    }
+                                                } else {
+                                                    // Scrolling from right to left
+                                                    withAnimation {
+                                                        self.show = false
+                                                    }
+                                                }
+                                            }
+                                        }
+                                )
+                                .offset(x: self.animazioneCatalogo ? UIScreen.main.bounds.width : 0, y: 0)
+                                .onAppear(){
+                                    self.animazioneCatalogo = false
+                                }
+                            
                         } else if self.index == 1{
                             //Libri prestito
                             MenuPrestiti(listaPrestiti: viewModel.arrayPrestiti as! [Prestito])
+                                .gesture(
+                                    DragGesture()
+                                        .onEnded { value in
+                                            if abs(value.translation.width) > abs(value.translation.height) {
+                                                // Horizontal movement
+                                                if value.translation.width > 0 {
+                                                    // Scrolling from left to right
+                                                    withAnimation {
+                                                        self.show = true
+                                                    }
+                                                } else {
+                                                    // Scrolling from right to left
+                                                    withAnimation {
+                                                        self.show = false
+                                                    }
+                                                }
+                                            }
+                                        }
+                                )
                             
                         } else if self.index == 2{
                             //Informazioni()
                             
-                            /*
-                            MenuLibro(datiLibro: DatiLibro(isbn: "84729472912", titolo: "Miao", sottotitolo: "miao sottotitolo", lingua: "it", casaEditrice: "miaone", autore: "0", annoPubblicazione: "2004", idCategorie: NSMutableArray(), idGenere: 0, descrizione: "miao descrizione", np: 0, image: "https://www.pitarresicma.it/wp-content/uploads/2022/12/618T7zo4nL.jpg"))
-                             */
-
-                            
                         } else if self.index == 3{
-                            //Text(viewModel.prova)
                             
                         }else if self.index == 4{
-                            
+
                         }else if self.index == 5{
-                            
+                            GestioneLibri(index: $index, datiLibro: $datiLibroGestione, showAnimationSecondary: $showAnimationSecondary)
+                                .gesture(
+                                    DragGesture()
+                                        .onEnded { value in
+                                            if abs(value.translation.width) > abs(value.translation.height) {
+                                                // Horizontal movement
+                                                if value.translation.width > 0 {
+                                                    // Scrolling from left to right
+                                                    withAnimation {
+                                                        self.show = true
+                                                    }
+                                                } else {
+                                                    // Scrolling from right to left
+                                                    withAnimation {
+                                                        self.show = false
+                                                    }
+                                                }
+                                            }
+                                        }
+                                )
+
                         }else if self.index == 6{
                             
                         }else if self.index == 7{
                             
                         }else if self.index == 8{
                             
-                        }else{
-                            MenuLibro(datiLibro: datiLibro.datiLibro)
+                        }else if self.index == 9{
+                            MenuGestioneLibro(datiLibro: datiLibroGestione)
+                                .offset(x: self.showAnimationSecondary ? 0 : UIScreen.main.bounds.width, y: 0)
+                                .gesture(
+                                    DragGesture()
+                                        .onEnded { value in
+                                            if abs(value.translation.width) > abs(value.translation.height) {
+                                                // Horizontal movement
+                                                if value.translation.width > 0 {
+                                                    // Scrolling from left to right
+                                                    index = 5
+                                                    
+                                                    withAnimation {
+                                                        showAnimationSecondary = false
+                                                        animazioneCatalogo = true
+                                                    }
+                                                }
+                                            }
+                                        }
+                                )
+                            
+                        }else if self.index == 10{
+                            MenuLibro(datiLibro: datiLibro.datiLibro, index: $index, showAnimationSecondary: $showAnimationSecondary, show: $show)
                                 .background(Color(UIColor.systemBackground))
                                 //Spostamento della vista a destra quando si fa clic sul pulsante del menu
-                            
                                 .offset(x: self.showAnimationSecondary ? 0 : UIScreen.main.bounds.width, y: 0)
+                                .gesture(
+                                    DragGesture()
+                                        .onEnded { value in
+                                            if abs(value.translation.width) > abs(value.translation.height) {
+                                                // Horizontal movement
+                                                if value.translation.width > 0 {
+                                                    // Scrolling from left to right
+                                                    index = 0
+                                                    
+                                                    withAnimation {
+                                                        showAnimationSecondary = false
+                                                        animazioneCatalogo = true
+                                                    }
+                                                }
+                                            }
+                                        }
+                                )
                             
                         }
                         
@@ -458,79 +574,20 @@ struct MenuSplit: View {
             .rotationEffect(.init(degrees: self.show ? -5 : 0))
             .shadow(color: Color("ColorePrincipale"), radius: self.show ? 5 : 0)
         }
-        
     }
-}
-
-@available(iOS 15.0, *)
-private func inizializzaItem(index: Binding<Int>, CONST_INDEX_LIBRI: Int, datiLibro: Binding<MenuLibro>, showAnimationSecondary: Binding<Bool>, libriVisualizzazioneRichiestaJson: [DatiLibro]) -> [ItemOrizzontaliLista]{
-    
-    var arrayTemp = [ItemOrizzontaliLista]()
-    
-    var item = ItemOrizzontaliLista(funzionePrimaCard: {}, funzioneSecondaCard: {})
-                    
-    for i in stride(from: 0, to: libriVisualizzazioneRichiestaJson.count, by: 2) {
-                
-        if i < libriVisualizzazioneRichiestaJson.count - 1 && i != libriVisualizzazioneRichiestaJson.count{
-            item = ItemOrizzontaliLista(
-                cardPrimi: CardLibri(libro: libriVisualizzazioneRichiestaJson[i]),
-                cardSecondo: CardLibri(libro: libriVisualizzazioneRichiestaJson[i + 1]),
-                funzionePrimaCard: {
-                    index.wrappedValue = CONST_INDEX_LIBRI
-                    datiLibro.wrappedValue = MenuLibro(datiLibro: libriVisualizzazioneRichiestaJson[i])
-                    withAnimation { showAnimationSecondary.wrappedValue.toggle() }
-                },
-                funzioneSecondaCard: {
-                    index.wrappedValue = CONST_INDEX_LIBRI
-                    datiLibro.wrappedValue = MenuLibro(datiLibro: libriVisualizzazioneRichiestaJson[i + 1])
-                    withAnimation { showAnimationSecondary.wrappedValue.toggle() }
-                }
-            )
-            
-        }else if i == libriVisualizzazioneRichiestaJson.count - 1{
-            item = ItemOrizzontaliLista(
-                cardPrimi: CardLibri(libro: libriVisualizzazioneRichiestaJson[i]),
-                cardSecondo: CardLibri(libro: DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "0", annoPubblicazione: nil, idCategorie: NSMutableArray(), idGenere: 0, descrizione: nil, np: 0, image: nil)),
-                funzionePrimaCard: {
-                    index.wrappedValue = CONST_INDEX_LIBRI
-                    datiLibro.wrappedValue = MenuLibro(datiLibro: libriVisualizzazioneRichiestaJson[i])
-                    withAnimation { showAnimationSecondary.wrappedValue.toggle() }
-                },
-                funzioneSecondaCard: {}
-            )
-        }
-        
-        arrayTemp.append(item)
-
-        
-    }
-        
-    return arrayTemp
 }
 
 @available(iOS 15.0, *)
 extension MenuSplit {
-    class ViewModel: ObservableObject {
-        @Published var arrayLibri = NSMutableArray()
+    class ViewModel: ObservableObject {        
         @Published var arrayPrestiti = NSMutableArray()
         
         @Published var prova = ""
         
         init(utente: Utente) {
-            GestioneJson().getTuttiLibri { connessione, error in
+            GestioneJson().getPrestitiDellUtente(utente: utente){ prestito, errore in
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    if let connessione = connessione {
-                        self.arrayLibri = connessione
-                        
-                    } else {
-                        print(error?.localizedDescription ?? "error")
-                    }
-                }
-            }
-            
-            GestioneJson().getTuttiPrestito(utente: utente){ prestito, errore in
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    if let prestito = prestito {
+                    if let prestito = prestito {                        
                         self.arrayPrestiti = prestito
                         
                     }else {
@@ -540,7 +597,8 @@ extension MenuSplit {
                 
             }
             
-            GestioneJson().postLibroServer(){ libro, errore in
+            /*
+            GestioneJson().postDatiLibro(libroDaCaricare: <#T##DatiLibro#>, ){ libro, errore in
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     if libro != nil {
                         self.prova = libro ?? "CIAO"
@@ -551,6 +609,7 @@ extension MenuSplit {
                 }
                 
             }
+             */
              
         }
     }
@@ -559,7 +618,6 @@ extension MenuSplit {
 @available(iOS 15.0, *)
 struct MenuSplit_Previews: PreviewProvider {
     static var previews: some View {
-        MenuSplit(nomeUtente: "", utenteUtilizzo: Utente(idUtente: 0, nome: "", cognome: "", numero: nil, mailAlternativa: "", grado: 0, mail: ""), datiLibro: MenuLibro(datiLibro: DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "", annoPubblicazione: nil, idCategorie: NSMutableArray(), idGenere: 0, descrizione: nil, np: 0, image: nil)))
+        MenuSplit(nomeUtente: "", utenteUtilizzo: Utente(idUtente: 0, nome: "", cognome: "", numero: nil, mailAlternativa: "", grado: 0, mail: "", preferiti: nil), datiLibro: MenuLibro(datiLibro: DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "", annoPubblicazione: nil, idCategorie: "", idGenere: 0, descrizione: nil, np: 0, image: nil), index: .constant(0), showAnimationSecondary: .constant(false), show: .constant(false)))
     }
 }
-

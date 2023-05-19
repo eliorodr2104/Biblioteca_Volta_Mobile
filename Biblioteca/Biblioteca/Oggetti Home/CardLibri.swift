@@ -92,7 +92,7 @@ extension CardLibri {
         @Published var libro: Libro?
         
         init(isbn: String) {
-            GestioneJson().getCopieLibro(isbn: isbn) { libro, error in
+            GestioneJson().getCopieLibroDaIsbn(isbn: isbn) { libro, error in
                 DispatchQueue.main.async {
                     if let libro = libro {
                         self.libro = libro
@@ -111,7 +111,7 @@ extension CardLibri {
 @available(iOS 15.0, *)
 struct CardLibri_Previews: PreviewProvider {
     static var previews: some View {
-        CardLibri(libro: DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "0", annoPubblicazione: nil, idCategorie: NSMutableArray(), idGenere: 0, descrizione: nil, np: 0, image: nil))
+        CardLibri(libro: DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "0", annoPubblicazione: nil, idCategorie: "", idGenere: 0, descrizione: nil, np: 0, image: nil))
         
     }
 }
