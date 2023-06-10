@@ -130,3 +130,15 @@ actual suspend fun postCopiaLibro(copiaLibro: String): String?{
 actual suspend fun getLibroIsbnApi(isbn: String): String?{
     return null
 }
+
+actual suspend fun getUtenteInstituzionale(email: String): String?{
+    return null
+}
+
+actual suspend fun postUtenti(utente: String): String?{
+    return null
+}
+
+actual suspend fun getFiltroLibri(mappaRicerca: HashMap<String, String>, listaIdCategoria: String): String? {
+    return null
+}

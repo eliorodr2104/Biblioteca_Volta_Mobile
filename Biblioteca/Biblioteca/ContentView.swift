@@ -18,29 +18,9 @@ import sharedModuleBiblioteca
 
 @available(iOS 15.0, *)
 struct ContentView: View {
-	var body: some View {
-        //Login()
         
-        /*
-         * Il codice utilizza il costrutto GeometryReader per ottenere informazioni sulle dimensioni della
-         * vista in cui viene mostrato. In base alla larghezza ottenuta, viene scelto il tipo di menu da
-         * mostrare tra MenuSplit per dimensioni inferiori a 700 e MenuSplitTablet per dimensioni
-         * superiori o uguali a 700.
-         */
-        GeometryReader { geometry in
-            
-            /*
-             * Struttura condizionale che controlla se lo schermo ha lunghezza minore a 700,
-             * s'è vero apre il menù per telefono, altrimenti apre la visuale per il tablet.
-             */
-            if geometry.size.width < 700 {
-                MenuSplit(nomeUtente: "Eliomar", salutoUtente: "Ciao", utenteUtilizzo: Utente(idUtente: 1, nome: "Eliomar", cognome: "Rodriguez", numero: nil, mailAlternativa: "", grado: 3, mail: "eliomaralejandro.rodriguezferrer@volta-alessandria.it", preferiti: nil ), datiLibro: MenuLibro(datiLibro: DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "", annoPubblicazione: nil, idCategorie: "", idGenere: 0, descrizione: nil, np: 0, image: nil), index: .constant(0), showAnimationSecondary: .constant(false), show: .constant(false)))
-                
-            }else{
-                MenuSplitTablet(viewModel: MenuSplitTablet.ViewModel(), nomeUtente: "Eliomar", salutoUtente: "Ciao")
-            }
-        }
-         
+	var body: some View {
+        LoginView()
 	}
 }
 

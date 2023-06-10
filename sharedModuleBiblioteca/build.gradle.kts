@@ -3,6 +3,7 @@ plugins {
     kotlin("native.cocoapods")
     kotlin("plugin.serialization") version "1.8.10"
     id("com.android.library")
+    id("com.google.gms.google-services")
 }
 
 kotlin {

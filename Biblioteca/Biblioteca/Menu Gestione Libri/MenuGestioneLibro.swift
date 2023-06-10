@@ -177,7 +177,7 @@ struct MenuGestioneLibro: View {
                                     .shadow(color: Color("ColorePrincipale") ,radius: 4)
                                 }
                                 .padding(.leading, 40)
-                                .animation(.easeInOut(duration: 0.1)) // Imposta una durata più breve per l'animazione
+                                .animation(.easeInOut(duration: 0.1), value: showAggiuntaCopia) // Imposta una durata più breve per l'animazione
                                 .transition(.move(edge: .trailing))
                             }
                         }

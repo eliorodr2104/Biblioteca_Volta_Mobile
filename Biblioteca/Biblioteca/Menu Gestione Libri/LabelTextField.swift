@@ -13,28 +13,37 @@ struct LabelTextField: View {
     private var labelName: String
     private var textFieldText: String
     private var textState: Binding<String>
+    
+    @State private var avviaAnimazione: Bool
         
     init(labelName: String, textFieldText: String, textState: Binding<String>) {
         self.labelName = labelName
         self.textFieldText = textFieldText
         self.textState = textState
+        
+        self.avviaAnimazione = textState.wrappedValue != ""
     }
     
     var body: some View {
         VStack(alignment: .leading) {
             
-            if textState.wrappedValue != ""{
+            if avviaAnimazione {
                 Text(labelName)
                     .font(.headline)
+                    .bold()
                     .offset(y: 0)
-                    .animation(.easeInOut(duration: 0.1))
+                    .animation(.easeInOut(duration: 0.1), value: avviaAnimazione)
                     .transition(.move(edge: .top))
             }
                 
             TextField(textFieldText, text: textState)
-            //.background(Color(red: 239.0/255.0, green: 243.0/255.0, blue: 244.0/255.0, opacity: 1.0), cornerRadius: 5.0)
+                .onChange(of: textState.wrappedValue) { _ in
+                    withAnimation(.easeInOut(duration: 0.1)) {
+                        avviaAnimazione = textState.wrappedValue != "" ? true : false
+                    }
+                }
+                .font(.subheadline)
         }
-        //.padding(.horizontal, 15)
     }
 }
 

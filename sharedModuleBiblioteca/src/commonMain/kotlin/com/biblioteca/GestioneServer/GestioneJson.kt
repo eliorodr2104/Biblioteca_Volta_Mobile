@@ -9,11 +9,14 @@ import com.biblioteca.deleteCopiaLibro
 import com.biblioteca.getCategorieLibri
 import com.biblioteca.getCopieLibri
 import com.biblioteca.getCopieLibroIdCopia
+import com.biblioteca.getFiltroLibri
 import com.biblioteca.postLibroJsonServer
 import com.biblioteca.getLibriCatalogo
 import com.biblioteca.getLibroIsbn
 import com.biblioteca.getLibroIsbnApi
 import com.biblioteca.getPrestitiLibri
+import com.biblioteca.getUtenteInstituzionale
+import com.biblioteca.postUtenti
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
@@ -176,6 +179,45 @@ class GestioneJson {
         }
     }
 
+    suspend fun getLibroRicerca(ricercaTitoloLibro: String, ricercaCategorieLibro: ArrayList<String>, indiceCatalogo: String): ArrayList<DatiLibro>?{
+        val hashMapRicerca = HashMap<String, String>()
+
+        hashMapRicerca["titolo"] = ricercaTitoloLibro
+
+        if (ricercaCategorieLibro.toString() != "[]") {
+            hashMapRicerca["IDCategorie"] = ricercaCategorieLibro.toString()
+        }
+
+        return try {
+            val stringHttpJson = getFiltroLibri(hashMapRicerca, indiceCatalogo)
+            
+            if (stringHttpJson != "Server timeout connection" && stringHttpJson != ""){
+
+                Json.decodeFromString<ArrayList<DatiLibro>>( stringHttpJson.toString())
+            }else
+                null
+
+        }catch (e: Exception){
+            null
+        }
+    }
+
+    suspend fun getUtenteEmail(email: String): Utente?{
+        val stringHttpJson = getUtenteInstituzionale(email)
+
+        return try {
+            if (stringHttpJson != "Illegal operation on empty result set." && stringHttpJson != ""){
+                val json = Json.parseToJsonElement(stringHttpJson ?: "")
+                
+                Json.decodeFromString<Utente>(json.toString())
+            }else
+                null
+
+        }catch (e: Exception){
+            null
+        }
+    }
+
     /*******************************/
     /******       POST        ******/
     /*******************************/
@@ -209,6 +251,22 @@ class GestioneJson {
             val jsonString = json.encodeToString(CopiaLibro.serializer(), copiaDaCaricare)
 
             com.biblioteca.postCopiaLibro(jsonString).toString()
+        }catch (e: Exception){
+            "Failed Load" //Da prevenire nella grafica come messaggio di errore
+        }
+    }
+
+    //POST PER CARICARE I OGGETTI Utente
+
+    suspend fun postUtente(utenteDaCaricare: Utente): String {
+        //val prova = DatiLibro("1234", "prova", null, "prova", null, "prova", null, "1, 2", 1, null, 10, null)
+
+        return try {
+            val json = Json { prettyPrint = true }
+
+            val jsonString = json.encodeToString(Utente.serializer(), utenteDaCaricare)
+
+            postUtenti(jsonString).toString()
         }catch (e: Exception){
             "Failed Load" //Da prevenire nella grafica come messaggio di errore
         }

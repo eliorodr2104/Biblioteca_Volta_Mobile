@@ -20,12 +20,11 @@
 import SwiftUI
 import sharedModuleBiblioteca
 
+import CachedAsyncImage
+
 @available(iOS 15.0, *)
 struct MenuSplit: View {
-    
-    //Variabile statica e privata con l'indice per i libri
-    private let CONST_INDEX_LIBRI = 9
-    
+        
     @ObservedObject private(set) var viewModel: ViewModel
     
     @State var animazioneCatalogo = false
@@ -40,11 +39,14 @@ struct MenuSplit: View {
     @State var datiLibroGestione = DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "", annoPubblicazione: nil, idCategorie: "", idGenere: 0, descrizione: nil, np: 0, image: nil)
 
     private var nomeUtente: String
-    var salutoUtente: String
+    private var salutoUtente: String
     
     private var utenteUtilizzo: Utente
     
-    init(index: Int = 0, show: Bool = false, showAnimationSecondary: Bool = false, nomeUtente: String, salutoUtente: String = "Bentornato", utenteUtilizzo: Utente, datiLibro: MenuLibro) {
+    private var imgUtente: String
+        
+    init(index: Int = 0, show: Bool = false, showAnimationSecondary: Bool = false, nomeUtente: String, salutoUtente: String = "Bentornato", utenteUtilizzo: Utente, datiLibro: MenuLibro, imgUtente: String) {
+        
         self.viewModel = ViewModel(utente: utenteUtilizzo)
         self.index = index
         self.show = show
@@ -53,6 +55,7 @@ struct MenuSplit: View {
         self.salutoUtente = salutoUtente
         self.utenteUtilizzo = utenteUtilizzo
         self.datiLibro = datiLibro
+        self.imgUtente = imgUtente
     }
     
     
@@ -63,303 +66,305 @@ struct MenuSplit: View {
              * controllata dalla variabile di stato "showAnimationSecondary", la quale quando viene modificata aggiorna la grafica
              * del programma inizialize, così mostrando i pulsanti di scelta.
              */
-            HStack{
-                VStack(alignment: .leading, spacing: 10) {
-                    
-                    //Immagine Profilo da mettere quando avrò l'icona del profilo
-                    VStack(alignment: .center){
-                        ZStack{
-                            RoundedRectangle(cornerRadius: 100)
-                                .fill(.white)
-                            
-                            Image(systemName: "xmark")
-                                .cornerRadius(100)
-                        }
-                        .frame(width: 50, height: 50)
-                        
-                        
-                        Text(salutoUtente)
-                            .font(.title)
-                            .fontWeight(.bold)
-                            .foregroundColor(.primary)
-                            .padding(.top, 5)
-                        
-                        Text(nomeUtente)
-                            .fontWeight(.bold)
-                            .font(.title)
-                            .foregroundColor(.primary)
-                    }
-                    .padding(.leading, 25)
-                                        
-                    //Pulsante per la visualizzazione del catalogo
-                    Button(action: {
-                        
-                        self.indexPrecedente = 0
-                        
-                        //Indice di riconoscimento azione
-                        self.index = 0
-                        
-                        //Fa lo switch della variabile di stato "show"
-                        withAnimation{ self.show.toggle() }
-                    }) {
-                        HStack(spacing: 25){
-                            Image("catalogue_icon")
-                                .foregroundColor(self.index == 0 ? Color("ColorePrincipale") : Color.primary)
-                                .frame(width: 5, height: 5)
+            
+            GeometryReader{ geometry in
+                HStack{
+                    VStack(alignment: .leading, spacing: 10) {
+                        //Immagine Profilo da mettere quando avrò l'icona del profilo
+                        VStack(alignment: .center){
+                            CachedAsyncImage(url: URL(string: imgUtente)){ image in
+                                image.resizable(resizingMode: .stretch)
                                 
+                            } placeholder: {
+                                ProgressView()
+                            }
+                            .frame(width: 70, height: 70)
+                            .cornerRadius(100)
+                            .padding(.bottom, -10)
                             
-                            Text("Catalogo")
-                                .foregroundColor(self.index == 0 ? Color("ColorePrincipale") : Color.primary)
+                            Text(salutoUtente)
+                                .font(.title)
+                                .foregroundColor(.primary)
                             
+                            Text(nomeUtente)
+                                .font(.title)
+                                .foregroundColor(.primary)
                         }
-                        .padding(.vertical, 10)
-                        .padding(.horizontal)
-                        .background(self.index == 0 ? Color("ColorePrincipale").opacity(0.2) : Color.clear)
-                        .cornerRadius(10)
-                    }
-                    .padding(.top,20)
-                    
-                    //Pulsante per la visualizzazione dei libri che sono in prestito
-                    Button(action: {
-                        
-                        self.indexPrecedente = 1
-                        
-                        //Indice di riconoscimento azione
-                        self.index = 1
-                        
-                        //Fa lo switch della variabile di stato "show"
-                        withAnimation{ self.show.toggle() }
-                        
-                    }) {
-                        HStack(spacing: 25){
-                            Image("libri_prestito")
-                                .foregroundColor(self.index == 1 ? Color("ColorePrincipale") : Color.primary)
-                                .frame(width: 5, height: 5)
-                            
-                            Text("Libri Prestito")
-                                .foregroundColor(self.index == 1 ? Color("ColorePrincipale") : Color.primary)
-                            
-                        }
-                        .padding(.vertical, 10)
-                        .padding(.horizontal)
-                        .background(self.index == 1 ? Color("ColorePrincipale").opacity(0.2) : Color.clear)
-                        .cornerRadius(10)
-                    }
-                    
-                    //Pulsante per la visualizzazione delle informazioni dell'utente
-                    Button(action: {
-                        
-                        self.indexPrecedente = 2
-                        
-                        //Indice di riconoscimento azione
-                        self.index = 2
-                        
-                        //Fa lo switch della variabile di stato "show"
-                        withAnimation{ self.show.toggle() }
-                        
-                    }) {
-                        HStack(spacing: 25){
-                            Image("information_icon")
-                                .foregroundColor(self.index == 2 ? Color("ColorePrincipale") : Color.primary)
-                                .frame(width: 5, height: 5)
-                            
-                            
-                            Text("Informazioni")
-                                .foregroundColor(self.index == 2 ? Color("ColorePrincipale") : Color.primary)
-                            
-                        }
-                        .padding(.vertical, 10)
-                        .padding(.horizontal)
-                        .background(self.index == 2 ? Color("ColorePrincipale").opacity(0.2) : Color.clear)
-                        .cornerRadius(10)
-                    }
-                    
-                    //Pulsante per la visualizzazione delle notifiche nell'app
-                    Button(action: {
-                        
-                        self.indexPrecedente = 3
-                        
-                        //Indice di riconoscimento azione
-                        self.index = 3
-                        
-                        //Fa lo switch della variabile di stato "show"
-                        withAnimation{ self.show.toggle() }
-                        
-                    }) {
-                        HStack(spacing: 25){
-                            Image("notification_icon")
-                                .foregroundColor(self.index == 3 ? Color("ColorePrincipale") : Color.primary)
-                                .frame(width: 5, height: 5)
-                            
-                            Text("Notifiche App")
-                                .foregroundColor(self.index == 3 ? Color("ColorePrincipale") : Color.primary)
-                            
-                        }
-                        .padding(.vertical, 10)
-                        .padding(.horizontal)
-                        .background(self.index == 3 ? Color("ColorePrincipale").opacity(0.2) : Color.clear)
-                        .cornerRadius(10)
-                    }
-                    
-                    if utenteUtilizzo.grado > 0 || utenteUtilizzo.grado < 4{
-                        //Pulsante per la visualizzazione delle notifiche nell'app
+                        .padding(.leading, 25)
+                        .padding(.top, geometry.size.width > 750 && geometry.size.height > 1334 ? 10 : 5)
+                                            
+                        //Pulsante per la visualizzazione del catalogo
                         Button(action: {
-                            self.indexPrecedente = 5
+                            
+                            self.indexPrecedente = 0
                             
                             //Indice di riconoscimento azione
-                            self.index = 5
+                            self.index = 0
+                            
+                            //Fa lo switch della variabile di stato "show"
+                            withAnimation{ self.show.toggle() }
+                        }) {
+                            HStack(spacing: 25){
+                                Image("catalogue_icon")
+                                    .foregroundColor(self.index == 0 ? Color("ColorePrincipale") : Color.primary)
+                                    .frame(width: 5, height: 5)
+                                    
+                                
+                                Text("Catalogo")
+                                    .foregroundColor(self.index == 0 ? Color("ColorePrincipale") : Color.primary)
+                                
+                            }
+                            .padding(.vertical, 10)
+                            .padding(.horizontal)
+                            .background(self.index == 0 ? Color("ColorePrincipale").opacity(0.2) : Color.clear)
+                            .cornerRadius(10)
+                        }
+                        .padding(.top, geometry.size.width > 750 && geometry.size.height > 1334 ? 10 : 5)
+                        
+                        //Pulsante per la visualizzazione dei libri che sono in prestito
+                        Button(action: {
+                            
+                            self.indexPrecedente = 1
+                            
+                            //Indice di riconoscimento azione
+                            self.index = 1
                             
                             //Fa lo switch della variabile di stato "show"
                             withAnimation{ self.show.toggle() }
                             
                         }) {
                             HStack(spacing: 25){
-                                Image("bookManagment_icon")
-                                    .foregroundColor(self.index == 5 ? Color("ColorePrincipale") : Color.primary)
+                                Image("libri_prestito")
+                                    .foregroundColor(self.index == 1 ? Color("ColorePrincipale") : Color.primary)
                                     .frame(width: 5, height: 5)
                                 
-                                Text("Gestione Libri")
-                                    .foregroundColor(self.index == 5 ? Color("ColorePrincipale") : Color.primary)
+                                Text("Libri Prestito")
+                                    .foregroundColor(self.index == 1 ? Color("ColorePrincipale") : Color.primary)
                                 
                             }
                             .padding(.vertical, 10)
                             .padding(.horizontal)
-                            .background(self.index == 5 ? Color("ColorePrincipale").opacity(0.2) : Color.clear)
+                            .background(self.index == 1 ? Color("ColorePrincipale").opacity(0.2) : Color.clear)
+                            .cornerRadius(10)
+                        }
+                        
+                        //Pulsante per la visualizzazione delle informazioni dell'utente
+                        Button(action: {
+                            
+                            self.indexPrecedente = 2
+                            
+                            //Indice di riconoscimento azione
+                            self.index = 2
+                            
+                            //Fa lo switch della variabile di stato "show"
+                            withAnimation{ self.show.toggle() }
+                            
+                        }) {
+                            HStack(spacing: 25){
+                                Image("information_icon")
+                                    .foregroundColor(self.index == 2 ? Color("ColorePrincipale") : Color.primary)
+                                    .frame(width: 5, height: 5)
+                                
+                                
+                                Text("Informazioni")
+                                    .foregroundColor(self.index == 2 ? Color("ColorePrincipale") : Color.primary)
+                                
+                            }
+                            .padding(.vertical, 10)
+                            .padding(.horizontal)
+                            .background(self.index == 2 ? Color("ColorePrincipale").opacity(0.2) : Color.clear)
+                            .cornerRadius(10)
+                        }
+                        
+                        //Pulsante per la visualizzazione delle notifiche nell'app
+                        Button(action: {
+                            
+                            self.indexPrecedente = 3
+                            
+                            //Indice di riconoscimento azione
+                            self.index = 3
+                            
+                            //Fa lo switch della variabile di stato "show"
+                            withAnimation{ self.show.toggle() }
+                            
+                        }) {
+                            HStack(spacing: 25){
+                                Image("notification_icon")
+                                    .foregroundColor(self.index == 3 ? Color("ColorePrincipale") : Color.primary)
+                                    .frame(width: 5, height: 5)
+                                
+                                Text("Notifiche App")
+                                    .foregroundColor(self.index == 3 ? Color("ColorePrincipale") : Color.primary)
+                                
+                            }
+                            .padding(.vertical, 10)
+                            .padding(.horizontal)
+                            .background(self.index == 3 ? Color("ColorePrincipale").opacity(0.2) : Color.clear)
+                            .cornerRadius(10)
+                        }
+                        
+                        if utenteUtilizzo.grado > 0 && utenteUtilizzo.grado < 4{
+                            //Pulsante per la visualizzazione delle notifiche nell'app
+                            Button(action: {
+                                self.indexPrecedente = 5
+                                
+                                //Indice di riconoscimento azione
+                                self.index = 5
+                                
+                                //Fa lo switch della variabile di stato "show"
+                                withAnimation{ self.show.toggle() }
+                                
+                            }) {
+                                HStack(spacing: 25){
+                                    Image("bookManagment_icon")
+                                        .foregroundColor(self.index == 5 ? Color("ColorePrincipale") : Color.primary)
+                                        .frame(width: 5, height: 5)
+                                    
+                                    Text("Gestione Libri")
+                                        .foregroundColor(self.index == 5 ? Color("ColorePrincipale") : Color.primary)
+                                    
+                                }
+                                .padding(.vertical, 10)
+                                .padding(.horizontal)
+                                .background(self.index == 5 ? Color("ColorePrincipale").opacity(0.2) : Color.clear)
+                                .cornerRadius(10)
+                                
+                            }
+                            
+                            if utenteUtilizzo.grado == 2 || utenteUtilizzo.grado == 3{
+                                //Pulsante per la visualizzazione delle notifiche nell'app
+                                Button(action: {
+                                    
+                                    self.indexPrecedente = 6
+                                    
+                                    //Indice di riconoscimento azione
+                                    self.index = 6
+                                    
+                                    //Fa lo switch della variabile di stato "show"
+                                    withAnimation{ self.show.toggle() }
+                                    
+                                }) {
+                                    HStack(spacing: 25){
+                                        Image("loansManagment_icon")
+                                            .foregroundColor(self.index == 6 ? Color("ColorePrincipale") : Color.primary)
+                                            .frame(width: 5, height: 5)
+                                        
+                                        Text("Gestione Prestiti")
+                                            .foregroundColor(self.index == 6 ? Color("ColorePrincipale") : Color.primary)
+                                        
+                                    }
+                                    .padding(.vertical, 10)
+                                    .padding(.horizontal)
+                                    .background(self.index == 6 ? Color("ColorePrincipale").opacity(0.2) : Color.clear)
+                                    .cornerRadius(10)
+                                    
+                                }
+                                
+                                //Pulsante per la visualizzazione delle notifiche nell'app
+                                Button(action: {
+                                    
+                                    self.indexPrecedente = 7
+                                    
+                                    //Indice di riconoscimento azione
+                                    self.index = 7
+                                    
+                                    //Fa lo switch della variabile di stato "show"
+                                    withAnimation{ self.show.toggle() }
+                                    
+                                }) {
+                                    HStack(spacing: 25){
+                                        Image("analytics_icon")
+                                            .foregroundColor(self.index == 7 ? Color("ColorePrincipale") : Color.primary)
+                                            .frame(width: 5, height: 5)
+                                        
+                                        Text("Statistiche")
+                                            .foregroundColor(self.index == 7 ? Color("ColorePrincipale") : Color.primary)
+                                        
+                                    }
+                                    .padding(.vertical, 10)
+                                    .padding(.horizontal)
+                                    .background(self.index == 7 ? Color("ColorePrincipale").opacity(0.2) : Color.clear)
+                                    .cornerRadius(10)
+                                    
+                                }
+                            }
+                            
+                            if utenteUtilizzo.grado == 3{
+                                //Pulsante per la visualizzazione delle notifiche nell'app
+                                Button(action: {
+                                    
+                                    self.indexPrecedente = 8
+                                    
+                                    //Indice di riconoscimento azione
+                                    self.index = 8
+                                    
+                                    //Fa lo switch della variabile di stato "show"
+                                    withAnimation{ self.show.toggle() }
+                                    
+                                }) {
+                                    HStack(spacing: 25){
+                                        Image("developer_icon")
+                                            .foregroundColor(self.index == 8 ? Color("ColorePrincipale") : Color.primary)
+                                            .frame(width: 5, height: 5)
+                                        
+                                        Text("Debug")
+                                            .foregroundColor(self.index == 8 ? Color("ColorePrincipale") : Color.primary)
+                                        
+                                    }
+                                    .padding(.vertical, 10)
+                                    .padding(.horizontal)
+                                    .background(self.index == 8 ? Color("ColorePrincipale").opacity(0.2) : Color.clear)
+                                    .cornerRadius(10)
+                                    
+                                }
+                            }
+                        }
+                        
+                        
+                        Divider()
+                            .frame(width: 150, height: 1)
+                            .background(Color.white)
+                            .padding(.vertical, geometry.size.width > 750 && geometry.size.height > 1334 ? (utenteUtilizzo.grado > 0 && utenteUtilizzo.grado < 4 ? 15 : 30) : (utenteUtilizzo.grado > 0 && utenteUtilizzo.grado < 4 ? 1.25 : 15))
+                                                    
+                        //Pulsante per la visualizzazione delle impostazioni dell'app
+                        Button(action: {
+                            
+                            self.indexPrecedente = 4
+                            
+                            //Indice di riconoscimento azione
+                            self.index = 4
+                            
+                            //Fa lo switch della variabile di stato "show"
+                            withAnimation{ self.show.toggle() }
+                            
+                        }) {
+                            HStack(spacing: 25){
+                                Image("settings_icon")
+                                    .foregroundColor(self.index == 4 ? Color("ColorePrincipale") : Color.primary)
+                                    .frame(width: 5, height: 5)
+                                
+                                Text("Impostazioni")
+                                    .foregroundColor(self.index == 4 ? Color("ColorePrincipale") : Color.primary)
+                                
+                            }
+                            .padding(.vertical, 10)
+                            .padding(.horizontal)
+                            .background(self.index == 4 ? Color("ColorePrincipale").opacity(0.2) : Color.clear)
                             .cornerRadius(10)
                             
                         }
-                        
-                        if utenteUtilizzo.grado == 2 || utenteUtilizzo.grado == 3{
-                            //Pulsante per la visualizzazione delle notifiche nell'app
-                            Button(action: {
-                                
-                                self.indexPrecedente = 6
-                                
-                                //Indice di riconoscimento azione
-                                self.index = 6
-                                
-                                //Fa lo switch della variabile di stato "show"
-                                withAnimation{ self.show.toggle() }
-                                
-                            }) {
-                                HStack(spacing: 25){
-                                    Image("loansManagment_icon")
-                                        .foregroundColor(self.index == 6 ? Color("ColorePrincipale") : Color.primary)
-                                        .frame(width: 5, height: 5)
-                                    
-                                    Text("Gestione Prestiti")
-                                        .foregroundColor(self.index == 6 ? Color("ColorePrincipale") : Color.primary)
-                                    
-                                }
-                                .padding(.vertical, 10)
-                                .padding(.horizontal)
-                                .background(self.index == 6 ? Color("ColorePrincipale").opacity(0.2) : Color.clear)
-                                .cornerRadius(10)
-                                
-                            }
-                            
-                            //Pulsante per la visualizzazione delle notifiche nell'app
-                            Button(action: {
-                                
-                                self.indexPrecedente = 7
-                                
-                                //Indice di riconoscimento azione
-                                self.index = 7
-                                
-                                //Fa lo switch della variabile di stato "show"
-                                withAnimation{ self.show.toggle() }
-                                
-                            }) {
-                                HStack(spacing: 25){
-                                    Image("analytics_icon")
-                                        .foregroundColor(self.index == 7 ? Color("ColorePrincipale") : Color.primary)
-                                        .frame(width: 5, height: 5)
-                                    
-                                    Text("Statistiche")
-                                        .foregroundColor(self.index == 7 ? Color("ColorePrincipale") : Color.primary)
-                                    
-                                }
-                                .padding(.vertical, 10)
-                                .padding(.horizontal)
-                                .background(self.index == 7 ? Color("ColorePrincipale").opacity(0.2) : Color.clear)
-                                .cornerRadius(10)
-                                
-                            }
-                        }
-                        
-                        if utenteUtilizzo.grado == 3{
-                            //Pulsante per la visualizzazione delle notifiche nell'app
-                            Button(action: {
-                                
-                                self.indexPrecedente = 8
-                                
-                                //Indice di riconoscimento azione
-                                self.index = 8
-                                
-                                //Fa lo switch della variabile di stato "show"
-                                withAnimation{ self.show.toggle() }
-                                
-                            }) {
-                                HStack(spacing: 25){
-                                    Image("developer_icon")
-                                        .foregroundColor(self.index == 8 ? Color("ColorePrincipale") : Color.primary)
-                                        .frame(width: 5, height: 5)
-                                    
-                                    Text("Debug")
-                                        .foregroundColor(self.index == 8 ? Color("ColorePrincipale") : Color.primary)
-                                    
-                                }
-                                .padding(.vertical, 10)
-                                .padding(.horizontal)
-                                .background(self.index == 8 ? Color("ColorePrincipale").opacity(0.2) : Color.clear)
-                                .cornerRadius(10)
-                                
-                            }
-                        }
-                    }
-                    
-                    
-                    Divider()
-                        .frame(width: 150, height: 1)
-                        .background(Color.white)
-                        .padding(.vertical, utenteUtilizzo.grado > 0 && utenteUtilizzo.grado < 4 ? 15 : 30)
-                    
-                    //Pulsante per la visualizzazione delle impostazioni dell'app
-                    Button(action: {
-                        
-                        self.indexPrecedente = 4
-                        
-                        //Indice di riconoscimento azione
-                        self.index = 4
-                        
-                        //Fa lo switch della variabile di stato "show"
-                        withAnimation{ self.show.toggle() }
-                        
-                    }) {
-                        HStack(spacing: 25){
-                            Image("settings_icon")
-                                .foregroundColor(self.index == 4 ? Color("ColorePrincipale") : Color.primary)
-                                .frame(width: 5, height: 5)
-                            
-                            Text("Impostazioni")
-                                .foregroundColor(self.index == 4 ? Color("ColorePrincipale") : Color.primary)
-                            
-                        }
-                        .padding(.vertical, 10)
-                        .padding(.horizontal)
-                        .background(self.index == 4 ? Color("ColorePrincipale").opacity(0.2) : Color.clear)
-                        .cornerRadius(10)
+                        Spacer(minLength: 0)
                         
                     }
+                    .padding(.top,25)
+                    .padding(.horizontal,20)
+                    
                     Spacer(minLength: 0)
                     
                 }
-                .padding(.top,25)
-                .padding(.horizontal,20)
-                
-                Spacer(minLength: 0)
-                
             }
+            
+            
             
             //Schermata di visualizzazione principale, la quale  mostra la lista di tutti i libri richiesti dal database
             VStack(spacing: 0){
@@ -405,19 +410,58 @@ struct MenuSplit: View {
                         
                     }
                     
-                    //Cambia il testo del pulsante dipendendo dall'indice che c'è nel momento del controllo
-                    Text(self.index == 0 ? "Catalogo" :
-                            (self.index == 1 ? "Libri Prestito" :
-                                (self.index == 2 ? "Informazioni" :
-                                    (self.index == 3 ? "Notifiche App" :
-                                        (self.index == 4 ? "Impostazioni" :
-                                            (self.index == 5 ? "Gestione Libri" :
-                                                (self.index == 6 ? "Gestione Prestiti" :
-                                                    (self.index == 7 ? "Statistiche" :
-                                                        (self.index == 8 ? "Debug" : "Dati Libro")))))))))
-                        .font(.title)
-                        .foregroundColor(Color.primary.opacity(0.6))
+                    switch self.index {
+                        case 0:
+                            Text("Catalogo")
+                            .font(.title)
+                            .foregroundColor(Color.primary.opacity(0.6))
                         
+                        case 1:
+                            Text("Libri Prestito")
+                                .font(.title)
+                                .foregroundColor(Color.primary.opacity(0.6))
+                        
+                        case 2:
+                            Text("Informazioni")
+                                .font(.title)
+                                .foregroundColor(Color.primary.opacity(0.6))
+                    
+                        case 3:
+                            Text("Notifiche App")
+                                .font(.title)
+                                .foregroundColor(Color.primary.opacity(0.6))
+                    
+                        case 4:
+                            Text("Impostazioni")
+                                .font(.title)
+                                .foregroundColor(Color.primary.opacity(0.6))
+                    
+                        case 5:
+                            Text("Gestione Libri")
+                                .font(.title)
+                                .foregroundColor(Color.primary.opacity(0.6))
+                        
+                        case 6:
+                            Text("Gestione Prestiti")
+                                .font(.title)
+                                .foregroundColor(Color.primary.opacity(0.6))
+                                                
+                        case 7:
+                            Text("Statistiche")
+                                .font(.title)
+                                .foregroundColor(Color.primary.opacity(0.6))
+                                            
+                        case 8:
+                        Text("Debug")
+                            .font(.title)
+                            .foregroundColor(Color.primary.opacity(0.6))
+                                            
+                        default:
+                            Text("Dati Libro")
+                                .font(.title)
+                                .foregroundColor(Color.primary.opacity(0.6))
+                        }
+                    
                     Spacer(minLength: 0)
                     
                 }
@@ -442,19 +486,24 @@ struct MenuSplit: View {
                                                     // Scrolling from left to right
                                                     withAnimation {
                                                         self.show = true
+                                                        
                                                     }
                                                 } else {
                                                     // Scrolling from right to left
                                                     withAnimation {
                                                         self.show = false
+                                                        
                                                     }
                                                 }
                                             }
                                         }
                                 )
-                                .offset(x: self.animazioneCatalogo ? UIScreen.main.bounds.width : 0, y: 0)
+                                //.offset(x: self.animazioneCatalogo ? UIScreen.main.bounds.width : 0, y: 0)
+                                .transition(AnyTransition.offset(x: self.animazioneCatalogo ? UIScreen.main.bounds.width : 0, y: 0))
                                 .onAppear(){
-                                    self.animazioneCatalogo = false
+                                    withAnimation(.easeInOut(duration: 1.0)) {
+                                        self.animazioneCatalogo = false
+                                    }
                                 }
                             
                         } else if self.index == 1{
@@ -524,10 +573,11 @@ struct MenuSplit: View {
                                             if abs(value.translation.width) > abs(value.translation.height) {
                                                 // Horizontal movement
                                                 if value.translation.width > 0 {
-                                                    // Scrolling from left to right
-                                                    index = 5
                                                     
                                                     withAnimation {
+                                                        // Scrolling from left to right
+                                                        index = 5
+                                                        
                                                         showAnimationSecondary = false
                                                         animazioneCatalogo = true
                                                     }
@@ -581,9 +631,7 @@ struct MenuSplit: View {
 extension MenuSplit {
     class ViewModel: ObservableObject {        
         @Published var arrayPrestiti = NSMutableArray()
-        
-        @Published var prova = ""
-        
+                
         init(utente: Utente) {
             GestioneJson().getPrestitiDellUtente(utente: utente){ prestito, errore in
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -596,21 +644,6 @@ extension MenuSplit {
                 }
                 
             }
-            
-            /*
-            GestioneJson().postDatiLibro(libroDaCaricare: <#T##DatiLibro#>, ){ libro, errore in
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    if libro != nil {
-                        self.prova = libro ?? "CIAO"
-                        
-                    }else {
-                        //print(errore?.localizedDescription ?? "error")
-                    }
-                }
-                
-            }
-             */
-             
         }
     }
 }
@@ -618,6 +651,6 @@ extension MenuSplit {
 @available(iOS 15.0, *)
 struct MenuSplit_Previews: PreviewProvider {
     static var previews: some View {
-        MenuSplit(nomeUtente: "", utenteUtilizzo: Utente(idUtente: 0, nome: "", cognome: "", numero: nil, mailAlternativa: "", grado: 0, mail: "", preferiti: nil), datiLibro: MenuLibro(datiLibro: DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "", annoPubblicazione: nil, idCategorie: "", idGenere: 0, descrizione: nil, np: 0, image: nil), index: .constant(0), showAnimationSecondary: .constant(false), show: .constant(false)))
+        MenuSplit(nomeUtente: "", utenteUtilizzo: Utente(idUtente: 0, nome: "", cognome: "", numero: nil, mailAlternativa: "", grado: 0, mail: "", preferiti: nil), datiLibro: MenuLibro(datiLibro: DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "", annoPubblicazione: nil, idCategorie: "", idGenere: 0, descrizione: nil, np: 0, image: nil), index: .constant(0), showAnimationSecondary: .constant(false), show: .constant(false)), imgUtente: "")
     }
 }

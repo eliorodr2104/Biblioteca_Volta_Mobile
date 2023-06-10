@@ -110,6 +110,25 @@ actual suspend fun getCopieLibri(isbn: String): String?{
     }
 }
 
+//GET OGGETTO Libro CON DENTRO LE COPIE
+
+actual suspend fun getFiltroLibri(mappaRicerca: HashMap<String, String>, listaIdCategoria: String): String? {
+    return try {
+
+        val libri = client.get("http://192.168.20.228:8080/filtra/$mappaRicerca/$listaIdCategoria")
+
+        //Controllo per la risposta giusta del server
+        if (libri.status.value in 200..299)
+            libri.readBytes().decodeToString()
+
+        else
+            null
+
+    }catch (s: Exception){
+        "Server timeout connection"
+    }
+}
+
 //GET OGGETTO Prestito
 
 actual suspend fun getPrestitiLibri(utentePrestito: Utente): String?{
@@ -146,9 +165,28 @@ actual suspend fun getCategorieLibri(listaIdCategoria: String): String?{
     }
 }
 
+//GET LIBRO DA UN ISBN
+
 actual suspend fun getLibroIsbnApi(isbn: String): String?{
     return try {
         val prestitiLibri = client.get("http://192.168.20.228:8080/API/$isbn")
+
+        //Controllo per la risposta giusta del server
+        if (prestitiLibri.status.value in 200..299)
+            prestitiLibri.readBytes().decodeToString()
+
+        else
+            null
+
+    }catch (s: Exception){
+        "Server timeout connection"
+    }
+}
+
+//GET UTENTE DA MAIL INSTITUZIONALE
+actual suspend fun getUtenteInstituzionale(email: String): String?{
+    return try {
+        val prestitiLibri = client.get("http://192.168.20.228:8080/utenti/$email")
 
         //Controllo per la risposta giusta del server
         if (prestitiLibri.status.value in 200..299)
@@ -195,6 +233,18 @@ actual suspend fun postCopiaLibro(copiaLibro: String): String?{
     return postLibro.readBytes().decodeToString()
 }
 
+//POST PER CARICARE I OGGETTI Utente
+actual suspend fun postUtenti(utente: String): String?{
+    val postLibro = client.post {
+
+        url("http://192.168.20.228:8080/utenti")
+        setBody(utente)
+    }
+
+    println(postLibro.readBytes().decodeToString())
+
+    return postLibro.readBytes().decodeToString()
+}
 
 /*******************************/
 /******      DELETE       ******/

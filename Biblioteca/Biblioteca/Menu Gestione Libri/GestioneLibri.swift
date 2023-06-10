@@ -349,7 +349,7 @@ struct AggiuntaRicercaLibroApi: View{
                 VStack(alignment: .leading){
                     Text("Numero pagine")
                         .font(.headline)
-                        .padding(.bottom, 6)
+                        .padding(.bottom)
                     
                     Text(String(datiLibro.np))
                 }
@@ -376,7 +376,7 @@ struct AggiuntaRicercaLibroApi: View{
             cambiaModo.toggle()
             
         }){
-            Text("WEUWEU")
+            Text("Avanti")
         }
     }
 }

@@ -11,29 +11,36 @@
 import SwiftUI
 import sharedModuleBiblioteca
 
-@available(iOS 15.0, *)
 struct ListaVisualizzazione: View {
     //Chiamata al server per la richiesta dei libri (10 alla volta)
     @StateObject var dataList = PrendiData()
     
     //Variabili di stato delle classi MenuSplit
-    var index: Binding<Int>
-    var datiLibro: Binding<MenuLibro>
-    var showAnimationSecondary: Binding<Bool>
-    var show: Binding<Bool>
+    private var index: Binding<Int>
+    private var datiLibro: Binding<MenuLibro>
+    private var showAnimationSecondary: Binding<Bool>
+    private var show: Binding<Bool>
     
+    @State private var textSearch: String
+        
     //Metodo costruttore
-    init(index: Binding<Int>, datiLibro: Binding<MenuLibro>, showAnimationSecondary: Binding<Bool>, show: Binding<Bool>) {
+    init(index: Binding<Int>, datiLibro: Binding<MenuLibro>, showAnimationSecondary: Binding<Bool>, show: Binding<Bool>, textSearch: String = "") {
         self.index = index
         self.datiLibro = datiLibro
         self.showAnimationSecondary = showAnimationSecondary
         self.show = show
+        
+        self.textSearch = textSearch
     }
     
-    var body: some View {        
+    //@State private var hashMapRicerca = Dictionary<String, Binding<String>>(dictionaryLiteral: ("", self.$textSearch))
+    
+    var body: some View {
         //Oggetti ItemVisualizzazione che viene inizializzato dalla funzione inializzaItem
-        let tempArrayItemVisualizzazione = inizializzaItem(index: index, CONST_INDEX_LIBRI: 10, datiLibro: datiLibro, showAnimationSecondary: showAnimationSecondary, libriVisualizzazioneRichiestaJson: dataList.arrayLibri as! [DatiLibro], show: .constant(false))
+        var tempArrayItemVisualizzazione = textSearch == "" ? inizializzaItem(index: index, CONST_INDEX_LIBRI: 10, datiLibro: datiLibro, showAnimationSecondary: showAnimationSecondary, libriVisualizzazioneRichiestaJson: dataList.arrayLibri as! [DatiLibro], show: .constant(false), searchData: $textSearch) : inizializzaItem(index: index, CONST_INDEX_LIBRI: 10, datiLibro: datiLibro, showAnimationSecondary: showAnimationSecondary, libriVisualizzazioneRichiestaJson: dataList.arrayLibriRicerca as! [DatiLibro], show: .constant(false), searchData: $textSearch)
         
+        
+        //Text("WEUUU: " + String(tempArrayItemVisualizzazione.count))
         
         //Lettura delle dimensioni dello schermo nel quale si avvia la app
         GeometryReader { geometry in
@@ -69,7 +76,7 @@ struct ListaVisualizzazione: View {
                         LazyVGrid(columns: columns, spacing: 16) {
                             ForEach(tempArrayItemVisualizzazione.indices, id: \.self) { index in
                                 
-                                ItemOrizzontaliLista(cardPrimi: tempArrayItemVisualizzazione[index].cardPrimi, cardSecondo: tempArrayItemVisualizzazione[index].cardSecondo, funzionePrimaCard: tempArrayItemVisualizzazione[index].funzionePrimaCard, funzioneSecondaCard: tempArrayItemVisualizzazione[index].funzioneSecondaCard, show: show, ultimoItem: false, getData: dataList)
+                                ItemOrizzontaliLista(cardPrimi: tempArrayItemVisualizzazione[index].cardPrimi, cardSecondo: tempArrayItemVisualizzazione[index].cardSecondo, funzionePrimaCard: tempArrayItemVisualizzazione[index].funzionePrimaCard, funzioneSecondaCard: tempArrayItemVisualizzazione[index].funzioneSecondaCard, show: show, ultimoItem: false, getData: dataList, searchText: $textSearch)
                             }
                         }
                         .padding()
@@ -96,14 +103,29 @@ struct ListaVisualizzazione: View {
                     List {
                         ForEach(tempArrayItemVisualizzazione.indices, id: \.self) { index in
                             //Se è l'ultimo item lo mette a "true", altrimente a "false"
-                            if index == (dataList.arrayLibri.count - 1) / 2{
-                                ItemOrizzontaliLista(cardPrimi: tempArrayItemVisualizzazione[index].cardPrimi, cardSecondo: tempArrayItemVisualizzazione[index].cardSecondo, funzionePrimaCard: tempArrayItemVisualizzazione[index].funzionePrimaCard, funzioneSecondaCard: tempArrayItemVisualizzazione[index].funzioneSecondaCard, show: show, ultimoItem: true, getData: dataList)
+                            if textSearch == ""{
+                                if index == (dataList.arrayLibri.count - 1) / 2{
+                                    ItemOrizzontaliLista(cardPrimi: tempArrayItemVisualizzazione[index].cardPrimi, cardSecondo: tempArrayItemVisualizzazione[index].cardSecondo, funzionePrimaCard: tempArrayItemVisualizzazione[index].funzionePrimaCard, funzioneSecondaCard: tempArrayItemVisualizzazione[index].funzioneSecondaCard, show: show, ultimoItem: true, getData: dataList, searchText: $textSearch)
+                                                                    
+                                }else{
+                                    ItemOrizzontaliLista(cardPrimi: tempArrayItemVisualizzazione[index].cardPrimi, cardSecondo: tempArrayItemVisualizzazione[index].cardSecondo, funzionePrimaCard: tempArrayItemVisualizzazione[index].funzionePrimaCard, funzioneSecondaCard: tempArrayItemVisualizzazione[index].funzioneSecondaCard, show: show, ultimoItem: false, getData: dataList, searchText: $textSearch)
+                                    
+                                }
                                 
                             }else{
-                                ItemOrizzontaliLista(cardPrimi: tempArrayItemVisualizzazione[index].cardPrimi, cardSecondo: tempArrayItemVisualizzazione[index].cardSecondo, funzionePrimaCard: tempArrayItemVisualizzazione[index].funzionePrimaCard, funzioneSecondaCard: tempArrayItemVisualizzazione[index].funzioneSecondaCard, show: show, ultimoItem: false, getData: dataList)
+                                if index == (dataList.arrayLibriRicerca.count - 1) / 2{
+                                    ItemOrizzontaliLista(cardPrimi: tempArrayItemVisualizzazione[index].cardPrimi, cardSecondo: tempArrayItemVisualizzazione[index].cardSecondo, funzionePrimaCard: tempArrayItemVisualizzazione[index].funzionePrimaCard, funzioneSecondaCard: tempArrayItemVisualizzazione[index].funzioneSecondaCard, show: show, ultimoItem: true, getData: dataList, searchText: $textSearch)
+                                                                    
+                                }else{
+                                    ItemOrizzontaliLista(cardPrimi: tempArrayItemVisualizzazione[index].cardPrimi, cardSecondo: tempArrayItemVisualizzazione[index].cardSecondo, funzionePrimaCard: tempArrayItemVisualizzazione[index].funzionePrimaCard, funzioneSecondaCard: tempArrayItemVisualizzazione[index].funzioneSecondaCard, show: show, ultimoItem: false, getData: dataList, searchText: $textSearch)
+                                    
+                                }
                             }
+                            
+                            
                         }
                     }
+                    .searchable(text: $textSearch)
                     .listStyle(.plain)
                     .allowsHitTesting(show.wrappedValue ? false : true)
                     .navigationTitle("Lista dei libri")
@@ -113,13 +135,15 @@ struct ListaVisualizzazione: View {
                             dataList.updateData()
                         }
                     }
+                    .onChange(of: textSearch) { newValue in
+                        dataList.searchData(searchText: newValue)
+                    }
                 }
             }
         }
     }
 }
 
-@available(iOS 15.0, *)
 struct ItemOrizzontaliLista: View{
     //Dichiarazione e inizializzazione delle due "Card" dove
     var cardPrimi = CardLibri(libro: DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "0", annoPubblicazione: nil, idCategorie: "", idGenere: 0, descrizione: nil, np: 0, image: nil))
@@ -140,6 +164,8 @@ struct ItemOrizzontaliLista: View{
     
     //Varaibile con il collegamento con il server
     @StateObject var getData: PrendiData
+    
+    @State var searchText: Binding<String>
         
     var body: some View {
         //Visualizzazione orizzontale nella quale ci sono le due "Card" che si vedono nella schermata principale
@@ -201,14 +227,19 @@ class PrendiData: ObservableObject{
     @Published var nPag = 0
     
     @Published var arrayLibri = NSMutableArray()
+    
+    @Published var arrayLibriRicerca = NSMutableArray()
+    @Published var nPagRicerca = 0
 
     init() {
         updateData()
+        searchData(searchText: "")
     }
     
     func updateData(){
+        
         GestioneJson().getPezziDelCatalogo(indiceCatalogo: String(nPag)) { connessione, error in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 if let connessione = connessione {
                     
                     if self.nPag == 0{
@@ -220,7 +251,29 @@ class PrendiData: ObservableObject{
                     
                     self.nPag += 1
                 } else {
-                    print(error?.localizedDescription ?? "error")
+                    print(error?.localizedDescription ?? "error libri")
+                }
+            }
+        }
+        
+    }
+    
+    func searchData(searchText: String){
+        GestioneJson().getLibroRicerca(ricercaTitoloLibro: searchText, ricercaCategorieLibro: NSMutableArray(object: "") ,indiceCatalogo: String(nPagRicerca)) { esitoLibri, errore in
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                if let esitoLibri = esitoLibri {
+                    
+                    if self.nPagRicerca == 0{
+                        self.arrayLibriRicerca = esitoLibri
+                        
+                    }else{
+                        self.arrayLibriRicerca.addObjects(from: esitoLibri as! [Any])
+                    }
+                                        
+                    self.nPagRicerca += 1
+                } else {
+                    print(errore?.localizedDescription ?? "error ricerca")
                 }
             }
         }
@@ -232,12 +285,11 @@ class PrendiData: ObservableObject{
     }
 }
 
-@available(iOS 15.0, *)
-private func inizializzaItem(index: Binding<Int>, CONST_INDEX_LIBRI: Int, datiLibro: Binding<MenuLibro>, showAnimationSecondary: Binding<Bool>, libriVisualizzazioneRichiestaJson: [DatiLibro], show: Binding<Bool>) -> [ItemOrizzontaliLista]{
+private func inizializzaItem(index: Binding<Int>, CONST_INDEX_LIBRI: Int, datiLibro: Binding<MenuLibro>, showAnimationSecondary: Binding<Bool>, libriVisualizzazioneRichiestaJson: [DatiLibro], show: Binding<Bool>, searchData: Binding<String>) -> [ItemOrizzontaliLista]{
             
     var arrayTemp = [ItemOrizzontaliLista]()
     
-    var item = ItemOrizzontaliLista(funzionePrimaCard: {}, funzioneSecondaCard: {},show: show, ultimoItem: false, getData: PrendiData())
+    var item = ItemOrizzontaliLista(funzionePrimaCard: {}, funzioneSecondaCard: {},show: show, ultimoItem: false, getData: PrendiData(), searchText: searchData)
                     
     for i in stride(from: 0, to: libriVisualizzazioneRichiestaJson.count, by: 2) {
                         
@@ -254,7 +306,7 @@ private func inizializzaItem(index: Binding<Int>, CONST_INDEX_LIBRI: Int, datiLi
                     index.wrappedValue = CONST_INDEX_LIBRI
                     datiLibro.wrappedValue = MenuLibro(datiLibro: libriVisualizzazioneRichiestaJson[i + 1], index: index, showAnimationSecondary: showAnimationSecondary, show: show)
                     withAnimation { showAnimationSecondary.wrappedValue.toggle() }
-                }, show: show, ultimoItem: false, getData: PrendiData()
+                }, show: show, ultimoItem: false, getData: PrendiData(), searchText: searchData
             )
             
         }else if i == libriVisualizzazioneRichiestaJson.count - 1{
@@ -266,7 +318,7 @@ private func inizializzaItem(index: Binding<Int>, CONST_INDEX_LIBRI: Int, datiLi
                     datiLibro.wrappedValue = MenuLibro(datiLibro: libriVisualizzazioneRichiestaJson[i], index: index, showAnimationSecondary: showAnimationSecondary, show: show)
                     withAnimation { showAnimationSecondary.wrappedValue.toggle() }
                 },
-                funzioneSecondaCard: {}, show: show, ultimoItem: false, getData: PrendiData()
+                funzioneSecondaCard: {}, show: show, ultimoItem: false, getData: PrendiData(), searchText: searchData
             )
         }
         
@@ -278,7 +330,6 @@ private func inizializzaItem(index: Binding<Int>, CONST_INDEX_LIBRI: Int, datiLi
     return arrayTemp
 }
 
-@available(iOS 15.0, *)
 struct ListaVisualizzazione_Previews: PreviewProvider {
     static var previews: some View {
         ListaVisualizzazione(index: .constant(0), datiLibro: .constant(MenuLibro(datiLibro: DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "", annoPubblicazione: nil, idCategorie: "", idGenere: 0, descrizione: nil, np: 0, image: nil), index: .constant(0), showAnimationSecondary: .constant(false), show: .constant(false))), showAnimationSecondary: .constant(false), show: .constant(false))
