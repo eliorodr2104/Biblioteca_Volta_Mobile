@@ -25,7 +25,7 @@ import CachedAsyncImage
 @available(iOS 15.0, *)
 struct MenuSplit: View {
         
-    @ObservedObject private(set) var viewModel: ViewModel
+    @ObservedObject private var httpManager: HttpManager
     
     @State var animazioneCatalogo = false
     
@@ -47,7 +47,7 @@ struct MenuSplit: View {
         
     init(index: Int = 0, show: Bool = false, showAnimationSecondary: Bool = false, nomeUtente: String, salutoUtente: String = "Bentornato", utenteUtilizzo: Utente, datiLibro: MenuLibro, imgUtente: String) {
         
-        self.viewModel = ViewModel(utente: utenteUtilizzo)
+        self.httpManager = HttpManager()
         self.index = index
         self.show = show
         self.showAnimationSecondary = showAnimationSecondary
@@ -475,8 +475,11 @@ struct MenuSplit: View {
                         
                         //Cambia la visuale dipendendo dall'indice
                         if self.index == 0{
-                            ListaVisualizzazione(index: $index, datiLibro: $datiLibro, showAnimationSecondary: $showAnimationSecondary, show: $show)
-                                //.disabled(showAnimationSecondary)
+                            ListaVisualizzazione(
+                                index: $index,
+                                datiLibro: $datiLibro,
+                                showAnimationSecondary: $showAnimationSecondary,
+                                show: $show)
                                 .gesture(
                                     DragGesture()
                                         .onEnded { value in
@@ -508,7 +511,7 @@ struct MenuSplit: View {
                             
                         } else if self.index == 1{
                             //Libri prestito
-                            MenuPrestiti(listaPrestiti: viewModel.arrayPrestiti as! [Prestito])
+                            MenuPrestiti(listaPrestiti: httpManager.arrayPrestiti as! [Prestito])
                                 .gesture(
                                     DragGesture()
                                         .onEnded { value in
@@ -528,6 +531,9 @@ struct MenuSplit: View {
                                             }
                                         }
                                 )
+                                .onAppear {
+                                    httpManager.getPrestitiUtente(utente: utenteUtilizzo)
+                                }
                             
                         } else if self.index == 2{
                             //Informazioni()
@@ -538,6 +544,7 @@ struct MenuSplit: View {
 
                         }else if self.index == 5{
                             GestioneLibri(index: $index, datiLibro: $datiLibroGestione, showAnimationSecondary: $showAnimationSecondary)
+                            
                                 .gesture(
                                     DragGesture()
                                         .onEnded { value in
@@ -567,7 +574,7 @@ struct MenuSplit: View {
                         }else if self.index == 9{
                             MenuGestioneLibro(datiLibro: datiLibroGestione)
                                 .offset(x: self.showAnimationSecondary ? 0 : UIScreen.main.bounds.width, y: 0)
-                                .gesture(
+                                /*.gesture(
                                     DragGesture()
                                         .onEnded { value in
                                             if abs(value.translation.width) > abs(value.translation.height) {
@@ -584,7 +591,7 @@ struct MenuSplit: View {
                                                 }
                                             }
                                         }
-                                )
+                                )*/
                             
                         }else if self.index == 10{
                             MenuLibro(datiLibro: datiLibro.datiLibro, index: $index, showAnimationSecondary: $showAnimationSecondary, show: $show)
@@ -623,27 +630,6 @@ struct MenuSplit: View {
             //Rotazione
             .rotationEffect(.init(degrees: self.show ? -5 : 0))
             .shadow(color: Color("ColorePrincipale"), radius: self.show ? 5 : 0)
-        }
-    }
-}
-
-@available(iOS 15.0, *)
-extension MenuSplit {
-    class ViewModel: ObservableObject {        
-        @Published var arrayPrestiti = NSMutableArray()
-                
-        init(utente: Utente) {
-            GestioneJson().getPrestitiDellUtente(utente: utente){ prestito, errore in
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    if let prestito = prestito {                        
-                        self.arrayPrestiti = prestito
-                        
-                    }else {
-                        //print(errore?.localizedDescription ?? "error")
-                    }
-                }
-                
-            }
         }
     }
 }

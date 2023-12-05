@@ -25,6 +25,7 @@ kotlin {
         ios.deploymentTarget = "14.1"
         podfile = project.file("../Biblioteca/Podfile")
         framework {
+            linkerOpts += "-ld64"
             baseName = "sharedModuleBiblioteca"
         }
     }

@@ -39,7 +39,7 @@ import CachedAsyncImage
  */
 @available(iOS 15.0, *)
 struct CardLibri: View {
-    @ObservedObject private(set) var viewModel: ViewModel
+    @StateObject private var httpManager = HttpManager()
 
     var libro: DatiLibro
     var titolo: String
@@ -49,11 +49,10 @@ struct CardLibri: View {
     init(libro: DatiLibro) {
         self.libro = libro
         self.titolo = libro.titolo
-        self.viewModel = ViewModel(isbn: libro.isbn)
     }
     
     var body: some View {
-        let copieLibro = getRisultatoCopie(copieLibro: viewModel.libro?.copie as? [CopiaLibro]) > 0
+        let copieLibro = getRisultatoCopie(copieLibro: httpManager.libro?.copie as? [CopiaLibro]) > 0
         
         ZStack(alignment: .topTrailing){
             CachedAsyncImage(url: URL(string: libro.image ?? "")){ image in
@@ -81,32 +80,13 @@ struct CardLibri: View {
                 .padding(.trailing, -8)
             
         }
+        .onAppear(perform: {
+            httpManager.getCopieLibroDatoIsbn(isbn: libro.isbn)
+        })
         .frame(width: 155, height: 250)
             
     }
 }
-
-@available(iOS 15.0, *)
-extension CardLibri {
-    class ViewModel: ObservableObject {
-        @Published var libro: Libro?
-        
-        init(isbn: String) {
-            GestioneJson().getCopieLibroDaIsbn(isbn: isbn) { libro, error in
-                DispatchQueue.main.async {
-                    if let libro = libro {
-                        self.libro = libro
-                    } else {
-                        //print(error?.localizedDescription ?? "error")
-                    }
-                }
-            }
-        }
-    }
-}
-
-
-
 
 @available(iOS 15.0, *)
 struct CardLibri_Previews: PreviewProvider {

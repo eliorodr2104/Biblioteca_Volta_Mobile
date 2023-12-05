@@ -34,6 +34,8 @@ private val client = HttpClient(Darwin) {
     }
 }
 
+private val CONST_ADDRES_SERVER = "3.81.234.3:8080"
+
 /*******************************/
 /******        GET        ******/
 /*******************************/
@@ -42,7 +44,7 @@ private val client = HttpClient(Darwin) {
 
 actual suspend fun getLibriCatalogo(indiceCatalogo: String): String? {
     return try {
-        val libri = client.get("http://192.168.20.228:8080/catalogo/$indiceCatalogo")
+        val libri = client.get("http://${CONST_ADDRES_SERVER}/catalogo/$indiceCatalogo")
 
         //Controllo per la risposta giusta del server
         if (libri.status.value in 200..299)
@@ -58,7 +60,7 @@ actual suspend fun getLibriCatalogo(indiceCatalogo: String): String? {
 
 actual suspend fun getCopieLibroIdCopia(idCopia: String): String?{
     return try {
-        val prestitiLibri = client.get("http://192.168.20.228:8080/copie/$idCopia")
+        val prestitiLibri = client.get("http://${CONST_ADDRES_SERVER}/copie/$idCopia")
 
         //Controllo per la risposta giusta del server
         if (prestitiLibri.status.value in 200..299)
@@ -74,7 +76,7 @@ actual suspend fun getCopieLibroIdCopia(idCopia: String): String?{
 
 actual suspend fun getLibroIsbn(isbn: String): String?{
     return try {
-        val prestitiLibri = client.get("http://192.168.20.228:8080/libri/$isbn")
+        val prestitiLibri = client.get("http://${CONST_ADDRES_SERVER}/libri/$isbn")
 
         //Controllo per la risposta giusta del server
         if (prestitiLibri.status.value in 200..299)
@@ -93,7 +95,7 @@ actual suspend fun getLibroIsbn(isbn: String): String?{
 actual suspend fun getCopieLibri(isbn: String): String?{
     return try {
         if (isbn != ""){
-            val copieLibri = client.get("http://192.168.20.228:8080/libri/$isbn/copie")
+            val copieLibri = client.get("http://${CONST_ADDRES_SERVER}/libri/$isbn/copie")
 
             if (copieLibri.status.value in 200..299)
                 copieLibri.readBytes().decodeToString()
@@ -115,7 +117,7 @@ actual suspend fun getCopieLibri(isbn: String): String?{
 actual suspend fun getFiltroLibri(mappaRicerca: HashMap<String, String>, listaIdCategoria: String): String? {
     return try {
 
-        val libri = client.get("http://192.168.20.228:8080/filtra/$mappaRicerca/$listaIdCategoria")
+        val libri = client.get("http://${CONST_ADDRES_SERVER}/filtra/$mappaRicerca/$listaIdCategoria")
 
         //Controllo per la risposta giusta del server
         if (libri.status.value in 200..299)
@@ -133,7 +135,7 @@ actual suspend fun getFiltroLibri(mappaRicerca: HashMap<String, String>, listaId
 
 actual suspend fun getPrestitiLibri(utentePrestito: Utente): String?{
     return try {
-        val prestitiLibri = client.get("http://192.168.20.228:8080/utenti/${utentePrestito.idUtente}/prestiti")
+        val prestitiLibri = client.get("http://${CONST_ADDRES_SERVER}/utenti/${utentePrestito.idUtente}/prestiti")
 
         //Controllo per la risposta giusta del server
         if (prestitiLibri.status.value in 200..299)
@@ -151,7 +153,39 @@ actual suspend fun getPrestitiLibri(utentePrestito: Utente): String?{
 
 actual suspend fun getCategorieLibri(listaIdCategoria: String): String?{
     return try {
-        val prestitiLibri = client.get("http://192.168.20.228:8080/categorie/$listaIdCategoria")
+        val prestitiLibri = client.get("http://${CONST_ADDRES_SERVER}/categorie/$listaIdCategoria")
+
+        //Controllo per la risposta giusta del server
+        if (prestitiLibri.status.value in 200..299)
+            prestitiLibri.readBytes().decodeToString()
+
+        else
+            null
+
+    }catch (s: Exception){
+        "Server timeout connection"
+    }
+}
+
+actual suspend fun getCategorie(): String?{
+    return try {
+        val prestitiLibri = client.get("http://${CONST_ADDRES_SERVER}/categorie")
+
+        //Controllo per la risposta giusta del server
+        if (prestitiLibri.status.value in 200..299)
+            prestitiLibri.readBytes().decodeToString()
+
+        else
+            null
+
+    }catch (s: Exception){
+        "Server timeout connection"
+    }
+}
+
+actual suspend fun getGeneri(): String?{
+    return try {
+        val prestitiLibri = client.get("http://${CONST_ADDRES_SERVER}/generi")
 
         //Controllo per la risposta giusta del server
         if (prestitiLibri.status.value in 200..299)
@@ -169,7 +203,7 @@ actual suspend fun getCategorieLibri(listaIdCategoria: String): String?{
 
 actual suspend fun getLibroIsbnApi(isbn: String): String?{
     return try {
-        val prestitiLibri = client.get("http://192.168.20.228:8080/API/$isbn")
+        val prestitiLibri = client.get("http://${CONST_ADDRES_SERVER}/API/$isbn")
 
         //Controllo per la risposta giusta del server
         if (prestitiLibri.status.value in 200..299)
@@ -186,7 +220,7 @@ actual suspend fun getLibroIsbnApi(isbn: String): String?{
 //GET UTENTE DA MAIL INSTITUZIONALE
 actual suspend fun getUtenteInstituzionale(email: String): String?{
     return try {
-        val prestitiLibri = client.get("http://192.168.20.228:8080/utenti/$email")
+        val prestitiLibri = client.get("http://${CONST_ADDRES_SERVER}/utenti/$email")
 
         //Controllo per la risposta giusta del server
         if (prestitiLibri.status.value in 200..299)
@@ -209,7 +243,7 @@ actual suspend fun getUtenteInstituzionale(email: String): String?{
 actual suspend fun postLibroJsonServer(libro: String?): String? {
      val postLibro = client.post {
 
-         url("http://192.168.20.228:8080/libri")
+         url("http://${CONST_ADDRES_SERVER}/libri")
          setBody(libro)
 
          onUpload { bytesSentTotal, contentLength ->
@@ -225,7 +259,7 @@ actual suspend fun postLibroJsonServer(libro: String?): String? {
 actual suspend fun postCopiaLibro(copiaLibro: String): String?{
     val postLibro = client.post {
 
-        url("http://192.168.20.228:8080/copie")
+        url("http://${CONST_ADDRES_SERVER}/copie")
         setBody(copiaLibro)
 
     }
@@ -237,7 +271,7 @@ actual suspend fun postCopiaLibro(copiaLibro: String): String?{
 actual suspend fun postUtenti(utente: String): String?{
     val postLibro = client.post {
 
-        url("http://192.168.20.228:8080/utenti")
+        url("http://${CONST_ADDRES_SERVER}/utenti")
         setBody(utente)
     }
 
@@ -259,8 +293,8 @@ actual suspend fun deleteCopiaLibro(idCopia: String): String?{
     //cancella/{tabella}/{nomePK}/{valorePK}
 
     return try {
-        val prestitiLibri = client.delete("http://192.168.20.228:8080/cancellaCopia/$idCopia")
-
+        val prestitiLibri = client.delete("http://${CONST_ADDRES_SERVER}/cancellaCopia/$idCopia")
+        
         //Controllo per la risposta giusta del server
         if (prestitiLibri.status.value in 200..299)
             prestitiLibri.readBytes().decodeToString()

@@ -17,7 +17,7 @@ struct ItemPrestitiLista: View {
     private var titoloLibro: String
     //private var prestitoLibro: Prestito
     
-    @StateObject var viewModel = ViewModel()
+    @StateObject var httpManager = HttpManager()
         
     init(prestitoLibro: Prestito) {
         self.prestitoLibro = prestitoLibro
@@ -29,7 +29,7 @@ struct ItemPrestitiLista: View {
     var body: some View {
         HStack{
             ZStack(alignment: .topTrailing){
-                CachedAsyncImage(url: URL(string: viewModel.libro.image ?? "")){ image in
+                CachedAsyncImage(url: URL(string: httpManager.datiLibro.image ?? "")){ image in
                     image.resizable(resizingMode: .stretch)
                 } placeholder: {
                     ProgressView()
@@ -41,11 +41,11 @@ struct ItemPrestitiLista: View {
             .padding(.trailing, 10)
             .padding(.bottom, 23)
             .onAppear(){
-                viewModel.getCopieDaIdCopia(idCopia: String(prestitoLibro.idCopia))
+                httpManager.getCopieDaIdCopia(idCopia: String(prestitoLibro.idCopia))
             }
             
             VStack(alignment: .leading){
-                Text(viewModel.libro.titolo)
+                Text(httpManager.datiLibro.titolo)
                     .font(.title3)
                 
                 /*
@@ -56,31 +56,6 @@ struct ItemPrestitiLista: View {
                 Text("Data fine: " + (prestitoLibro.dataFine ?? ""))
                     .font(.subheadline)
                     .padding(.bottom, 50)
-            }
-        }
-    }
-}
-
-@available(iOS 15.0, *)
-extension ItemPrestitiLista {
-    class ViewModel: ObservableObject {
-        @Published var libro = DatiLibro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "", annoPubblicazione: nil, idCategorie: "", idGenere: 0, descrizione: nil, np: 0, image: nil)
-                        
-        init() {
-            getCopieDaIdCopia(idCopia: "")
-        }
-        
-        func getCopieDaIdCopia(idCopia: String){
-            GestioneJson().getCopieDallId(idCopia: idCopia){ libro, errore in
-                DispatchQueue.main.async() {
-                    if let libro = libro {                        
-                        self.libro = libro
-                        
-                    }else {
-                        //print(errore?.localizedDescription ?? "error")
-                    }
-                }
-                
             }
         }
     }

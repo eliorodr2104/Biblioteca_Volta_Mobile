@@ -6,10 +6,12 @@ import com.biblioteca.OggettiComuni.Libro
 import com.biblioteca.OggettiComuni.Prestito
 import com.biblioteca.OggettiComuni.Utente
 import com.biblioteca.deleteCopiaLibro
+import com.biblioteca.getCategorie
 import com.biblioteca.getCategorieLibri
 import com.biblioteca.getCopieLibri
 import com.biblioteca.getCopieLibroIdCopia
 import com.biblioteca.getFiltroLibri
+import com.biblioteca.getGeneri
 import com.biblioteca.postLibroJsonServer
 import com.biblioteca.getLibriCatalogo
 import com.biblioteca.getLibroIsbn
@@ -19,6 +21,11 @@ import com.biblioteca.getUtenteInstituzionale
 import com.biblioteca.postUtenti
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 class GestioneJson {
 
@@ -164,6 +171,62 @@ class GestioneJson {
         }
     }
 
+    suspend fun getCategorieTotali(): ArrayList<String>? {
+        val stringHttpJson = getCategorie()
+
+        return try {
+            if (stringHttpJson != "Server timeout connection" && stringHttpJson != "" && stringHttpJson != "[]") {
+                // Usa kotlinx.serialization per analizzare la risposta JSON
+                val jsonArray = Json.parseToJsonElement(stringHttpJson.toString()).jsonArray
+
+                // Estrai i nomi delle categorie
+                val categorieList = ArrayList<String>()
+
+                for (jsonObject in jsonArray) {
+                    val nome = jsonObject.jsonObject["nome"]?.jsonPrimitive?.content
+                    if (nome != null) {
+                        categorieList.add(nome)
+                    }
+                }
+
+                // Restituisci l'ArrayList di categorie
+                categorieList
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    suspend fun getGeneriTotali(): ArrayList<String>? {
+        val stringHttpJson = getGeneri()
+
+        return try {
+            if (stringHttpJson != "Server timeout connection" && stringHttpJson != "" && stringHttpJson != "[]") {
+                // Usa kotlinx.serialization per analizzare la risposta JSON
+                val jsonArray = Json.parseToJsonElement(stringHttpJson.toString()).jsonArray
+
+                // Estrai i nomi delle categorie
+                val generiList = ArrayList<String>()
+
+                for (jsonObject in jsonArray) {
+                    val nome = jsonObject.jsonObject["nome"]?.jsonPrimitive?.content
+                    if (nome != null) {
+                        generiList.add(nome)
+                    }
+                }
+
+                // Restituisci l'ArrayList di categorie
+                generiList
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            null
+        }
+    }
+
     suspend fun getLibroApi(isbn: String): DatiLibro?{
         val stringHttpJson = getLibroIsbnApi(isbn)
 
@@ -290,9 +353,8 @@ class GestioneJson {
 
         return try {
             if (stringHttpJson != "Server timeout connection" && stringHttpJson != ""){
-                val json = Json.parseToJsonElement(stringHttpJson ?: "")
+                stringHttpJson
 
-                Json.decodeFromString(json.toString())
             }else
                 null
         }catch (e: Exception){

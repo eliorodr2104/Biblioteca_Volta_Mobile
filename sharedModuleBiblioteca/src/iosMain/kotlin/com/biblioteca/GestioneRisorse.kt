@@ -1,20 +1,27 @@
 package com.biblioteca
 
+import io.ktor.utils.io.errors.IOException
 import kotlinx.cinterop.ObjCObjectVar
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.value
 import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonPrimitive
 import platform.Foundation.NSBundle
 import platform.Foundation.NSError
+import platform.Foundation.NSFileManager
+import platform.Foundation.NSSearchPathForDirectoriesInDomains
 import platform.Foundation.NSString
 import platform.Foundation.NSUTF8StringEncoding
+import platform.Foundation.create
+import platform.Foundation.dataUsingEncoding
 import platform.Foundation.stringWithContentsOfFile
+import platform.Foundation.writeToFile
 import platform.darwin.NSObject
 import platform.darwin.NSObjectMeta
 
@@ -23,7 +30,8 @@ actual fun conversioneLinguaLibro(linguaDelLibro: String): String{
 
     val name = "lingua.json"
 
-    val (filename, type) = when (val lastPeriodIndex = name.lastIndexOf('.')) {
+    val (filename, type) =
+        when (val lastPeriodIndex = name.lastIndexOf('.')) {
         0 -> {
             null to name.drop(1)
         }

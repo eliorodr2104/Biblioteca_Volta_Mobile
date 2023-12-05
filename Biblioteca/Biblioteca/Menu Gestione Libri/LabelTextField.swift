@@ -30,7 +30,7 @@ struct LabelTextField: View {
             if avviaAnimazione {
                 Text(labelName)
                     .font(.headline)
-                    .bold()
+                    //.bold()
                     .offset(y: 0)
                     .animation(.easeInOut(duration: 0.1), value: avviaAnimazione)
                     .transition(.move(edge: .top))
@@ -42,7 +42,6 @@ struct LabelTextField: View {
                         avviaAnimazione = textState.wrappedValue != "" ? true : false
                     }
                 }
-                .font(.subheadline)
         }
     }
 }

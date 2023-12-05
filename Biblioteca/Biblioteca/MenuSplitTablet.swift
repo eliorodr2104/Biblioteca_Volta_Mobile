@@ -345,7 +345,7 @@ private func inizializzaItem(index: Binding<Int>, CONST_INDEX_LIBRI: Int, datiLi
     
     var arrayTemp = [ItemOrizzontaliLista]()
     
-    var item = ItemOrizzontaliLista(funzionePrimaCard: {}, funzioneSecondaCard: {}, show: .constant(false), ultimoItem: false, getData: PrendiData(), searchText: .constant(""))
+    var item = ItemOrizzontaliLista(funzionePrimaCard: {}, funzioneSecondaCard: {}, show: .constant(false), ultimoItem: false, getData: HttpManager(), searchText: .constant(""))
             
     for i in stride(from: 0, to: libriVisualizzazioneRichiestaJson.count, by: 2) {
                 
@@ -362,7 +362,7 @@ private func inizializzaItem(index: Binding<Int>, CONST_INDEX_LIBRI: Int, datiLi
                     index.wrappedValue = CONST_INDEX_LIBRI
                     datiLibro.wrappedValue = MenuLibro(datiLibro: libriVisualizzazioneRichiestaJson[i + 1], index: index, showAnimationSecondary: showAnimationSecondary, show: .constant(false))
                     withAnimation { showAnimationSecondary.wrappedValue.toggle() }
-                }, show: .constant(false), ultimoItem: false, getData: PrendiData(), searchText: .constant("")
+                }, show: .constant(false), ultimoItem: false, getData: HttpManager(), searchText: .constant("")
             )
             
         }else if i == libriVisualizzazioneRichiestaJson.count - 1{
@@ -374,7 +374,7 @@ private func inizializzaItem(index: Binding<Int>, CONST_INDEX_LIBRI: Int, datiLi
                     datiLibro.wrappedValue = MenuLibro(datiLibro: libriVisualizzazioneRichiestaJson[i], index: index, showAnimationSecondary: showAnimationSecondary, show: .constant(false))
                     withAnimation { showAnimationSecondary.wrappedValue.toggle() }
                 },
-                funzioneSecondaCard: {}, show: .constant(false), ultimoItem: false, getData: PrendiData(), searchText: .constant("")
+                funzioneSecondaCard: {}, show: .constant(false), ultimoItem: false, getData: HttpManager(), searchText: .constant("")
             )
         }
         

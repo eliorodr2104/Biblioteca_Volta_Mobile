@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 53;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -18,6 +18,11 @@
 		E34814602A0A3789004B2560 /* CachedAsyncImage in Frameworks */ = {isa = PBXBuildFile; productRef = E348145F2A0A3789004B2560 /* CachedAsyncImage */; };
 		E34B71DE2A163083009C7783 /* LabelTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = E34B71DD2A163083009C7783 /* LabelTextField.swift */; };
 		E351EA5F2A1C02880025EDD2 /* ParticleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E351EA5E2A1C02880025EDD2 /* ParticleView.swift */; };
+		E3715EF22AC47DC5001D9C99 /* CondizioneStato.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3715EF12AC47DC5001D9C99 /* CondizioneStato.swift */; };
+		E3851A322ABB0CE300C282CE /* MultiSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3851A312ABB0CE300C282CE /* MultiSelectionView.swift */; };
+		E3851A342ABB0D1C00C282CE /* MultiSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3851A332ABB0D1C00C282CE /* MultiSelector.swift */; };
+		E3851A362ABB0E4D00C282CE /* Goal.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3851A352ABB0E4D00C282CE /* Goal.swift */; };
+		E3851A382ABB0E6100C282CE /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3851A372ABB0E6100C282CE /* Task.swift */; };
 		E387E8F829FC5EBD000E5DF7 /* lingua.json in Resources */ = {isa = PBXBuildFile; fileRef = E387E8F729FC5EBC000E5DF7 /* lingua.json */; };
 		E387E8FA29FC7218000E5DF7 /* Etichetta.swift in Sources */ = {isa = PBXBuildFile; fileRef = E387E8F929FC7218000E5DF7 /* Etichetta.swift */; };
 		E396D0022A0916DC0039C101 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E396D0012A0916DC0039C101 /* Launch Screen.storyboard */; };
@@ -33,6 +38,7 @@
 		E3C4369429CB9E1D00B4B494 /* ListaVisualizzazione.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3C4369329CB9E1D00B4B494 /* ListaVisualizzazione.swift */; };
 		E3C4369729CC7BE100B4B494 /* MenuLibro.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3C4369629CC7BE100B4B494 /* MenuLibro.swift */; };
 		E3C4369929CCFA3500B4B494 /* MenuSplitTablet.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3C4369829CCFA3500B4B494 /* MenuSplitTablet.swift */; };
+		E3F1BC762AB8E32700F3597D /* HttpManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3F1BC752AB8E32700F3597D /* HttpManager.swift */; };
 		E3FD0E692A0BFECB00030F97 /* GestioneLibri.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3FD0E682A0BFECB00030F97 /* GestioneLibri.swift */; };
 		E3FD0E6B2A0C11B800030F97 /* MenuGestioneLibro.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3FD0E6A2A0C11B800030F97 /* MenuGestioneLibro.swift */; };
 /* End PBXBuildFile section */
@@ -52,6 +58,11 @@
 		E34696CE29E9E70300D7A17B /* ItemPrestitiLista.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemPrestitiLista.swift; sourceTree = "<group>"; };
 		E34B71DD2A163083009C7783 /* LabelTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabelTextField.swift; sourceTree = "<group>"; };
 		E351EA5E2A1C02880025EDD2 /* ParticleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticleView.swift; sourceTree = "<group>"; };
+		E3715EF12AC47DC5001D9C99 /* CondizioneStato.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CondizioneStato.swift; sourceTree = "<group>"; };
+		E3851A312ABB0CE300C282CE /* MultiSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiSelectionView.swift; sourceTree = "<group>"; };
+		E3851A332ABB0D1C00C282CE /* MultiSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiSelector.swift; sourceTree = "<group>"; };
+		E3851A352ABB0E4D00C282CE /* Goal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Goal.swift; sourceTree = "<group>"; };
+		E3851A372ABB0E6100C282CE /* Task.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Task.swift; sourceTree = "<group>"; };
 		E387E8F729FC5EBC000E5DF7 /* lingua.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = lingua.json; sourceTree = "<group>"; };
 		E387E8F929FC7218000E5DF7 /* Etichetta.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Etichetta.swift; sourceTree = "<group>"; };
 		E396D0012A0916DC0039C101 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
@@ -65,6 +76,7 @@
 		E3C4369329CB9E1D00B4B494 /* ListaVisualizzazione.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListaVisualizzazione.swift; sourceTree = "<group>"; };
 		E3C4369629CC7BE100B4B494 /* MenuLibro.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuLibro.swift; sourceTree = "<group>"; };
 		E3C4369829CCFA3500B4B494 /* MenuSplitTablet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuSplitTablet.swift; sourceTree = "<group>"; };
+		E3F1BC752AB8E32700F3597D /* HttpManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HttpManager.swift; sourceTree = "<group>"; };
 		E3FD0E682A0BFECB00030F97 /* GestioneLibri.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GestioneLibri.swift; sourceTree = "<group>"; };
 		E3FD0E6A2A0C11B800030F97 /* MenuGestioneLibro.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuGestioneLibro.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -129,6 +141,8 @@
 				2152FB032600AC8F00CF470E /* iOSApp.swift */,
 				058557D7273AAEEB004C7B11 /* Preview Content */,
 				E3C4369829CCFA3500B4B494 /* MenuSplitTablet.swift */,
+				E3F1BC752AB8E32700F3597D /* HttpManager.swift */,
+				E3715EF12AC47DC5001D9C99 /* CondizioneStato.swift */,
 			);
 			path = Biblioteca;
 			sourceTree = "<group>";
@@ -204,6 +218,10 @@
 				E3FD0E682A0BFECB00030F97 /* GestioneLibri.swift */,
 				E3FD0E6A2A0C11B800030F97 /* MenuGestioneLibro.swift */,
 				E34B71DD2A163083009C7783 /* LabelTextField.swift */,
+				E3851A312ABB0CE300C282CE /* MultiSelectionView.swift */,
+				E3851A332ABB0D1C00C282CE /* MultiSelector.swift */,
+				E3851A352ABB0E4D00C282CE /* Goal.swift */,
+				E3851A372ABB0E6100C282CE /* Task.swift */,
 			);
 			path = "Menu Gestione Libri";
 			sourceTree = "<group>";
@@ -251,7 +269,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastSwiftUpdateCheck = 1130;
-				LastUpgradeCheck = 1430;
+				LastUpgradeCheck = 1500;
 				ORGANIZATIONNAME = orgName;
 				TargetAttributes = {
 					7555FF7A242A565900829871 = {
@@ -345,16 +363,22 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E3F1BC762AB8E32700F3597D /* HttpManager.swift in Sources */,
 				E3AD56272A17B0C6009A6D11 /* Application.swift in Sources */,
 				E3C4368B29CB5B3000B4B494 /* CardLibri.swift in Sources */,
 				E3C4369429CB9E1D00B4B494 /* ListaVisualizzazione.swift in Sources */,
+				E3851A382ABB0E6100C282CE /* Task.swift in Sources */,
 				E34696CD29E9E69600D7A17B /* MenuPrestiti.swift in Sources */,
 				E3FD0E6B2A0C11B800030F97 /* MenuGestioneLibro.swift in Sources */,
+				E3851A362ABB0E4D00C282CE /* Goal.swift in Sources */,
 				E34696CF29E9E70300D7A17B /* ItemPrestitiLista.swift in Sources */,
 				E3AD56252A17AFB4009A6D11 /* SigninGoogle.swift in Sources */,
 				E3C4369729CC7BE100B4B494 /* MenuLibro.swift in Sources */,
+				E3851A342ABB0D1C00C282CE /* MultiSelector.swift in Sources */,
 				2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */,
+				E3715EF22AC47DC5001D9C99 /* CondizioneStato.swift in Sources */,
 				E3FD0E692A0BFECB00030F97 /* GestioneLibri.swift in Sources */,
+				E3851A322ABB0CE300C282CE /* MultiSelectionView.swift in Sources */,
 				E3AD56292A17B205009A6D11 /* LoginView.swift in Sources */,
 				E3C4369229CB70EF00B4B494 /* MenuSplit.swift in Sources */,
 				E3C4369929CCFA3500B4B494 /* MenuSplitTablet.swift in Sources */,
@@ -406,6 +430,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -467,6 +492,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;

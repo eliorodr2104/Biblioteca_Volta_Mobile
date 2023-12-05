@@ -11,7 +11,8 @@ import sharedModuleBiblioteca
 import CachedAsyncImage
 
 struct MenuGestioneLibro: View {
-    @State private var textFieldCondizioni = ""
+    @State private var pickerCondizioni: CondizioneStato = .eccellenti
+    
     @State private var textFieldSezione = ""
     @State private var textFieldScaffale = ""
     @State private var textFieldRipiano = ""
@@ -24,22 +25,17 @@ struct MenuGestioneLibro: View {
 
     @State var showAggiuntaCopia = false
     
-    @ObservedObject var dataList: PrendiDatiCopiaLibri
+    @ObservedObject var httpManager = HttpManager()
                 
     init(datiLibro: DatiLibro) {
         self.datiLibro = datiLibro
-        self.dataList = PrendiDatiCopiaLibri(isbn: datiLibro.isbn, idCategorie: datiLibro.idCategorie)
+        //self.dataList = PrendiDatiCopiaLibri(isbn: datiLibro.isbn, idCategorie: datiLibro.idCategorie)
     }
     
     //Variabile di stato booleana
     @State var controlloDimensione = false
         
     var body: some View {
-        let items: [Etichetta] = inizializzaCategorie(arrayCategorie: dataList.arrayCategorie as! [String])
-
-        let nCopieDisponibili = getRisultatoCopie(copieLibro: dataList.libro.copie as? [CopiaLibro])
-        
-        let arrayLibri = dataList.libro.copie as? [CopiaLibro] ?? []
         
         //let condizioni = GestioneRisorseKt.leggereCondizioniLibro() as! [String]
         
@@ -52,6 +48,11 @@ struct MenuGestioneLibro: View {
                 
                 //Corpo della schermata
                 ZStack {
+                    let items: [Etichetta] = inizializzaCategorie(arrayCategorie: httpManager.arrayCategorie as! [String])
+
+                    let nCopieDisponibili = getRisultatoCopie(copieLibro: httpManager.libro?.copie as? [CopiaLibro])
+                    
+                    let arrayLibri = httpManager.libro?.copie as? [CopiaLibro] ?? []
                     
                     //Visualizazzione verticale la quale mostra i elementi allineati a sinistra dello schermo
                     VStack(alignment: .leading){
@@ -64,6 +65,7 @@ struct MenuGestioneLibro: View {
                                 CachedAsyncImage(url: URL(string: datiLibro.image ?? "")){ image in
                                     image.resizable(resizingMode: .stretch)
                                 } placeholder: {
+                                    //Color.red
                                     ProgressView()
                                 }
                                 .clipShape(RoundedRectangle(cornerRadius: 20))
@@ -85,6 +87,7 @@ struct MenuGestioneLibro: View {
                                     }
                                      
                                 }
+                                .padding(.leading, 10)
                                 
                             }
                             .frame(width: 113, height: 175)
@@ -109,7 +112,7 @@ struct MenuGestioneLibro: View {
                                         .font(isLargeSize ? .headline : .subheadline)
                                         .foregroundColor(.primary.opacity(0.5))
                                     
-                                    Text("La lingua del libro è: " + GestioneRisorseKt.conversioneLinguaLibro(linguaDelLibro: datiLibro.lingua ))
+                                    Text("La lingua è: " + GestioneRisorseKt.conversioneLinguaLibro(linguaDelLibro: datiLibro.lingua ))
                                         .fontWeight(.bold)
                                         .font(isLargeSize ? .headline : .subheadline)
                                         .foregroundColor(.primary.opacity(0.75))
@@ -130,51 +133,58 @@ struct MenuGestioneLibro: View {
                                         .font(.headline)
                                     
                                     VStack(alignment: .leading){
-                                        TextField("Condizioni", text: $textFieldCondizioni)
-                                            .frame(width: 175, height: 25)
-                                            .font(.system(size: 20))
-                                            .padding(.leading, 10)
-                                            .padding(.top, 10)
+                                        Picker("", selection: $pickerCondizioni) {
+                                            ForEach(CondizioneStato.allCases) { condizione in
+                                                Text(condizione.rawValue.capitalized)
+                                                    .tag(condizione.descrizione)
+                                                    
+                                            }
+                                        }
+                                        .frame(width: 175, height: 25)
+                                        .font(.system(size: 15))
+                                        .padding(.leading, 10)
+                                        .padding(.top, 10)
+                                        
                                         
                                         Divider()
-                                            .frame(width: 165, height: 1)
-                                            .background(Color.white)
-                                            .padding(.vertical, 0)
+                                            .frame(width: 185, height: 0.5)
+                                            .background(Color("ColoreDividerContrasto"))
                                             .padding(.leading, 10)
-                                        
+                                            
                                         TextField("Sezione", text: $textFieldSezione)
                                             .frame(width: 175, height: 25)
-                                            .font(.system(size: 20))
+                                            .font(.system(size: 17))
                                             .padding(.leading, 10)
                                         
                                         Divider()
-                                            .frame(width: 165, height: 1)
-                                            .background(Color.white)
-                                            .padding(.vertical, 1)
+                                            .frame(width: 185, height: 0.5)
+                                            .background(Color("ColoreDividerContrasto"))
                                             .padding(.leading, 10)
-                                                                            
+
+                                              
                                         TextField("Scaffale", text: $textFieldScaffale)
                                             .frame(width: 175, height: 25)
-                                            .font(.system(size: 20))
+                                            .font(.system(size: 17))
                                             .keyboardType(.numberPad)
                                             .padding(.leading, 10)
                                         
                                         Divider()
-                                            .frame(width: 165, height: 1)
-                                            .background(Color.white)
-                                            .padding(.vertical, 1)
+                                            .frame(width: 185, height: 0.5)
+                                            .background(Color("ColoreDividerContrasto"))
                                             .padding(.leading, 10)
+
                                         
                                         TextField("Ripiano", text: $textFieldRipiano)
                                             .frame(width: 175, height: 25)
-                                            .font(.system(size: 20))
+                                            .font(.system(size: 17))
                                             .keyboardType(.numberPad)
                                             .padding(.leading, 10)
-                                            .padding(.bottom, 7)
+                                            .padding(.bottom, 10)
                                     }
                                     .background(Color("ColoreContrasto"))
-                                    .cornerRadius(15)
-                                    .shadow(color: Color("ColorePrincipale") ,radius: 4)
+                                    .cornerRadius(13)
+                                    .shadow(color: Color("ColoreContrasto"),radius: 22)
+                                    
                                 }
                                 .padding(.leading, 40)
                                 .animation(.easeInOut(duration: 0.1), value: showAggiuntaCopia) // Imposta una durata più breve per l'animazione
@@ -184,10 +194,11 @@ struct MenuGestioneLibro: View {
                         
                         
                         Divider()
-                            .background(Color.white)
-                            .padding(.vertical, 11)
+                            .background(Color("ColoreDividerContrasto"))
+                            .padding(.vertical, 20)
+                            .padding(.leading, 17)
                         
-                        if dataList.libro.idCategorie != ""{
+                        if httpManager.libro?.idCategorie != ""{
                             ScrollView(.horizontal, showsIndicators: false) {
                                 LazyHStack {
                                     ForEach(items.indices, id: \.self) { index in
@@ -197,7 +208,7 @@ struct MenuGestioneLibro: View {
                                 .frame(height: 30)
                             }
                             .frame(height: 30)
-                            .padding(.trailing, 10)
+                            .padding(.trailing, 20)
                             .padding(.leading, 10)
                         }
                         
@@ -206,20 +217,37 @@ struct MenuGestioneLibro: View {
                                 ForEach(arrayLibri.indices, id: \.self) { index in
                                     
                                     //Se è l'ultimo item lo mette a "true", altrimente a "false"
-                                    if index == (dataList.libro.copie!.count) - 1{
-                                        ItemGestioneCopiaLibro(datiLibro: CopiaLibro(idCopia: arrayLibri[index].idCopia , isbn: arrayLibri[index].isbn , condizioni: arrayLibri[index].condizioni , sezione: arrayLibri[index].sezione, scaffale: arrayLibri[index].scaffale , ripiano: arrayLibri[index].ripiano , idPrestito: arrayLibri[index].idPrestito ), data: dataList, index: $index, datiLibroBinding: $datiLibro, ricaricaPaginaBinding: $ricaricaGrafica)
+                                    if index == ((httpManager.libro?.copie!.count)!) - 1{
+                                        ItemGestioneCopiaLibro(datiLibro: CopiaLibro(
+                                            idCopia: arrayLibri[index].idCopia,
+                                            isbn: arrayLibri[index].isbn,
+                                            condizioni: arrayLibri[index].condizioni,
+                                            sezione: arrayLibri[index].sezione,
+                                            scaffale: arrayLibri[index].scaffale,
+                                            ripiano: arrayLibri[index].ripiano,
+                                            idPrestito: arrayLibri[index].idPrestito),
+                                                               data: httpManager,
+                                                               index: $index,
+                                                               datiLibroBinding: $datiLibro,
+                                                               ricaricaPaginaBinding: $ricaricaGrafica)
                                         
                                     }else{
-                                        ItemGestioneCopiaLibro(datiLibro: CopiaLibro(idCopia: arrayLibri[index].idCopia , isbn: arrayLibri[index].isbn, condizioni: arrayLibri[index].condizioni , sezione: arrayLibri[index].sezione, scaffale: arrayLibri[index].scaffale , ripiano: arrayLibri[index].ripiano, idPrestito: arrayLibri[index].idPrestito ), data: dataList, index: $index, datiLibroBinding: $datiLibro, ricaricaPaginaBinding: $ricaricaGrafica)
+                                        ItemGestioneCopiaLibro(datiLibro: CopiaLibro(idCopia: arrayLibri[index].idCopia , isbn: arrayLibri[index].isbn, condizioni: arrayLibri[index].condizioni , sezione: arrayLibri[index].sezione, scaffale: arrayLibri[index].scaffale , ripiano: arrayLibri[index].ripiano, idPrestito: arrayLibri[index].idPrestito ), data: httpManager, index: $index, datiLibroBinding: $datiLibro, ricaricaPaginaBinding: $ricaricaGrafica)
                                     }
                                 }
+                                .onDelete(perform: { indexSet in
+                                    
+                                    httpManager.deleteCopia(idCopiaDelete: String(arrayLibri[indexSet.first!].idCopia))
+                                
+                                    self.ricaricaGrafica.toggle()
+                                })
                             }
                             .listStyle(.plain)
                             .onChange(of: ricaricaGrafica, perform: { newValue in
-                                dataList.updateData()
+                                httpManager.getCopieLibroDatoIsbn(isbn: datiLibro.isbn)
                             })
                             .refreshable {
-                                dataList.updateData()
+                                httpManager.getCopieLibroDatoIsbn(isbn: datiLibro.isbn)
                             }
                             .navigationBarItems(leading:
                                                     HStack{
@@ -230,16 +258,16 @@ struct MenuGestioneLibro: View {
                                 Spacer()
                                 
                                 Button(action: {
-                                    if showAggiuntaCopia && textFieldCondizioni != "" && textFieldSezione != ""{
-                                        dataList.postCopiaLibro(copiaDelLibro: CopiaLibro(idCopia: 0, isbn: datiLibro.isbn, condizioni: textFieldCondizioni, sezione: textFieldSezione != "" ? textFieldSezione : nil, scaffale: Int32(textFieldScaffale) ?? 0, ripiano: Int32(textFieldRipiano) ?? 0, idPrestito: -1))
+                                    if showAggiuntaCopia && pickerCondizioni.rawValue != "" && textFieldSezione != ""{
+                                        httpManager.postCopiaLibro(copiaDelLibro: CopiaLibro(idCopia: 0, isbn: datiLibro.isbn, condizioni: pickerCondizioni.rawValue, sezione: textFieldSezione != "" ? textFieldSezione : nil, scaffale: Int32(textFieldScaffale) ?? 0, ripiano: Int32(textFieldRipiano) ?? 0, idPrestito: -1))
                                         
-                                        textFieldCondizioni = ""
+                                        pickerCondizioni = .eccellenti
                                         textFieldSezione = ""
                                         textFieldScaffale = ""
                                         textFieldRipiano = ""
                                                                                 
                                     }
-                                    withAnimation {
+                                    withAnimation(.easeIn(duration: 0.25)) {
                                         showAggiuntaCopia.toggle()
                                     }
                                     
@@ -247,31 +275,27 @@ struct MenuGestioneLibro: View {
                                     
                                 }){
                                     ZStack{
-                                        if !showAggiuntaCopia{
-                                            Text("+")
-                                                .font(.title)
-                                                .foregroundColor(.primary)
-                                            
-                                        }else if textFieldCondizioni != "" && textFieldSezione != ""{
-                                            
-                                            RoundedRectangle(cornerRadius: 7)
-                                                .fill(Color.green)
-                                                .shadow(color: Color.green, radius: 5)
-                                                .frame(width: 25, height: 30)
-                                            
-                                            Image(systemName: "chevron.right")
-                                                .resizable()
-                                                .frame(width: 18, height: 18)
-                                                .foregroundColor(Color.primary)
-                                            
-                                        }else{
-                                            Text("-")
-                                                .font(.title)
-                                                .foregroundColor(.primary)
+                                        withAnimation(.easeIn(duration: 0.25)) {
+                                            if !showAggiuntaCopia{
+                                                Text("+")
+                                                    .font(.title)
+                                                    .foregroundColor(.primary)
+                                                
+                                            }else if pickerCondizioni.rawValue != "" && textFieldSezione != ""{
+                                                Text("Avanti")
+                                                    .font(.headline)
+                                                    .foregroundColor(.accentColor)
+                                                    //.shadow(color: Color.green, radius: 5)
+                                                
+                                            }else{
+                                                Text("-")
+                                                    .font(.title)
+                                                    .foregroundColor(.primary)
+                                            }
                                         }
                                         
                                     }
-                                    .frame(width: 25, height: 25)
+                                    //.frame(width: 25, height: 25)
                                 }
                                 .buttonStyle(PlainButtonStyle())
                                 .padding(.trailing, 10)
@@ -280,8 +304,13 @@ struct MenuGestioneLibro: View {
                                 .frame(width: UIScreen.main.bounds.width)
                             )
                         }
+                        .padding(.top, 5)
                     }
                 }
+                .onAppear(perform: {
+                    httpManager.getCopieLibroDatoIsbn(isbn: datiLibro.isbn)
+                    httpManager.getCategorieDelLibro(listaIdCategoria: datiLibro.idCategorie.replacingOccurrences(of: "[", with: "").replacingOccurrences(of: "]", with: ""))
+                })
             }
             
         }else{
@@ -306,14 +335,14 @@ struct ItemGestioneCopiaLibro: View{
     
     var copiaDelLibro: CopiaLibro
         
-    var data: PrendiDatiCopiaLibri
+    var data: HttpManager
         
     var index: Binding<Int>
     var datiLibroBinding: Binding<DatiLibro>
     
     var ricaricaPaginaBinding: Binding<Bool>
     
-    init(datiLibro: CopiaLibro, data: PrendiDatiCopiaLibri, index: Binding<Int>, datiLibroBinding: Binding<DatiLibro>, ricaricaPaginaBinding: Binding<Bool>) {
+    init(datiLibro: CopiaLibro, data: HttpManager, index: Binding<Int>, datiLibroBinding: Binding<DatiLibro>, ricaricaPaginaBinding: Binding<Bool>) {
         self.copiaDelLibro = datiLibro
         self.data = data
         self.index = index
@@ -325,127 +354,19 @@ struct ItemGestioneCopiaLibro: View{
         HStack {
             VStack(alignment: .leading) {
                 Text(datiLibroBinding.wrappedValue.titolo)
-                    .font(.title)
+                    .font(.headline)
                     .padding(.top)
                 
                 
                 Text(datiLibroBinding.wrappedValue.autore)
-                    .font(.body)
+                    .font(.footnote)
                 
                 Text("L'ID della copia è: " + String(copiaDelLibro.idCopia))
-                    .font(.footnote)
+                    .font(.caption)
             }
             .padding(.trailing, 10)
-            
-            Spacer()
-            
-            Button(action: {
-                //ELIMINA LIBRO
-                showAlert = true
-            }){
-                VStack(alignment: .center) {
-                    Text("Elimina")
-                        .font(.title2)
-                        .padding(.leading, 10)
-                        .padding(.trailing, 10)
-                        .foregroundColor(.primary)
-                }
-                .background(Color("ColorePrincipale").opacity(0.6))
-                .cornerRadius(10)
-            }
-            .buttonStyle(PlainButtonStyle())
-            .padding(.trailing, 10)
-            .alert(isPresented: $showAlert) {
-                        Alert(title: Text("Attenzione"),
-                              message: Text("Vuoi continuare?"),
-                              primaryButton: .default(Text("Continua")) {
-                            //ELIMINA LIBRO da eseguire se l'utente sceglie "Continua"
-                                                        
-                            withAnimation {
-                                data.deleteCopia(idCopiaDelete: String(copiaDelLibro.idCopia))
-                            }
-                            
-                            self.ricaricaPaginaBinding.wrappedValue.toggle()
-                        },
-                              secondaryButton: .cancel(){
-                            showAlert = false
-                        })
-                    }
         }
     }
-}
-
-class PrendiDatiCopiaLibri: ObservableObject{
-    @Published var libro = Libro(isbn: "", titolo: "", sottotitolo: nil, lingua: "", casaEditrice: nil, autore: "", annoPubblicazione: nil, idCategorie: "", idGenere: 0, copie: nil, descrizione: nil, np: 0, image: nil)
-    
-    @Published var esito = ""
-    
-    @Published var arrayCategorie = NSMutableArray()
-    
-    var isbn: String
-    var idCategorie: String
-    
-    init(isbn: String, idCategorie: String) {
-        self.isbn = isbn
-        self.idCategorie = idCategorie
-        
-        updateData()
-        getCategorieLibro()
-    }
-    
-    func updateData(){
-        GestioneJson().getCopieLibroDaIsbn(isbn: isbn) { libro, error in
-            DispatchQueue.main.async() {
-                if let libro = libro {
-                    self.libro = libro
-                    
-                } else {
-                    //print(error?.localizedDescription ?? "error")
-                }
-            }
-        }
-    }
-    
-    func deleteCopia(idCopiaDelete: String){
-        GestioneJson().deleteSingolaCopia(idCopia: idCopiaDelete) { esitoDelete, errore in
-            DispatchQueue.main.async {
-                if let esitoDelete = esitoDelete{
-                    self.esito = esitoDelete
-                    
-                }else{
-                    
-                }
-            }
-        }
-    }
-    
-    func getCategorieLibro(){
-        GestioneJson().getCategorieLibro(listaIdCategoria: idCategorie) { arrayCategorie, error in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0) {
-                if let arrayCategorie = arrayCategorie {
-                    
-                    self.arrayCategorie = arrayCategorie
-                                        
-                } else {
-                    //print(error?.localizedDescription ?? "error")
-                }
-            }
-        }
-    }
-    
-    func postCopiaLibro(copiaDelLibro: CopiaLibro){
-        GestioneJson().postCopiaLibro(copiaDaCaricare: copiaDelLibro) { risultato, error in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                if let risultato = risultato {
-                    self.esito = risultato
-                    
-                } else {
-                    //print(error?.localizedDescription ?? "error")
-                }
-            }
-        }
-    }
-    
 }
 
 struct MenuGestioneLibro_Previews: PreviewProvider {

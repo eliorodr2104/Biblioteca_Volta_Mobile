@@ -32,8 +32,9 @@ import CachedAsyncImage
 struct MenuLibro: View {
     
     var datiLibro: DatiLibro
+        
+    @ObservedObject private var httpManager: HttpManager
     
-    @ObservedObject private(set) var viewModel: ViewModel
     
     var index: Binding<Int>
     var showAnimationSecondary: Binding<Bool>
@@ -41,19 +42,22 @@ struct MenuLibro: View {
     
     init(datiLibro: DatiLibro, index: Binding<Int>, showAnimationSecondary: Binding<Bool>, show: Binding<Bool>) {
         self.datiLibro = datiLibro
-        self.viewModel = ViewModel(isbn: datiLibro.isbn, listaCategorie: datiLibro.idCategorie)
+                
+        self.httpManager = HttpManager()
+        
         self.index = index
         self.showAnimationSecondary = showAnimationSecondary
         self.show = show
     }
+
     
     //Variabile di stato booleana
     @State var controlloDimensione = false
         
     var body: some View {
-        let items: [Etichetta] = inizializzaCategorie(arrayCategorie: viewModel.arrayCategorie as! [String])
+        let items: [Etichetta] = inizializzaCategorie(arrayCategorie: httpManager.arrayCategorie as! [String])
         
-        let nCopieDisponibili = getRisultatoCopie(copieLibro: viewModel.libro?.copie as? [CopiaLibro])
+        let nCopieDisponibili = getRisultatoCopie(copieLibro: httpManager.libro?.copie as? [CopiaLibro])
         
         //Lettura delle dimensioni dello schermo nel quale si avvia la app
         GeometryReader { geometry in
@@ -173,6 +177,10 @@ struct MenuLibro: View {
                     }
                 }
             }
+            .onAppear(perform: {                
+                httpManager.getCategorieDelLibro(listaIdCategoria: datiLibro.idCategorie.replacingOccurrences(of: "[", with: "").replacingOccurrences(of: "]", with: ""))
+                httpManager.getCopieLibroDatoIsbn(isbn: datiLibro.isbn)
+            })
             .padding(.top, 20)
             
         }
@@ -207,41 +215,6 @@ private func inizializzaCategorie(arrayCategorie: [String]) -> [Etichetta]{
     
     return arrayEtichette
 }
-
-
-@available(iOS 15.0, *)
-extension MenuLibro {
-    class ViewModel: ObservableObject {
-        @Published var libro: Libro?
-        @Published var arrayCategorie = NSMutableArray()
-        
-        init(isbn: String, listaCategorie: String) {
-            GestioneJson().getCopieLibroDaIsbn(isbn: isbn) { libro, error in
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                    if let libro = libro {
-                        self.libro = libro
-                        
-                    } else {
-                        //print(error?.localizedDescription ?? "error")
-                    }
-                }
-            }
-            
-            GestioneJson().getCategorieLibro(listaIdCategoria: listaCategorie) { arrayCategorie, error in
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                    if let arrayCategorie = arrayCategorie {
-                                                
-                        self.arrayCategorie = arrayCategorie
-                        
-                    } else {
-                        //print(error?.localizedDescription ?? "error")
-                    }
-                }
-            }
-        }
-    }
-}
-
 
 @available(iOS 15.0, *)
 struct MenuLibro_Previews: PreviewProvider {

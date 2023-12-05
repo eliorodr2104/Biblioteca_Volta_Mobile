@@ -139,6 +139,15 @@ actual suspend fun postUtenti(utente: String): String?{
     return null
 }
 
+actual suspend fun getCategorie(): String?{
+    return null
+}
+
+actual suspend fun getGeneri(): String?{
+    return null
+}
+
+
 actual suspend fun getFiltroLibri(mappaRicerca: HashMap<String, String>, listaIdCategoria: String): String? {
     return null
 }

@@ -13,7 +13,7 @@ import sharedModuleBiblioteca
 
 struct ListaVisualizzazione: View {
     //Chiamata al server per la richiesta dei libri (10 alla volta)
-    @StateObject var dataList = PrendiData()
+    @StateObject var httpManager = HttpManager()
     
     //Variabili di stato delle classi MenuSplit
     private var index: Binding<Int>
@@ -37,7 +37,7 @@ struct ListaVisualizzazione: View {
     
     var body: some View {
         //Oggetti ItemVisualizzazione che viene inizializzato dalla funzione inializzaItem
-        var tempArrayItemVisualizzazione = textSearch == "" ? inizializzaItem(index: index, CONST_INDEX_LIBRI: 10, datiLibro: datiLibro, showAnimationSecondary: showAnimationSecondary, libriVisualizzazioneRichiestaJson: dataList.arrayLibri as! [DatiLibro], show: .constant(false), searchData: $textSearch) : inizializzaItem(index: index, CONST_INDEX_LIBRI: 10, datiLibro: datiLibro, showAnimationSecondary: showAnimationSecondary, libriVisualizzazioneRichiestaJson: dataList.arrayLibriRicerca as! [DatiLibro], show: .constant(false), searchData: $textSearch)
+        let tempArrayItemVisualizzazione = textSearch == "" ? inizializzaItem(index: index, CONST_INDEX_LIBRI: 10, datiLibro: datiLibro, showAnimationSecondary: showAnimationSecondary, libriVisualizzazioneRichiestaJson: httpManager.arrayLibri as! [DatiLibro], show: .constant(false), searchData: $textSearch) : inizializzaItem(index: index, CONST_INDEX_LIBRI: 10, datiLibro: datiLibro, showAnimationSecondary: showAnimationSecondary, libriVisualizzazioneRichiestaJson: httpManager.arrayLibriRicerca as! [DatiLibro], show: .constant(false), searchData: $textSearch)
         
         
         //Text("WEUUU: " + String(tempArrayItemVisualizzazione.count))
@@ -76,7 +76,7 @@ struct ListaVisualizzazione: View {
                         LazyVGrid(columns: columns, spacing: 16) {
                             ForEach(tempArrayItemVisualizzazione.indices, id: \.self) { index in
                                 
-                                ItemOrizzontaliLista(cardPrimi: tempArrayItemVisualizzazione[index].cardPrimi, cardSecondo: tempArrayItemVisualizzazione[index].cardSecondo, funzionePrimaCard: tempArrayItemVisualizzazione[index].funzionePrimaCard, funzioneSecondaCard: tempArrayItemVisualizzazione[index].funzioneSecondaCard, show: show, ultimoItem: false, getData: dataList, searchText: $textSearch)
+                                ItemOrizzontaliLista(cardPrimi: tempArrayItemVisualizzazione[index].cardPrimi, cardSecondo: tempArrayItemVisualizzazione[index].cardSecondo, funzionePrimaCard: tempArrayItemVisualizzazione[index].funzionePrimaCard, funzioneSecondaCard: tempArrayItemVisualizzazione[index].funzioneSecondaCard, show: show, ultimoItem: false, getData: httpManager, searchText: $textSearch)
                             }
                         }
                         .padding()
@@ -104,20 +104,20 @@ struct ListaVisualizzazione: View {
                         ForEach(tempArrayItemVisualizzazione.indices, id: \.self) { index in
                             //Se è l'ultimo item lo mette a "true", altrimente a "false"
                             if textSearch == ""{
-                                if index == (dataList.arrayLibri.count - 1) / 2{
-                                    ItemOrizzontaliLista(cardPrimi: tempArrayItemVisualizzazione[index].cardPrimi, cardSecondo: tempArrayItemVisualizzazione[index].cardSecondo, funzionePrimaCard: tempArrayItemVisualizzazione[index].funzionePrimaCard, funzioneSecondaCard: tempArrayItemVisualizzazione[index].funzioneSecondaCard, show: show, ultimoItem: true, getData: dataList, searchText: $textSearch)
+                                if index == (httpManager.arrayLibri.count - 1) / 2{
+                                    ItemOrizzontaliLista(cardPrimi: tempArrayItemVisualizzazione[index].cardPrimi, cardSecondo: tempArrayItemVisualizzazione[index].cardSecondo, funzionePrimaCard: tempArrayItemVisualizzazione[index].funzionePrimaCard, funzioneSecondaCard: tempArrayItemVisualizzazione[index].funzioneSecondaCard, show: show, ultimoItem: true, getData: httpManager, searchText: $textSearch)
                                                                     
                                 }else{
-                                    ItemOrizzontaliLista(cardPrimi: tempArrayItemVisualizzazione[index].cardPrimi, cardSecondo: tempArrayItemVisualizzazione[index].cardSecondo, funzionePrimaCard: tempArrayItemVisualizzazione[index].funzionePrimaCard, funzioneSecondaCard: tempArrayItemVisualizzazione[index].funzioneSecondaCard, show: show, ultimoItem: false, getData: dataList, searchText: $textSearch)
+                                    ItemOrizzontaliLista(cardPrimi: tempArrayItemVisualizzazione[index].cardPrimi, cardSecondo: tempArrayItemVisualizzazione[index].cardSecondo, funzionePrimaCard: tempArrayItemVisualizzazione[index].funzionePrimaCard, funzioneSecondaCard: tempArrayItemVisualizzazione[index].funzioneSecondaCard, show: show, ultimoItem: false, getData: httpManager, searchText: $textSearch)
                                     
                                 }
                                 
                             }else{
-                                if index == (dataList.arrayLibriRicerca.count - 1) / 2{
-                                    ItemOrizzontaliLista(cardPrimi: tempArrayItemVisualizzazione[index].cardPrimi, cardSecondo: tempArrayItemVisualizzazione[index].cardSecondo, funzionePrimaCard: tempArrayItemVisualizzazione[index].funzionePrimaCard, funzioneSecondaCard: tempArrayItemVisualizzazione[index].funzioneSecondaCard, show: show, ultimoItem: true, getData: dataList, searchText: $textSearch)
+                                if index == (httpManager.arrayLibriRicerca.count - 1) / 2{
+                                    ItemOrizzontaliLista(cardPrimi: tempArrayItemVisualizzazione[index].cardPrimi, cardSecondo: tempArrayItemVisualizzazione[index].cardSecondo, funzionePrimaCard: tempArrayItemVisualizzazione[index].funzionePrimaCard, funzioneSecondaCard: tempArrayItemVisualizzazione[index].funzioneSecondaCard, show: show, ultimoItem: true, getData: httpManager, searchText: $textSearch)
                                                                     
                                 }else{
-                                    ItemOrizzontaliLista(cardPrimi: tempArrayItemVisualizzazione[index].cardPrimi, cardSecondo: tempArrayItemVisualizzazione[index].cardSecondo, funzionePrimaCard: tempArrayItemVisualizzazione[index].funzionePrimaCard, funzioneSecondaCard: tempArrayItemVisualizzazione[index].funzioneSecondaCard, show: show, ultimoItem: false, getData: dataList, searchText: $textSearch)
+                                    ItemOrizzontaliLista(cardPrimi: tempArrayItemVisualizzazione[index].cardPrimi, cardSecondo: tempArrayItemVisualizzazione[index].cardSecondo, funzionePrimaCard: tempArrayItemVisualizzazione[index].funzionePrimaCard, funzioneSecondaCard: tempArrayItemVisualizzazione[index].funzioneSecondaCard, show: show, ultimoItem: false, getData: httpManager, searchText: $textSearch)
                                     
                                 }
                             }
@@ -129,15 +129,23 @@ struct ListaVisualizzazione: View {
                     .listStyle(.plain)
                     .allowsHitTesting(show.wrappedValue ? false : true)
                     .navigationTitle("Lista dei libri")
-                    .refreshable {
-                        if dataList.nPag != 0{
-                            dataList.resetData()
-                            dataList.updateData()
+                    
+
+                    .onChange(of: textSearch) { newValue in
+                        httpManager.searchData(searchText: newValue)
+                    }
+                }
+                .refreshable {
+                    withAnimation {
+                        if httpManager.nPagCatalogo != 0 {
+                            httpManager.resetDataCatalogo()
+                            httpManager.refreshLibriCatalogo()
                         }
                     }
-                    .onChange(of: textSearch) { newValue in
-                        dataList.searchData(searchText: newValue)
-                    }
+                    
+                }
+                .onAppear{
+                    httpManager.updateDataLibriCatalogo()
                 }
             }
         }
@@ -163,7 +171,7 @@ struct ItemOrizzontaliLista: View{
     var ultimoItem: Bool
     
     //Varaibile con il collegamento con il server
-    @StateObject var getData: PrendiData
+    @StateObject var getData: HttpManager
     
     @State var searchText: Binding<String>
         
@@ -192,7 +200,7 @@ struct ItemOrizzontaliLista: View{
                 }
             }
             .onAppear(){
-                getData.updateData()
+                getData.updateDataLibriCatalogo()
             }
             
         }else{
@@ -223,6 +231,7 @@ struct ItemOrizzontaliLista: View{
     }
 }
 
+/*
 class PrendiData: ObservableObject{
     @Published var nPag = 0
     
@@ -233,7 +242,7 @@ class PrendiData: ObservableObject{
 
     init() {
         updateData()
-        searchData(searchText: "")
+        //searchData(searchText: "")
     }
     
     func updateData(){
@@ -284,12 +293,13 @@ class PrendiData: ObservableObject{
         arrayLibri = NSMutableArray()
     }
 }
+*/
 
 private func inizializzaItem(index: Binding<Int>, CONST_INDEX_LIBRI: Int, datiLibro: Binding<MenuLibro>, showAnimationSecondary: Binding<Bool>, libriVisualizzazioneRichiestaJson: [DatiLibro], show: Binding<Bool>, searchData: Binding<String>) -> [ItemOrizzontaliLista]{
             
     var arrayTemp = [ItemOrizzontaliLista]()
     
-    var item = ItemOrizzontaliLista(funzionePrimaCard: {}, funzioneSecondaCard: {},show: show, ultimoItem: false, getData: PrendiData(), searchText: searchData)
+    var item = ItemOrizzontaliLista(funzionePrimaCard: {}, funzioneSecondaCard: {},show: show, ultimoItem: false, getData: HttpManager(), searchText: searchData)
                     
     for i in stride(from: 0, to: libriVisualizzazioneRichiestaJson.count, by: 2) {
                         
@@ -306,7 +316,7 @@ private func inizializzaItem(index: Binding<Int>, CONST_INDEX_LIBRI: Int, datiLi
                     index.wrappedValue = CONST_INDEX_LIBRI
                     datiLibro.wrappedValue = MenuLibro(datiLibro: libriVisualizzazioneRichiestaJson[i + 1], index: index, showAnimationSecondary: showAnimationSecondary, show: show)
                     withAnimation { showAnimationSecondary.wrappedValue.toggle() }
-                }, show: show, ultimoItem: false, getData: PrendiData(), searchText: searchData
+                }, show: show, ultimoItem: false, getData: HttpManager(), searchText: searchData
             )
             
         }else if i == libriVisualizzazioneRichiestaJson.count - 1{
@@ -318,7 +328,7 @@ private func inizializzaItem(index: Binding<Int>, CONST_INDEX_LIBRI: Int, datiLi
                     datiLibro.wrappedValue = MenuLibro(datiLibro: libriVisualizzazioneRichiestaJson[i], index: index, showAnimationSecondary: showAnimationSecondary, show: show)
                     withAnimation { showAnimationSecondary.wrappedValue.toggle() }
                 },
-                funzioneSecondaCard: {}, show: show, ultimoItem: false, getData: PrendiData(), searchText: searchData
+                funzioneSecondaCard: {}, show: show, ultimoItem: false, getData: HttpManager(), searchText: searchData
             )
         }
         

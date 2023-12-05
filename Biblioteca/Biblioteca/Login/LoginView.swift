@@ -113,7 +113,7 @@ struct RegistrazioneUtenteView: View {
     private var mailVolta: String
     private var imgUtente: String
     
-    @ObservedObject private var getData: ServerCollegamento
+    @ObservedObject private var httpManager: HttpManager
     
     @State private var numeroTelefonoTextField = ""
     @State private var mailAlternativaTextField = ""
@@ -138,7 +138,8 @@ struct RegistrazioneUtenteView: View {
         self.numeroTelefonoTextField = numeroTelefonoTextField
         self.mailAlternativaTextField = mailAlternativaTextField
         
-        self.getData = ServerCollegamento(email: mailVolta)
+        self.httpManager = HttpManager()
+        
     }
     
     var body: some View {
@@ -148,7 +149,7 @@ struct RegistrazioneUtenteView: View {
         }
          */
         //DEV'ESSERE DIVERSO DA ""
-        if getData.utente.nome != "" || isRegistred{
+        if httpManager.utente.nome != "" || isRegistred{
             
             GeometryReader { geometry in
                 
@@ -157,7 +158,7 @@ struct RegistrazioneUtenteView: View {
                  * s'è vero apre il menù per telefono, altrimenti apre la visuale per il tablet.
                  */
                 if geometry.size.width < 700 {
-                    MenuSplit(nomeUtente: nomeTextField, salutoUtente: "Ciao", utenteUtilizzo: getData.utente,
+                    MenuSplit(nomeUtente: nomeTextField, salutoUtente: "Ciao", utenteUtilizzo: httpManager.utente,
                               datiLibro:
                                 MenuLibro(datiLibro:
                                             DatiLibro(isbn: "",
@@ -240,7 +241,7 @@ struct RegistrazioneUtenteView: View {
                                 alertFrame = true
                                 
                             }else{
-                                getData.postUtente(utente: Utente(idUtente: 0,
+                                httpManager.postUtente(utente: Utente(idUtente: 0,
                                                                   nome: nomeTextField,
                                                                   cognome: cognomeTextField,
                                                                   numero: numeroTelefonoTextField == "" ? nil : numeroTelefonoTextField,
@@ -249,7 +250,7 @@ struct RegistrazioneUtenteView: View {
                                                                   mail: mailVolta,
                                                                   preferiti: nil))
                                 
-                                getData.updateData()
+                                httpManager.getUtenteDaEmail(email: mailVolta)
                                 
                                 isRegistred = true
                             }
@@ -275,6 +276,9 @@ struct RegistrazioneUtenteView: View {
                 }
                 
             }
+            .onAppear(perform: {
+                httpManager.getUtenteDaEmail(email: mailVolta)
+            })
             .padding(.top, 20)
         }
     }
@@ -300,46 +304,6 @@ struct ColorAnimation: AnimatableModifier {
                     }
                 }
             )
-    }
-}
-
-class ServerCollegamento: ObservableObject{
-    @Published var utente = Utente(idUtente: 0, nome: "", cognome: "", numero: nil, mailAlternativa: "", grado: 0, mail: "", preferiti: nil)
-    
-    @Published var esito = ""
-    
-    var email: String
-        
-    init(email: String) {
-        self.email = email
-        
-        updateData()
-    }
-    
-    func updateData(){
-        GestioneJson().getUtenteEmail(email: email) { risultato, error in
-            DispatchQueue.main.async() {
-                if let risultato = risultato {
-                    self.utente = risultato
-                             
-                } else {
-                    //print(error?.localizedDescription ?? "error")
-                }
-            }
-        }
-    }
-    
-    func postUtente(utente: Utente){
-        GestioneJson().postUtente(utenteDaCaricare: utente) { risultato, error in
-            DispatchQueue.main.async() {
-                if let risultato = risultato {
-                    self.esito = risultato
-                             
-                } else {
-                    //print(error?.localizedDescription ?? "error")
-                }
-            }
-        }
     }
 }
 

@@ -11,6 +11,10 @@ expect suspend fun getCopieLibri(isbn: String): String?
 
 expect suspend fun getCategorieLibri(listaIdCategoria: String): String?
 
+expect suspend fun getCategorie(): String?
+
+expect suspend fun getGeneri(): String?
+
 expect suspend fun getFiltroLibri(mappaRicerca: HashMap<String, String>, listaIdCategoria: String): String?
 
 expect suspend fun deleteCopiaLibro(idCopia: String): String?

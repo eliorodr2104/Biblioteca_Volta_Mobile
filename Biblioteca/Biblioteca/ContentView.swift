@@ -18,7 +18,7 @@ import sharedModuleBiblioteca
 
 @available(iOS 15.0, *)
 struct ContentView: View {
-        
+    
 	var body: some View {
         LoginView()
 	}

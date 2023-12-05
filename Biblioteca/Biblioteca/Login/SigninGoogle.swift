@@ -25,7 +25,7 @@ class SignIn_withGoogle_VM: ObservableObject{
         
         GIDSignIn.sharedInstance.signIn(withPresenting: Application_utility.rootViewController) { user, error in
                         
-            if let error = error {
+            if error != nil {
                 return
             }
             

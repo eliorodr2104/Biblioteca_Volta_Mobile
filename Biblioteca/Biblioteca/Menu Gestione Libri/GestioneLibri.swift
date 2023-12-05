@@ -33,7 +33,7 @@ struct GestioneLibri: View {
 @available(iOS 15.0, *)
 struct ListaGestioneLibro: View {
     //Chiamata al server per la richiesta dei libri (10 alla volta)
-    @ObservedObject var dataList: PrendiDatiLibri
+    @ObservedObject var httpManager: HttpManager
     
     @State var indexMenu: Binding<Int>
     @State var datiLibro: Binding<DatiLibro>
@@ -41,15 +41,15 @@ struct ListaGestioneLibro: View {
     @State var showAggiuntaLibro = false
     
     //Metodo costruttore
-    init(dataList: PrendiDatiLibri = PrendiDatiLibri(), indexMenu: Binding<Int>, datiLibro: Binding<DatiLibro>, showAnimationSeondary: Binding<Bool>) {
-        self.dataList = dataList
+    init(httpManager: HttpManager = HttpManager(), indexMenu: Binding<Int>, datiLibro: Binding<DatiLibro>, showAnimationSeondary: Binding<Bool>) {
+        self.httpManager = httpManager
         self.indexMenu = indexMenu
         self.datiLibro = datiLibro
         self.showAnimationSecondary = showAnimationSeondary
     }
     
     var body: some View {
-        let arrayLibri = dataList.arrayLibri as! [DatiLibro]
+        let arrayLibri = httpManager.arrayLibri as! [DatiLibro]
                
         if !showAggiuntaLibro{
             NavigationView{
@@ -57,14 +57,36 @@ struct ListaGestioneLibro: View {
                     ForEach(arrayLibri.indices, id: \.self) { index in
                         
                         //Se è l'ultimo item lo mette a "true", altrimente a "false"
-                        if index == dataList.arrayLibri.count - 1{
-                            ItemGestioneLibro(datiLibro: DatiLibro(isbn: arrayLibri[index].isbn, titolo: arrayLibri[index].titolo, sottotitolo: arrayLibri[index].sottotitolo, lingua: arrayLibri[index].lingua, casaEditrice: arrayLibri[index].casaEditrice, autore: arrayLibri[index].autore, annoPubblicazione: arrayLibri[index].annoPubblicazione, idCategorie: arrayLibri[index].idCategorie, idGenere: arrayLibri[index].idGenere, descrizione: arrayLibri[index].descrizione, np: arrayLibri[index].np, image: arrayLibri[index].image), isLast: true, data: dataList, index: indexMenu, datiLibroBinding: datiLibro, showAnimationSecondary: showAnimationSecondary)
+                        if index == httpManager.arrayLibri.count - 1{
+                            ItemGestioneLibro(
+                                datiLibro: DatiLibro(isbn: arrayLibri[index].isbn,
+                                 titolo: arrayLibri[index].titolo,
+                                 sottotitolo: arrayLibri[index].sottotitolo,
+                                 lingua: arrayLibri[index].lingua,
+                                 casaEditrice: arrayLibri[index].casaEditrice,
+                                 autore: arrayLibri[index].autore,
+                                 annoPubblicazione: arrayLibri[index].annoPubblicazione,
+                                 idCategorie: arrayLibri[index].idCategorie,
+                                 idGenere: arrayLibri[index].idGenere,
+                                 descrizione: arrayLibri[index].descrizione,
+                                 np: arrayLibri[index].np, 
+                                 image: arrayLibri[index].image),
+                                isLast: true,
+                                data: httpManager,
+                                index: indexMenu,
+                                datiLibroBinding: datiLibro,
+                                showAnimationSecondary:
+                                    showAnimationSecondary)
                             
                         }else{
-                            ItemGestioneLibro(datiLibro: DatiLibro(isbn: arrayLibri[index].isbn, titolo: arrayLibri[index].titolo, sottotitolo: arrayLibri[index].sottotitolo, lingua: arrayLibri[index].lingua, casaEditrice: arrayLibri[index].casaEditrice, autore: arrayLibri[index].autore, annoPubblicazione: arrayLibri[index].annoPubblicazione, idCategorie: arrayLibri[index].idCategorie, idGenere: arrayLibri[index].idGenere, descrizione: arrayLibri[index].descrizione, np: arrayLibri[index].np, image: arrayLibri[index].image), data: dataList, index: indexMenu, datiLibroBinding: datiLibro, showAnimationSecondary: showAnimationSecondary)
+                            ItemGestioneLibro(datiLibro: DatiLibro(isbn: arrayLibri[index].isbn, titolo: arrayLibri[index].titolo, sottotitolo: arrayLibri[index].sottotitolo, lingua: arrayLibri[index].lingua, casaEditrice: arrayLibri[index].casaEditrice, autore: arrayLibri[index].autore, annoPubblicazione: arrayLibri[index].annoPubblicazione, idCategorie: arrayLibri[index].idCategorie, idGenere: arrayLibri[index].idGenere, descrizione: arrayLibri[index].descrizione, np: arrayLibri[index].np, image: arrayLibri[index].image), data: httpManager, index: indexMenu, datiLibroBinding: datiLibro, showAnimationSecondary: showAnimationSecondary)
                         }
                     }
                 }
+                .refreshable(action: {
+                    httpManager.resetDataCatalogo()
+                    httpManager.refreshLibriCatalogo()
+                })
                 .listStyle(.plain)
                 .navigationBarItems(leading:
                                         HStack{
@@ -101,9 +123,14 @@ struct ListaGestioneLibro: View {
                     .frame(width: UIScreen.main.bounds.width)
                 )
             }
+            .onAppear {
+                httpManager.resetDataCatalogo()
+                httpManager.updateDataLibriCatalogo()
+                //9788891639431
+            }
             
         }else{
-            aggiuntaLibro(showAggiuntaLibroBinding: $showAggiuntaLibro, dataList: dataList)
+            aggiuntaLibro(showAggiuntaLibroBinding: $showAggiuntaLibro, dataList: httpManager)
         }
     }
 }
@@ -111,14 +138,14 @@ struct ListaGestioneLibro: View {
 struct aggiuntaLibro: View{
     @State var showAggiuntaLibroBinding: Binding<Bool>
     
-    @ObservedObject var dataList: PrendiDatiLibri
+    @ObservedObject var dataList: HttpManager
     
     @State var ricercaLibroIsbn = true
     
     //Variabile del TextField per la ricerca del libro dal ISBN
     @State var isbnLibro = ""
     
-    init(showAggiuntaLibroBinding: Binding<Bool>, dataList: PrendiDatiLibri) {
+    init(showAggiuntaLibroBinding: Binding<Bool>, dataList: HttpManager) {
         self.showAggiuntaLibroBinding = showAggiuntaLibroBinding
         self.dataList = dataList
     }
@@ -212,11 +239,11 @@ struct aggiuntaLibro: View{
 struct addLibro: View{
     
     @State var isbnLibro: String
-    @ObservedObject var prendiData: PrendiDatiLibri
+    @ObservedObject var prendiData: HttpManager
     
     var showAggiuntaLibroBinding: Binding<Bool>
     
-    init(isbnLibro: String, prendiData: PrendiDatiLibri = PrendiDatiLibri(), showAggiuntaLibroBinding: Binding<Bool>) {
+    init(isbnLibro: String, prendiData: HttpManager = HttpManager(), showAggiuntaLibroBinding: Binding<Bool>) {
         self.isbnLibro = isbnLibro
         self.prendiData = prendiData
         self.showAggiuntaLibroBinding = showAggiuntaLibroBinding
@@ -236,7 +263,7 @@ struct addLibro: View{
 
 struct AggiuntaRicercaLibroApi: View{
     
-    @ObservedObject var prendiData: PrendiDatiLibri
+    @ObservedObject var prendiData: HttpManager
     
     var showAggiuntaLibroBinding: Binding<Bool>
     
@@ -244,7 +271,7 @@ struct AggiuntaRicercaLibroApi: View{
     
     @State var cambiaModo = false
             
-    init(prendiData: PrendiDatiLibri, showAggiuntaLibroBinding: Binding<Bool>, datiLibro: DatiLibro) {
+    init(prendiData: HttpManager, showAggiuntaLibroBinding: Binding<Bool>, datiLibro: DatiLibro) {
         
         self.prendiData = prendiData
         self.showAggiuntaLibroBinding = showAggiuntaLibroBinding
@@ -262,97 +289,103 @@ struct AggiuntaRicercaLibroApi: View{
                     }
                     .clipShape(RoundedRectangle(cornerRadius: 20))
                     .frame(width: 113, height: 175)
+                    .padding(.leading, 20)
                                     
                     VStack(alignment: .leading) {
-                        Text("ISBN del libro: \n" + datiLibro.isbn)
-                            .padding(.bottom, 115)
+                        Text("ISBN:")
+                            .font(.subheadline)
+                        
+                        Text(datiLibro.isbn)
+                            .foregroundColor(.primary.opacity(0.5))
+                        
                     }
                 }
             }
+            .onAppear {
+                prendiData.getTutteCategorie()
+                prendiData.getTuttiGeneri()
+            }
             
-            Form{
-                VStack(alignment: .leading){
-                    Text("Titolo")
-                        .font(.headline)
-                        .padding(.bottom, 6)
-                    
-                    Text(datiLibro.titolo)
+            NavigationView {
+                Form{
+                    Section("Info libro"){
+                        VStack(alignment: .leading){
+                            Text("Titolo")
+                                .font(.headline)
+                                .padding(.bottom, 6)
+                            
+                            Text(datiLibro.titolo)
+                        }
+                        
+                        VStack(alignment: .leading){
+                            Text("Sottotitolo")
+                                .font(.headline)
+                                .padding(.bottom, 6)
+                            
+                            Text(datiLibro.sottotitolo ?? "Vuoto")
+                        }
+                        
+                        VStack(alignment: .leading){
+                            Text("Lingua")
+                                .font(.headline)
+                                .padding(.bottom, 6)
+                            
+                            Text(datiLibro.lingua)
+                        }
+                        
+                        VStack(alignment: .leading){
+                            Text("Casa editrice")
+                                .font(.headline)
+                                .padding(.bottom, 6)
+                            
+                            Text(datiLibro.casaEditrice ?? "Vuoto")
+                        }
+                                        
+                        VStack(alignment: .leading){
+                            Text("Autore")
+                                .font(.headline)
+                                .padding(.bottom, 6)
+                            
+                            Text(datiLibro.autore)
+                        }
+                        
+                        VStack(alignment: .leading){
+                            Text("Anno pubblicazione")
+                                .font(.headline)
+                                .padding(.bottom,6)
+                            
+                            Text(datiLibro.annoPubblicazione ?? "Vuoto")
+                        }
+                        
+                        //COPIE DA AGGIUNGERE
+                        VStack(alignment: .leading){
+                            Text("Descrizione")
+                                .font(.headline)
+                                .padding(.bottom, 6)
+                            
+                            Text(datiLibro.descrizione ?? "Vuoto")
+                        }
+                        
+                        VStack(alignment: .leading){
+                            Text("Numero pagine")
+                                .font(.headline)
+                                .padding(.bottom)
+                            
+                            Text(String(datiLibro.np))
+                        }
+                    }
+                    .headerProminence(.increased)
                 }
-                
-                VStack(alignment: .leading){
-                    Text("Sottotitolo")
-                        .font(.headline)
-                        .padding(.bottom, 6)
-                    
-                    Text(datiLibro.sottotitolo ?? "Vuoto")
-                }
-                
-                VStack(alignment: .leading){
-                    Text("Lingua")
-                        .font(.headline)
-                        .padding(.bottom, 6)
-                    
-                    Text(datiLibro.lingua)
-                }
-                
-                VStack(alignment: .leading){
-                    Text("Casa editrice")
-                        .font(.headline)
-                        .padding(.bottom, 6)
-                    
-                    Text(datiLibro.casaEditrice ?? "Vuoto")
-                }
-                                
-                VStack(alignment: .leading){
-                    Text("Autore")
-                        .font(.headline)
-                        .padding(.bottom, 6)
-                    
-                    Text(datiLibro.autore)
-                }
-                
-                VStack(alignment: .leading){
-                    Text("Anno pubblicazione")
-                        .font(.headline)
-                        .padding(.bottom,6)
-                    
-                    Text(datiLibro.annoPubblicazione ?? "Vuoto")
-                }
-                
-                //Cambiare a ComboBox
-                VStack(alignment: .leading){
-                    Text("Categorie")
-                        .font(.headline)
-                        .padding(.bottom, 6)
-                    
-                    Text(datiLibro.idCategorie)
-                }
-                
-                //Cambiare a ComboBox
-                VStack(alignment: .leading){
-                    Text("Genere")
-                        .font(.headline)
-                        .padding(.bottom, 6)
-                    
-                    Text(String(datiLibro.idGenere))
-                }
-                
-                //COPIE DA AGGIUNGERE
-                VStack(alignment: .leading){
-                    Text("Descrizione")
-                        .font(.headline)
-                        .padding(.bottom, 6)
-                    
-                    Text(datiLibro.descrizione ?? "Vuoto")
-                }
-                
-                VStack(alignment: .leading){
-                    Text("Numero pagine")
-                        .font(.headline)
-                        .padding(.bottom)
-                    
-                    Text(String(datiLibro.np))
-                }
+                .navigationBarItems(trailing:
+                                        Button(action: {
+                                            withAnimation(Animation.easeInOut(duration: 0.5)) {
+                                                cambiaModo.toggle()
+                                            }
+                                            
+                                        }){
+                                            Text("Avanti")
+                                        }
+                )
             }
             
         }else{
@@ -364,26 +397,24 @@ struct AggiuntaRicercaLibroApi: View{
                                   autoreLibro: datiLibro.autore,
                                   annoPubblicazioneLibro: datiLibro.annoPubblicazione ?? "Vuoto",
                                   idCategorieLibro: datiLibro.idCategorie,
-                                  idGenereLibro: String(datiLibro.idGenere),
                                   descrizioneLibro: datiLibro.descrizione ?? "Vuoto",
                                   numeroPagineLibro: String(datiLibro.np),
-                                  immagineLibro: datiLibro.image ?? "")
-        }
-        
-        
-        
-        Button(action: {
-            cambiaModo.toggle()
-            
-        }){
-            Text("Avanti")
+                                  immagineLibro: datiLibro.image ?? "", httpManager: prendiData, showAggiuntaLibroBilding: showAggiuntaLibroBinding)
         }
     }
 }
 
 struct ModificaAggiuntaLibro: View{
-    private var datiLibro: DatiLibro
     
+    private var datiLibro: DatiLibro
+        
+    private var httpManager: HttpManager
+    
+    @State private var showAlert = false
+    @State private var showAlertTextField = false
+    
+    private var showAggiuntaLibroBilding: Binding<Bool>
+        
     //Varaibili dei TextField per l'inserimento del libro nel DB
     @State var titoloLibro: String
     @State var sottotitoloLibro: String
@@ -391,13 +422,25 @@ struct ModificaAggiuntaLibro: View{
     @State var casaEditriceLibro: String
     @State var autoreLibro: String
     @State var annoPubblicazioneLibro: String
+    
     @State var idCategorieLibro: String
-    @State var idGenereLibro: String
+    
+    @State var idGenereLibro: String = ""
+    
     @State var descrizioneLibro: String
     @State var numeroPagineLibro: String
     @State var immagineLibro: String
     
-    init(datiLibro: DatiLibro, titoloLibro: String, sottotitoloLibro: String, linguaLibro: String, casaEditriceLibro: String, autoreLibro: String, annoPubblicazioneLibro: String, idCategorieLibro: String, idGenereLibro: String, descrizioneLibro: String, numeroPagineLibro: String, immagineLibro: String) {
+        
+    @State private var condizioneCopiaLibro: CondizioneStato = .eccellenti
+    
+    @State var sezioneCopiaLibro = ""
+    @State var scaffale = ""
+    @State var ripianoCopiaLibro = ""
+    
+    @State var task: Task
+            
+    init(datiLibro: DatiLibro, titoloLibro: String, sottotitoloLibro: String, linguaLibro: String, casaEditriceLibro: String, autoreLibro: String, annoPubblicazioneLibro: String, idCategorieLibro: String, descrizioneLibro: String, numeroPagineLibro: String, immagineLibro: String, httpManager: HttpManager, showAggiuntaLibroBilding: Binding<Bool>) {
         
         self.datiLibro = datiLibro
         self.titoloLibro = titoloLibro
@@ -407,13 +450,20 @@ struct ModificaAggiuntaLibro: View{
         self.autoreLibro = autoreLibro
         self.annoPubblicazioneLibro = annoPubblicazioneLibro
         self.idCategorieLibro = idCategorieLibro
-        self.idGenereLibro = idGenereLibro
         self.descrizioneLibro = descrizioneLibro
         self.numeroPagineLibro = numeroPagineLibro
         self.immagineLibro = immagineLibro
+        
+        self.httpManager = httpManager
+        self.showAggiuntaLibroBilding = showAggiuntaLibroBilding
+        
+        self.task = Task(name: "", servingGoals: [])
+        
     }
     
     var body: some View{
+        
+        
         VStack(alignment: .leading) {
             HStack{
                 CachedAsyncImage(url: URL(string: datiLibro.image ?? "")){ image in
@@ -423,6 +473,7 @@ struct ModificaAggiuntaLibro: View{
                 }
                 .clipShape(RoundedRectangle(cornerRadius: 20))
                 .frame(width: 113, height: 175)
+                .padding(.leading, 20)
                                 
                 VStack(alignment: .leading) {
                     Text("ISBN del libro: \n" + datiLibro.isbn)
@@ -430,37 +481,171 @@ struct ModificaAggiuntaLibro: View{
                 }
             }
             
-            Form{
-                LabelTextField(labelName: "Titolo", textFieldText: "Inserisci il titolo del libro", textState: $titoloLibro)
-                
-                LabelTextField(labelName: "Sottotitolo", textFieldText: "Inserisci il sottotitolo:", textState: $sottotitoloLibro)
-                
-                LabelTextField(labelName: "Lingua Libro", textFieldText: "Inserisci la lingua del libro:", textState: $linguaLibro)
-                
-                LabelTextField(labelName: "Casa editrice", textFieldText: "Inserisci la casa editrice del libro:", textState: $casaEditriceLibro)
-                
-                LabelTextField(labelName: "Autore del libro", textFieldText: "Inserisci la lingua del libro:", textState: $autoreLibro)
-                
-                LabelTextField(labelName: "Anno pubblicazione", textFieldText: "Inserisci l'anno di pubblicazione:", textState: $annoPubblicazioneLibro)
-                
-                //Cambiare a ComboBox
-                
-                LabelTextField(labelName: "Categorie", textFieldText: "Inserisci le categorie del libro:", textState: $idCategorieLibro)
-                
-                //Cambiare a ComboBox
-                
-                LabelTextField(labelName: "Genere", textFieldText: "Inserisci il genere del libro:", textState: $idGenereLibro)
-                
-                //COPIE DA AGGIUNGERE
-                
-                LabelTextField(labelName: "Descrizione", textFieldText: "Inserisci la descrizione del libro", textState: $descrizioneLibro)
-                
-                LabelTextField(labelName: "Numero di pagine", textFieldText: "Inserisci il numero di pagine del libro", textState: $numeroPagineLibro)
+            NavigationView{
+                Form{
+                    Section("Info libro"){
+                        LabelTextField(labelName: "Titolo", textFieldText: "Inserisci il titolo del libro", textState: $titoloLibro)
+                        
+                        LabelTextField(labelName: "Sottotitolo", textFieldText: "Inserisci il sottotitolo:", textState: $sottotitoloLibro)
+                        
+                        LabelTextField(labelName: "Lingua Libro", textFieldText: "Inserisci la lingua del libro:", textState: $linguaLibro)
+                        
+                        LabelTextField(labelName: "Casa editrice", textFieldText: "Inserisci la casa editrice del libro:", textState: $casaEditriceLibro)
+                        
+                        LabelTextField(labelName: "Autore del libro", textFieldText: "Inserisci l'autore del libro:", textState: $autoreLibro)
+                        
+                        LabelTextField(labelName: "Anno pubblicazione", textFieldText: "Inserisci l'anno di pubblicazione:", textState: $annoPubblicazioneLibro)
+                                                
+                        MultiSelector(
+                            label: Text("Categorie:"),
+                            options: generateGoals(categorie: httpManager.arrayCategorie),
+                            optionToString: { $0.name },
+                            selected: $task.servingGoals
+                        )
+                                                                                                
+                        Picker("Genere:", selection: $idGenereLibro) {
+                            
+                            ForEach(0..<httpManager.arrayGeneri.count, id: \.self) { index in
+                                Text((httpManager.arrayGeneri as! [String])[index])
+                                    .tag(String(index + 1))
+                            }
+                             
+                        }
+                        
+                        LabelTextField(labelName: "Descrizione", textFieldText: "Inserisci la descrizione del libro", textState: $descrizioneLibro)
+                        
+                        LabelTextField(labelName: "Numero di pagine", textFieldText: "Inserisci il numero di pagine del libro", textState: $numeroPagineLibro)
+                    }
+                    .headerProminence(.increased)
+                    
+                    Section("Sezione copia"){
+                        //SEZIONE PER AGGIUNGERE COPIE
+                        
+                        Picker("Condizioni:", selection: $condizioneCopiaLibro) {
+                            ForEach(CondizioneStato.allCases) { condizione in
+                                Text(condizione.rawValue.capitalized)
+                                    .tag(condizione.descrizione)
+                            }
+                        }
+                        
+                        LabelTextField(labelName: "Sezione", textFieldText: "Inserisci la sezione del libro", textState: $sezioneCopiaLibro)
+                        
+                        LabelTextField(labelName: "Scaffale", textFieldText: "Inserisci lo scaffale del libro", textState: $scaffale)
+                        
+                        LabelTextField(labelName: "Ripiano", textFieldText: "Inserisci il ripiano del libro", textState: $ripianoCopiaLibro)
+                    }
+                    .headerProminence(.increased)
+                }
+                .navigationBarItems(trailing:
+                                        Button(action: {
+                                            //9788891639431
+                                                                
+                    httpManager.postLibro(datiLibrolibro: DatiLibro(isbn: datiLibro.isbn,
+                                                                    titolo: titoloLibro,
+                                                                    sottotitolo: sottotitoloLibro as String?,
+                                                                    lingua: linguaLibro,
+                                                                    casaEditrice: casaEditriceLibro as String?,
+                                                                    autore: autoreLibro,
+                                                                    annoPubblicazione: annoPubblicazioneLibro as String?,
+                                                                    idCategorie: getIdItems(goalsDaOrdinare: task.servingGoals),
+                                                                    idGenere:   Int32(idGenereLibro) ?? 0,
+                                                                    descrizione: descrizioneLibro as String?,
+                                                                    np: Int32(numeroPagineLibro) ?? 0,
+                                                                    image: datiLibro.image))
+                                            
+                                            
+                    httpManager.postCopiaLibro(copiaDelLibro: CopiaLibro(idCopia: 0,
+                                                                         isbn: datiLibro.isbn,
+                                                                         condizioni: condizioneCopiaLibro.rawValue,
+                                                                         sezione: sezioneCopiaLibro,
+                                                                         scaffale: Int32(scaffale) ?? 0,
+                                                                         ripiano: Int32(ripianoCopiaLibro) ?? 0,
+                                                                         idPrestito: -1))
+                                            
+                                            if !titoloLibro.isEmpty &&
+                                                !sottotitoloLibro.isEmpty &&
+                                                !linguaLibro.isEmpty &&
+                                                !casaEditriceLibro.isEmpty &&
+                                                !autoreLibro.isEmpty &&
+                                                !annoPubblicazioneLibro.isEmpty &&
+                                                !idCategorieLibro.isEmpty &&
+                                                !idGenereLibro.isEmpty &&
+                                                !numeroPagineLibro.isEmpty &&
+                                                !condizioneCopiaLibro.rawValue.isEmpty &&
+                                                !sezioneCopiaLibro.isEmpty &&
+                                                !scaffale.isEmpty &&
+                                                !ripianoCopiaLibro.isEmpty {
+                                                
+                                                withAnimation {
+                                                    showAlertTextField = false
+                                                    showAlert.toggle()
+                                                }
+                                                
+                                            }else {
+                                                showAlertTextField.toggle()
+                                                showAlert.toggle()
+                                            }
+                                            
+                                            
+                                        }){
+                                            Text("Carica")
+                                        }
+                                        .alert(isPresented: $showAlert, content: {
+                                            Alert(
+                                                title: Text(showAlertTextField ? "Errore" : "Caricamento"),
+                                                message: Text(showAlertTextField ? "Il caricamento non è avvenuto, perché ci sono dei campi vuoti" : "Il caricamento è stato riuscito"),
+                                                primaryButton: .default(Text("Avanti")) {
+                                                    
+                                                    if !showAlertTextField {
+                                                        withAnimation {
+                                                            showAggiuntaLibroBilding.wrappedValue.toggle()
+                                                        }
+                                                        
+                                                    }else {
+                                                        showAlert.toggle()
+                                                    }
+                                                    
+                                                },
+                                                secondaryButton: .cancel()
+                                            )
+                                        })
+                )
             }
-            .navigationTitle("Modifica Libro")
+        }
+        .onAppear {
+            self.idGenereLibro = "1"
+            
+            self.task = Task(name: "", servingGoals: [generateGoals(categorie: self.httpManager.arrayCategorie)[1]])
         }
     }
 }
+
+func generateGoals(categorie: NSMutableArray) -> [Goal] {
+    
+    let goals = categorie.enumerated().map { (index, element) in
+        return Goal(name: element as! String, identificableNumber: String(index + 1))
+    }
+    
+    return goals
+}
+
+func getIdItems(goalsDaOrdinare: Set<Goal>) -> String {
+    var stringaStrutturata: String = ""
+    
+    for element in goalsDaOrdinare{
+        
+        if stringaStrutturata == "" {
+            stringaStrutturata = element.identificableNumber
+            
+        }else {
+            stringaStrutturata = stringaStrutturata + "," + element.identificableNumber
+        }
+    }
+    
+    return stringaStrutturata
+
+}
+
 
 @available(iOS 15.0, *)
 struct ItemGestioneLibro: View{
@@ -469,14 +654,14 @@ struct ItemGestioneLibro: View{
     
     var isLast = false
     
-    var data: PrendiDatiLibri
+    var data: HttpManager
         
     var index: Binding<Int>
     var datiLibroBinding: Binding<DatiLibro>
     
     var showAnimationSecondary: Binding<Bool>
     
-    init(datiLibro: DatiLibro, isLast: Bool = false, data: PrendiDatiLibri, index: Binding<Int>, datiLibroBinding: Binding<DatiLibro>, showAnimationSecondary: Binding<Bool>) {
+    init(datiLibro: DatiLibro, isLast: Bool = false, data: HttpManager, index: Binding<Int>, datiLibroBinding: Binding<DatiLibro>, showAnimationSecondary: Binding<Bool>) {
         
         self.datiLibro = datiLibro
         self.isLast = isLast
@@ -513,11 +698,11 @@ struct ItemGestioneLibro: View{
                     VStack(alignment: .leading) {
                         
                         Text(datiLibro.titolo)
-                            .font(.title)
+                            .font(.headline)
                             .padding(.top)
                         
                         Text(datiLibro.autore)
-                            .font(.body)
+                            .font(.subheadline)
                         
                         Text(String(datiLibro.np))
                             .font(.footnote)
@@ -528,7 +713,7 @@ struct ItemGestioneLibro: View{
                     Spacer()
                 }
                 .onAppear(){
-                    data.updateData()
+                    data.updateDataLibriCatalogo()
                 }
                 .background(Color(UIColor.systemBackground))
                 
@@ -550,14 +735,14 @@ struct ItemGestioneLibro: View{
                     
                     VStack(alignment: .leading) {
                         Text(datiLibro.titolo)
-                            .font(.title)
+                            .font(.headline)
                             .padding(.top)
                             
                         
                         Text(datiLibro.autore)
-                            .font(.body)
+                            .font(.subheadline)
                         
-                        Text(String("Numero pagine: " + String(datiLibro.np)))
+                        Text(String(String(datiLibro.np)) + " pagine")
                             .font(.footnote)
                             .padding(.bottom, 155/2)
                     }
@@ -572,6 +757,7 @@ struct ItemGestioneLibro: View{
     }
 }
 
+/*
 class PrendiDatiLibri: ObservableObject{
     @Published var nPagCatalogo = 0
     
@@ -606,14 +792,8 @@ class PrendiDatiLibri: ObservableObject{
         GestioneJson().getLibroApi(isbn: isbn) { datiLibro, errore in
             DispatchQueue.main.asyncAfter(deadline: .now() + -1){
                 if let datiLibro = datiLibro{
-                    //print(datiLibro)
-                    
                     self.datiLibro = datiLibro
-                    
-                    //print(self.datiLibro)
-                                        
-                    //print(self.datiLibro)
-                    
+                                                                                
                 }else{
                     print(errore?.localizedDescription ?? "error")
                 }
@@ -621,6 +801,7 @@ class PrendiDatiLibri: ObservableObject{
         }
     }
 }
+ */
 
 struct GestioneLibri_Previews: PreviewProvider {
     static var previews: some View {
